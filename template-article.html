@@ -2,34 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="$lang$" xml:lang="$lang$" $if(dir)$ dir="$dir$" $endif$>
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="generator" content="pandoc" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-    $for(author-meta)$
-        <meta name="author" content="$author-meta$" />
-    $endfor$
-    $if(date-meta)$
-        <meta name="dcterms.date" content="$date-meta$" />
-    $endif$
-    $if(keywords)$
-        <meta name="keywords" content="$for(keywords)$$keywords$$sep$, $endfor$" />
-    $endif$
-    $if(description-meta)$
-        <meta name="description" content="$description-meta$" />
-    $endif$
-    <title>$if(title-prefix)$$title-prefix$ – $endif$$pagetitle$</title>
-    $for(css)$
-        <link rel="stylesheet" href="$css$" />
-    $endfor$
-    $for(header-includes)$
-        $header-includes$
-    $endfor$
-    $if(math)$
-        $if(mathjax)$
-            <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-        $endif$
-        $math$
-    $endif$
+    <title>titlu</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
+    <link rel="stylesheet" type="text/css" href="template-article.css">
+    <!--<link rel="icon" href="" type="image/x-icon">-->
 </head>
 
 <body>
@@ -39,7 +16,20 @@
             <a href="#">redacția</a>
         </nav>
     </div>
-    $body$
+    <div class="article">
+        <div class="header">
+            <h1>titlu</h1>
+            <span style="opacity: 0.4;">—— </span>
+            <a href="#">autor</a>
+            <span style="float: right; opacity: 0.4;">dată</span>
+            <div id="tags">
+                <a href="#">#tag</a>
+            </div>
+        </div>
+        <div class="contents">
+            <p>conținut</p>
+        </div>
+    </div>
 </body>
 
 </html>
