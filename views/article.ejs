@@ -22,6 +22,11 @@
                     <a href="/query?tag=<%= tag %>">#<%=tag%></a>
                 <% } %>
             </div>
+            <div style="text-align: center">
+                <% if (article.thumbnail) { %>
+                    <img src="<%= article.thumbnail %>">
+                <% } %>
+            </div>
         </div>
         <div class="contents">
             <%- article.contents %>
