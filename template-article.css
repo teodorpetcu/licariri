@@ -12,6 +12,7 @@ a {
 .top-banner {
     max-width: 100%;
     margin: 0px auto;
+    text-align: center;
 }
 
 .top-banner nav {
