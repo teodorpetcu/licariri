@@ -1,6 +1,46 @@
 body {
     background-color: #EEEEEE;
+}
+
+a {
     text-decoration: none;
+    text-justify: none;
+    color: black;
+}
+
+.top-banner {
+    max-width: 100%;
+    margin: 0px auto;
+}
+
+.top-banner nav {
+    text-align: center;
+    padding: 5px;
+    border-top: solid 1px;
+    border-bottom: solid 1px;
+}
+
+.top-banner nav a {
+    display: inline-block;
+    position: relative;
+    font-size: 1.5rem;
+    padding: 5px 1.5rem;
+}
+
+.top-banner nav a:after {
+    position: absolute;
+    bottom: 0;
+    content: "";
+    height: 2px;
+    left: 50%;
+    background: black;
+    transition: width 0.3s ease 0s, left 0.3s ease 0s;
+    width: 0;
+}
+
+.top-banner nav a:hover:after {
+    width: 100%;
+    left: 0;
 }
 
 .article .header {
@@ -17,15 +57,12 @@ body {
     padding-top: 10px;
 }
 
-.article .header .link {
-    text-decoration: none;
-    text-justify: none;
+.article .header a {
     text-indent: 0rem;
     opacity: 0.3;
-    color: black;
 }
 
-.article .header .link:hover {
+.article .header a:hover {
     opacity: 1;
 }
 

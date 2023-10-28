@@ -1,11 +1,12 @@
 <div class="article">
 <div class="header">
 <h1>Ghidul bobocilor în primul an de liceu</h1>
-<span style="opacity: 0.4">——— </span>
-<a class="link" href="#">Silvia Buscan</a>
+<span style="opacity: 0.4;">——— </span>
+<a href="#">Silvia Buscan</a>
+<span style="float: right; opacity: 0.4;">2023/10/28</span>
 <div id="tags">
-<a class="link" href="#">#jurnalism</a>
-<a class="link" href="#">#profesional</a>
+<a href="#">#jurnalism</a>
+<a href="#">#profesional</a>
 </div>
 </div>
 <div class="contents">
