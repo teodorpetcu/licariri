@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <title><%= article.title%></title>
+    <%- include("./header"); %>
+</head>
+
+<body>
+    <%- include("./top-banner"); %>
+    <div class="article">
+        <div class="header">
+            <h1><%= article.title %></h1>
+            <span style="opacity: 0.3;">—</span>
+            <a href="/query?autor=<%= article.author %>"><%= article.author %></a>
+            <%if (article.author_status) { %>
+                <span style="opacity: 0.3">(<%= article.author_status %>)</span>
+            <% } %>
+            <span style="float: right; opacity: 0.3;"><%= article.date %></span>
+            <div id="tags">
+                <% for (tag of article.tags) { %>
+                    <a href="/query?tag=<%= tag %>">#<%=tag%></a>
+                <% } %>
+            </div>
+        </div>
+        <div class="contents">
+            <%- article.contents %>
+        </div>
+    </div>
+</body>
+
+</html>
