@@ -9,20 +9,20 @@ a {
     color: black;
 }
 
-.top-banner {
+.main-nav {
     max-width: 100%;
     margin: 0px auto;
     text-align: center;
 }
 
-.top-banner nav {
+.main-nav nav {
     text-align: center;
     padding: 5px;
     border-top: solid 1px;
     border-bottom: solid 1px;
 }
 
-.top-banner nav a {
+.main-nav nav a {
     background-color: #d4b0e9;
     display: inline-block;
     position: relative;
@@ -30,7 +30,7 @@ a {
     padding: 5px 1.5rem;
 }
 
-.top-banner nav a:after {
+.main-nav nav a:after {
     position: absolute;
     bottom: 0;
     content: "";
@@ -41,7 +41,7 @@ a {
     width: 0;
 }
 
-.top-banner nav a:hover:after {
+.main-nav nav a:hover:after {
     width: 100%;
     left: 0;
 }
@@ -137,4 +137,104 @@ a {
 .article-snippet img {
     max-width: 50%;
     max-height: 50%;
+}
+
+.main-nav {
+    font-family: 'Times New Roman';
+}
+
+.no-select {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.main-nav-button {
+    position: fixed;
+    right: 25px;
+    top: 3%;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-nav-button input
+{
+    position: absolute;
+    cursor: pointer;
+    margin: -2px 0px 0px -5px;
+    width: 32px;
+    height: 32px;
+    opacity: 0;
+    z-index: 9999;
+}
+
+.main-nav-button span
+{
+    background: black;
+    width: 32px;
+    height: 3px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    z-index: 1;
+}
+
+.main-nav-button span
+{
+    transform-origin: 0% 0%;
+    transition: transform 0.4s ease-in-out;
+}
+
+.main-nav-button span:nth-last-child(2)
+{
+    transition: transform 0.2s ease-in-out;
+}
+
+.main-nav-button span:nth-last-child(1)
+{
+    transform-origin: 0% 100%;
+    transition: transform 0.4s ease-in-out;
+}
+
+.main-nav-button input:checked ~ span
+{
+    transform: rotate(45deg) translate(0px, 0px);
+}
+
+/*The middle line gets hidden*/
+.main-nav-button input:checked ~ span:nth-last-child(2)
+{
+    transform: scaleY(0);
+}
+
+.main-nav-button input:checked ~ span:nth-last-child(1)
+{
+    transform: rotate(-45deg) translate(0px, 0px);
+}
+
+.banner {
+    text-align: center;
+}
+
+@media (max-width: 1024px) {
+    .main-nav {
+        display: none;
+        margin: auto;
+    }
+    .main-nav-button
+    .main-nav-button span {
+        display: block;
+    }
+    .banner {
+        text-align: left;
+    }
+}
+
+@media (min-width: 1024px) {
+    .main-nav {
+        display: block;
+    }
+    .main-nav-button,
+    .main-nav-button span {
+        display: none;
+    }
 }
