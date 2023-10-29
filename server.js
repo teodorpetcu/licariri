@@ -140,6 +140,20 @@ app.post("/publish", (_req, res) => {
     res.render("main", {})
 })
 
+app.get("/:article_id", async (req, res) => {
+    const article_id = req.params.article_id;
+    const article = await search_db(article_id);
+    const markdown = `./articles/${article_id}.md`
+    fs.readFile(markdown, "utf8", (err, data) => {
+        if (err) {
+            res.send("File not found")
+        } else {
+            article.contents = marked.parse(data.toString());
+            res.render("article", {article: article});
+        }
+    })
+})
+
 app.listen(port, () => {
     console.log(`Web server up (http://localhost:${port})`)
 })
