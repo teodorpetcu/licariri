@@ -101,6 +101,22 @@ class Article {
     article_id() {
         return this.date + "-" + this.title.toLowerCase().replace(/[ \t\n]/g, "-");
     }
+
+    save_metadata() {
+        db.exec(`
+            INSERT INTO articles VALUES('${this.id}', '${this.title}', '${this.date}');
+        `);
+        for (let tag of this.tags) {
+            db.exec(`
+                INSERT INTO article_tags VALUES('${this.id}', '${tag}');
+            `);
+        }
+        for (let author of this.authors) {
+            db.exec(`
+                INSERT INTO article_authors VALUES('${this.id}', '${author.name}', '${author.occupation}');
+            `);
+        }
+    }
 }
 
 app.set("view engine", "ejs");
