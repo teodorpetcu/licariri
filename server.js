@@ -82,6 +82,18 @@ const search_db = async (id) => {
     return new Article(title, date, authors, tags);
 }
 
+const db_get_recent_articles = async (start, end) => {
+    return new Promise((resolve, _) => {
+        db.all(`SELECT * FROM articles ORDER BY date DESC`, (err, rows) => {
+            if (err || rows === undefined) {
+                return resolve([]);
+            }
+            rows = rows.slice(start, end);
+            return Promise.all(rows.map((row) => search_db(row.id))).then((values) => resolve(values));
+        });
+    })
+}
+
 class Author {
     constructor(name, occupation) {
         this.name = name;
@@ -123,21 +135,23 @@ app.set("view engine", "ejs");
 
 app.use(express.static(__dirname + "/public"))
 
-app.get("/", (_, res) => {
-    res.render("main", {})
+app.get("/", async (req, res) => {
+    let page = req.query.page ? req.query.page : 1;
+    let page_size = 9;
+    let article_page = await db_get_recent_articles(page_size * (page - 1), page_size * (page));
+    res.render("main", {article_page})
 })
 
 app.get("/query", (_req, res) => {
-    res.render("main", {})
+    res.redirect("/");
 })
 
 app.get("/publish", (_, res) => {
-    res.render("main", {})
+    res.redirect("/");
 })
 
 app.post("/publish", (_req, res) => {
-
-    res.render("main", {})
+    res.redirect("/");
 })
 
 app.get("/:article_id", async (req, res) => {
@@ -149,7 +163,7 @@ app.get("/:article_id", async (req, res) => {
             res.send("File not found")
         } else {
             article.contents = marked.parse(data.toString());
-            res.render("article", {article: article});
+            res.render("article", {article});
         }
     })
 })

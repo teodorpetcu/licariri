@@ -8,6 +8,35 @@
 
 <body>
     <%- include("./top-banner"); %>
+    <div class="article-container">
+        <div class="row">
+            <div class="columns">
+            <div class="grid">
+            <% for (article of article_page) { %>
+                <div class="article-snippet">
+                    <div style="text-align: center">
+                        <% if (article.thumbnail) { %>
+                            <img src="<%= article.thumbnail %>">
+                        <% } %>
+                    </div>
+
+                    <a href="<%= article.id %>" class="title"><%= article.title %></a>
+
+                    <%- include("authors") %>
+
+                    <div class="description">
+                        <%= article.description %>
+                    </div>
+
+                    <div>
+                        <%- include("tags") %>
+                    </div>
+                </div>
+            <% } %>
+            </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

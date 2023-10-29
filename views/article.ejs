@@ -11,18 +11,10 @@
     <div class="article">
         <div class="header">
             <h1><%= article.title %></h1>
-            <span style="opacity: 0.3;">—</span>
-            <% for (let author of article.authors) { %>
-                <a href="/query?autor=<%= author.name %>"><%= author.name %></a>
-                <% if (author.occupation) { %>
-                    <span style="opacity: 0.3">(<%= author.occupation %>)</span>
-                <% } %>
-            <% } %>
+            <%- include("authors") %>
             <span style="float: right; opacity: 0.3;"><%= article.date %></span>
             <div id="tags">
-                <% for (tag of article.tags) { %>
-                    <a href="/query?tag=<%= tag %>">#<%=tag%></a>
-                <% } %>
+                <%- include("tags") %>
             </div>
             <div style="text-align: center">
                 <% if (article.thumbnail) { %>
