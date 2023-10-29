@@ -67,6 +67,8 @@ a {
 }
 
 .article .header a {
+    font-style: italic;
+    text-decoration: underline;
     text-indent: 0rem;
     opacity: 0.3;
 }

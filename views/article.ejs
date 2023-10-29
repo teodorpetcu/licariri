@@ -13,10 +13,10 @@
             <h1><%= article.title %></h1>
             <span style="opacity: 0.3;">—</span>
             <a href="/query?autor=<%= article.author %>"><%= article.author %></a>
+            <span style="float: right; opacity: 0.3;"><%= article.date %></span>
             <%if (article.author_status) { %>
                 <span style="opacity: 0.3">(<%= article.author_status %>)</span>
             <% } %>
-            <span style="float: right; opacity: 0.3;"><%= article.date %></span>
             <div id="tags">
                 <% for (tag of article.tags) { %>
                     <a href="/query?tag=<%= tag %>">#<%=tag%></a>
