@@ -17,7 +17,7 @@ a {
 
 .main-nav nav {
     text-align: center;
-    padding: 5px;
+    padding: 5px 0px 5px 0px;
     border-top: solid 1px;
     border-bottom: solid 1px;
 }
@@ -28,22 +28,6 @@ a {
     position: relative;
     font-size: 1.5rem;
     padding: 5px 1.5rem;
-}
-
-.main-nav nav a:after {
-    position: absolute;
-    bottom: 0;
-    content: "";
-    height: 2px;
-    left: 50%;
-    background: black;
-    transition: width 0.3s ease 0s, left 0.3s ease 0s;
-    width: 0;
-}
-
-.main-nav nav a:hover:after {
-    width: 100%;
-    left: 0;
 }
 
 .article .header {
@@ -149,7 +133,7 @@ a {
 }
 
 .main-nav-button {
-    position: fixed;
+    position: absolute;
     right: 25px;
     top: 3%;
     z-index: 1;
@@ -211,14 +195,32 @@ a {
     transform: rotate(-45deg) translate(0px, 0px);
 }
 
+.mobile-menu-visible {
+    display: block !important;
+}
+
 .banner {
+    position: relative;
     text-align: center;
 }
 
 @media (max-width: 1024px) {
     .main-nav {
+        position: absolute !important;
+        width: 100%;
+        box-sizing: border-box;
         display: none;
-        margin: auto;
+        background-color: #d4b0e9;
+        z-index: 9999;
+    }
+    .main-nav nav {
+        display: block !important;
+    }
+    .main-nav nav a {
+        display: block !important;
+        font-size: 1.6rem;
+        line-height: 1.6;
+        text-decoration: underline;
     }
     .main-nav-button
     .main-nav-button span {
@@ -233,6 +235,23 @@ a {
     .main-nav {
         display: block;
     }
+
+    .main-nav nav a:after {
+        position: absolute;
+        bottom: 0;
+        content: "";
+        height: 2px;
+        left: 50%;
+        background: black;
+        transition: width 0.3s ease 0s, left 0.3s ease 0s;
+        width: 0;
+    }
+
+    .main-nav nav a:hover:after {
+        width: 100%;
+        left: 0;
+    }
+
     .main-nav-button,
     .main-nav-button span {
         display: none;

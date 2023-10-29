@@ -1,19 +1,33 @@
 <div>
     <div class="banner no-select">
-        <h1 style="line-height: 0; padding-top: 10px;">LICĂRIRI</h1>
-        <p style="font-size: 0.7rem;">vocea meșotiștilor de pretutindeni</p>
+        <div id="logo">
+            <h1 style="line-height: 0; padding-top: 10px;">LICĂRIRI</h1>
+            <p style="font-size: 0.7rem;">vocea meșotiștilor de pretutindeni</p>
+        </div>
+        <div class="main-nav" id="main-nav">
+            <nav>
+                <a href="/">acasă</a>
+                <a href="/">scrie-ne</a>
+                <a href="publish">publică</a>
+            </nav>
+        </div>
     </div>
     <div class="main-nav-button no-select">
-        <input type="checkbox" />
+        <input type="checkbox" id="menu-checkbox"/>
             <span></span>
             <span></span>
             <span></span>
     </div>
-    <div class="main-nav">
-        <nav>
-            <a href="/">acasă</a>
-            <a href="/">scrie-ne</a>
-            <a href="publish">publică</a>
-        </nav>
-    </div>
+    <script>
+        // show hamburger menu if button is pressed
+        const menuCheckbox = document.getElementById("menu-checkbox");
+        const mainNav = document.getElementById("main-nav");
+        menuCheckbox.addEventListener("change", function() {
+            if (this.checked) {
+                mainNav.classList.add("mobile-menu-visible");
+            } else {
+                mainNav.classList.remove("mobile-menu-visible");
+            }
+        })
+    </script>
 </div>
