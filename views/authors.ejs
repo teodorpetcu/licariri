@@ -1,9 +1,10 @@
 <% for (let author of article.authors) { %>
-    <div style="display: block">
-        <span style="opacity: 0.3; float: left;">—</span>
-        <a href="/query?author=<%= author.name %>"><%= author.name %></a>
-        <% if (author.occupation) { %>
-            <span style="opacity: 0.3">(<%= author.occupation %>)</span>
-        <% } %>
+    <div style="text-align: center; width: 100%">
+    <span style="opacity: 0.3">—</span>
+    <a style="display: inline-block;" href="/query?author=<%= author.name %>"><%= author.name %></a>
+    <% if (author.occupation) { %>
+        <span style="opacity: 0.3">(<%= author.occupation %>)</span>
+    <% } %>
+    <span style="opacity: 0.3">—</span>
     </div>
 <% } %>

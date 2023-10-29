@@ -160,7 +160,9 @@ app.get("/:article_id", async (req, res) => {
     const markdown = `./articles/${article_id}.md`
     fs.readFile(markdown, "utf8", (err, data) => {
         if (err) {
-            res.send("File not found")
+            // TODO: make a 404 page
+            article.contents = "";
+            res.render("article", {article});
         } else {
             article.contents = marked.parse(data.toString());
             res.render("article", {article});

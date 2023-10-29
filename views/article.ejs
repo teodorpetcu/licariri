@@ -11,16 +11,21 @@
     <div class="article">
         <div class="header">
             <h1><%= article.title %></h1>
-            <%- include("authors") %>
-            <span style="float: right; opacity: 0.3;"><%= article.date %></span>
+
+            <div>
+                <%- include("authors") %>
+                <span style="float: right; opacity: 0.3;"><%= article.date %></span>
+            </div>
+
             <div id="tags">
                 <%- include("tags") %>
             </div>
-            <div style="text-align: center">
-                <% if (article.thumbnail) { %>
-                    <img src="<%= article.thumbnail %>">
-                <% } %>
-            </div>
+
+            <% if (article.has_thumbnail) { %>
+                <div style="text-align: center">
+                    <img src="images/<%= article.id %>">
+                </div>
+            <% } %>
         </div>
         <div class="contents">
             <%- article.contents %>

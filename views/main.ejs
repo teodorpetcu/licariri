@@ -14,11 +14,11 @@
             <div class="grid">
             <% for (article of article_page) { %>
                 <div class="article-snippet">
-                    <div style="text-align: center">
-                        <% if (article.thumbnail) { %>
-                            <img src="<%= article.thumbnail %>">
-                        <% } %>
-                    </div>
+                    <% if (article.has_thumbnail) { %>
+                        <div style="text-align: center">
+                            <a href="<%= article.id %>" class="title"><img src="images/<%= article.id %>"></a>
+                        </div>
+                    <% } %>
 
                     <a href="<%= article.id %>" class="title"><%= article.title %></a>
 
