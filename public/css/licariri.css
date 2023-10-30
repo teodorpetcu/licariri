@@ -3,6 +3,10 @@ body {
     font-family: "Helvetica";
 }
 
+body.open {
+    overflow: hidden;
+}
+
 a {
     text-decoration: none;
     text-justify: none;

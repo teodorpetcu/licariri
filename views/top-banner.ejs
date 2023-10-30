@@ -25,8 +25,10 @@
         menuCheckbox.addEventListener("change", function() {
             if (this.checked) {
                 mainNav.classList.add("open");
+                document.body.classList.add("open");
             } else {
                 mainNav.classList.remove("open");
+                document.body.classList.remove("open");
             }
         })
     </script>
