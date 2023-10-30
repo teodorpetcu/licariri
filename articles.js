@@ -187,4 +187,4 @@ class ArticleDatabase {
     }
 }
 
-exports.ArticleDatabase = ArticleDatabase;
+module.exports.ArticleDatabase = ArticleDatabase;
