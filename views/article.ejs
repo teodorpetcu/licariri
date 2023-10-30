@@ -8,27 +8,29 @@
 
 <body>
     <%- include("./top-banner"); %>
-    <div class="article">
-        <div class="header">
-            <h1><%= article.title %></h1>
+    <div id="page-body">
+        <div class="article">
+            <div class="header">
+                <h1><%= article.title %></h1>
 
-            <div>
-                <%- include("authors") %>
-                <span style="float: right; opacity: 0.3;"><%= article.date %></span>
-            </div>
-
-            <div id="tags">
-                <%- include("tags") %>
-            </div>
-
-            <% if (article.has_thumbnail) { %>
-                <div style="text-align: center">
-                    <img src="images/<%= article.id %>">
+                <div>
+                    <%- include("authors") %>
+                    <span style="float: right; opacity: 0.3;"><%= article.date %></span>
                 </div>
-            <% } %>
-        </div>
-        <div class="contents">
-            <%- article.contents %>
+
+                <div id="tags">
+                    <%- include("tags") %>
+                </div>
+
+                <% if (article.has_thumbnail) { %>
+                    <div style="text-align: center">
+                        <img src="images/<%= article.id %>">
+                    </div>
+                <% } %>
+            </div>
+            <div class="contents">
+                <%- article.contents %>
+            </div>
         </div>
     </div>
 </body>

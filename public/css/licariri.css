@@ -114,8 +114,8 @@ a {
 .main-nav-button {
     position: absolute;
     right: 25px;
-    top: 1.7rem;
-    z-index: 1;
+    top: 18px;
+    z-index: 10;
     display: flex;
     flex-direction: column;
 }
@@ -128,7 +128,7 @@ a {
     width: 32px;
     height: 32px;
     opacity: 0;
-    z-index: 9999;
+    z-index: 3;
 }
 
 .main-nav-button span
@@ -178,16 +178,31 @@ a {
     display: block !important;
 }
 
+#header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #f4e9e9;
+    border-bottom: 1px solid;
+    z-index: 1;
+}
+
 #logo {
+    position: relative;
+    z-index: 3;
     line-height: 0;
 }
 
 #main-nav {
+    z-index: 2;
     text-align: center;
+    background-color: #f4e9e9;
 }
 
 @media (max-width: 1023px) {
     #logo {
+        padding-left: 10px;
         align-items: left;
     }
 
@@ -196,20 +211,23 @@ a {
         text-align: center;
     }
 
+    #page-body {
+        padding-top: 65px;
+    }
+
     #main-nav {
-        position: fixed !important;
+        position: fixed;
         width: 100%;
         left: 0;
+        opacity: 0;
         box-sizing: border-box;
-        display: none;
-        background-color: #d4b0e9;
-        z-index: 9999;
-        transition: top 0.4s;
+        transition: top 0.3s ease;
         top: -100%;
+        height: 100%;
     }
 
     #main-nav.open {
-        top: 0;
+        top: 65px;
         opacity: 1;
     }
 
@@ -231,13 +249,16 @@ a {
         text-align: center;
     }
 
+    #page-body {
+        padding-top: 115px;
+    }
+
     #main-nav {
         display: block;
         max-width: 100%;
         margin: 0px auto;
         padding: 5px 0px 5px 0px;
         border-top: solid 1px;
-        border-bottom: solid 1px;
     }
 
     #main-nav a {
