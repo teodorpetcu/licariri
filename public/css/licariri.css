@@ -4,7 +4,13 @@ body {
 }
 
 body.open {
+    /* Make it impossible to scroll */
     overflow: hidden;
+}
+
+.no-select {
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 a {
@@ -13,13 +19,13 @@ a {
     color: black;
 }
 
-.article .header {
+.article .headline {
     max-width: 700px;
     margin: 0px auto;
     padding-bottom: 0.5rem;
 }
 
-.article .header h1 {
+.article .headline h1 {
     text-align: center;
     line-height: 1.2;
     font-size: 3.5rem;
@@ -33,7 +39,7 @@ a {
     max-height: 100%;
 }
 
-.article .header a,
+.article .headline a,
 .article-snippet a:not(.title) {
     font-style: italic;
     text-decoration: underline;
@@ -41,7 +47,7 @@ a {
     opacity: 0.45;
 }
 
-.article .header a:hover,
+.article .headline a:hover,
 .article-snippet a:hover {
     opacity: 1;
 }
@@ -66,15 +72,6 @@ a {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 3fr));
     gap: 1rem;
-}
-
-@media (max-width: 800px) {
-    .article-container .grid {
-        margin: 0 0 30px;
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 2fr));
-        gap: 1rem;
-    }
 }
 
 .article-snippet {
@@ -106,100 +103,25 @@ a {
     max-height: 50%;
 }
 
-#main-nav {
-    font-family: 'Times New Roman';
-}
-
-.no-select {
-    -webkit-user-select: none;
-    user-select: none;
-}
-
-.main-nav-button {
-    position: absolute;
-    right: 25px;
-    top: 18px;
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-}
-
-.main-nav-button input
-{
-    position: absolute;
-    cursor: pointer;
-    margin: -2px 0px 0px -5px;
-    width: 32px;
-    height: 32px;
-    opacity: 0;
-    z-index: 3;
-}
-
-.main-nav-button span
-{
-    background: black;
-    width: 32px;
-    height: 3px;
-    margin-top: 4px;
-    margin-bottom: 4px;
-    z-index: 1;
-}
-
-.main-nav-button span
-{
-    transform-origin: 0% 0%;
-    transition: transform 0.2s ease-in-out;
-}
-
-.main-nav-button span:nth-last-child(2)
-{
-    transition: transform 0.1s ease-in-out;
-}
-
-.main-nav-button span:nth-last-child(1)
-{
-    transform-origin: 0% 100%;
-    transition: transform 0.2s ease-in-out;
-}
-
-.main-nav-button input:checked ~ span
-{
-    transform: rotate(45deg) translate(0px, 0px);
-}
-
-/*The middle line gets hidden*/
-.main-nav-button input:checked ~ span:nth-last-child(2)
-{
-    transform: scaleY(0);
-}
-
-.main-nav-button input:checked ~ span:nth-last-child(1)
-{
-    transform: rotate(-45deg) translate(0px, 0px);
-}
-
-.open {
-    display: block !important;
-}
-
 #header {
+    z-index: 1;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     background-color: #f4e9e9;
     border-bottom: 1px solid;
-    z-index: 1;
 }
 
 #logo {
-    position: relative;
     z-index: 3;
+    position: relative;
     line-height: 0;
 }
 
 #main-nav {
     z-index: 2;
+    font-family: 'Times New Roman';
     text-align: center;
     background-color: #f4e9e9;
 }
@@ -207,7 +129,6 @@ a {
 @media (max-width: 1023px) {
     #logo {
         padding-left: 10px;
-        align-items: left;
     }
 
     #logo-link {
@@ -242,9 +163,54 @@ a {
         text-decoration: underline;
     }
 
-    .main-nav-button
-    .main-nav-button span {
-        display: block;
+    #main-nav-button {
+        position: absolute;
+        right: 25px;
+        top: 18px;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #main-nav-button input {
+        position: absolute;
+        cursor: pointer;
+        margin: -2px 0px 0px -5px;
+        width: 32px;
+        height: 32px;
+        opacity: 0;
+        z-index: 3;
+    }
+
+    #main-nav-button span {
+        background: black;
+        width: 32px;
+        height: 3px;
+        margin-top: 4px;
+        margin-bottom: 4px;
+        z-index: 1;
+    }
+
+    #main-nav-button span {
+        transform-origin: 0% 0%;
+        transition: transform 0.2s ease-in-out;
+    }
+    #main-nav-button span:nth-last-child(2) {
+        transition: transform 0.1s ease-in-out;
+    }
+    #main-nav-button span:nth-last-child(1) {
+        transform-origin: 0% 100%;
+        transition: transform 0.2s ease-in-out;
+    }
+
+    #main-nav-button input:checked ~ span {
+        transform: rotate(45deg) translate(0px, 0px);
+    }
+    #main-nav-button input:checked ~ span:nth-last-child(2) {
+        transform: scaleY(0);
+    }
+    #main-nav-button input:checked ~ span:nth-last-child(1) {
+        transform: rotate(-45deg) translate(0px, 0px);
     }
 }
 
@@ -290,8 +256,7 @@ a {
         left: 0;
     }
 
-    .main-nav-button,
-    .main-nav-button span {
+    #main-nav-button {
         display: none;
     }
 }

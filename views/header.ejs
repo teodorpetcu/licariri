@@ -1,4 +1,33 @@
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
-<link rel="stylesheet" type="text/css" href="css/licariri.css">
-<!--<link rel="icon" href="" type="image/x-icon">-->
+<div id="header" class="no-select">
+    <div id="logo">
+        <div id="logo-link">
+            <a href="/">
+                <h1 style="line-height: 0; padding-top: 10px;">LICĂRIRI</h1>
+                <p style="font-size: 0.7rem; font-style: italic;">semper ad astra</p>
+            </a>
+        </div>
+    </div>
+    <nav id="main-nav">
+        <a href="/">acasă</a>
+        <a href="/">scrie-ne</a>
+    </nav>
+    <div id="main-nav-button">
+        <input type="checkbox" id="menu-checkbox"/>
+            <span></span>
+            <span></span>
+            <span></span>
+    </div>
+    <script>
+        const menuCheckbox = document.getElementById("menu-checkbox");
+        const mainNav = document.getElementById("main-nav");
+        menuCheckbox.addEventListener("change", function() {
+            if (this.checked) {
+                mainNav.classList.add("open");
+                document.body.classList.add("open");
+            } else {
+                mainNav.classList.remove("open");
+                document.body.classList.remove("open");
+            }
+        })
+    </script>
+</div>

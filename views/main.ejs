@@ -3,39 +3,29 @@
 
 <head>
     <title>Licăriri</title>
-    <%- include("./header"); %>
+    <%- include("meta"); %>
 </head>
 
 <body>
-    <%- include("./top-banner"); %>
+    <%- include("header"); %>
     <div id="page-body">
         <div class="article-container">
-            <div class="row">
-                <div class="columns">
-                <div class="grid">
-                <% for (article of article_page) { %>
-                    <div class="article-snippet">
-                        <% if (article.has_thumbnail) { %>
-                            <div style="text-align: center">
-                                <a href="<%= article.id %>" class="title"><img src="images/<%= article.id %>"></a>
-                            </div>
-                        <% } %>
-
-                        <a href="<%= article.id %>" class="title"><%= article.title %></a>
-
-                        <%- include("authors") %>
-
-                        <div class="description">
-                            <%= article.description %>
+            <div class="grid">
+            <% for (article of article_page) { %>
+                <div class="article-snippet">
+                    <% if (article.has_thumbnail) { %>
+                        <div style="text-align: center">
+                            <a href="<%= article.id %>" class="title"><img src="images/<%= article.id %>"></a>
                         </div>
-
-                        <div>
-                            <%- include("tags") %>
-                        </div>
+                    <% } %>
+                    <a href="<%= article.id %>" class="title"><%= article.title %></a>
+                    <%- include("authors") %>
+                    <div class="description">
+                        <%= article.description %>
                     </div>
-                <% } %>
+                    <%- include("tags") %>
                 </div>
-                </div>
+            <% } %>
             </div>
         </div>
     </div>

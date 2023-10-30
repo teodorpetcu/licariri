@@ -1,3 +1,7 @@
-<% for (tag of article.tags) {%>
-    <a href="/query?tag=<%= tag %>">#<%=tag%></a>
+<% if (article.tags) { %>
+    <div id="tags">
+    <% for (tag of article.tags) {%>
+        <a href="/query?tag=<%= tag %>">#<%=tag%></a>
+    <% } %>
+    </div>
 <% } %>
