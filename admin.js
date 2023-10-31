@@ -34,7 +34,7 @@ class UsersDatabase {
                 // TODO: handle error
                 console.error(err);
             } else {
-                console.log(`User database '${path}': ok`)
+                console.log(`User database '${this.path}': ok`)
             }
         })
     }
@@ -49,7 +49,13 @@ class UsersDatabase {
                 id          TEXT NOT NULL,
                 password    TEXT NOT NULL,
                 UNIQUE (id)
-            )`
+            )`, (err) => {
+                if (err) {
+                    console.error(err);
+                } else {
+                    console.log(`User database '${this.path}' tables: ok`)
+                }
+            }
         );
     }
 

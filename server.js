@@ -55,6 +55,8 @@ app.get("/:article_id", async (req, res) => {
     })
 })
 
+// TODO: ensure that we first connect to all the databases before starting to
+// listen on the internet
 app.listen(port, () => {
-    console.log(`Web server up (http://localhost:${port})`)
+    console.log(`Web server up (http://localhost:${port})`);
 })
