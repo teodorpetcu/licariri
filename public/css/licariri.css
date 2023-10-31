@@ -15,7 +15,6 @@
 }
 
 body {
-    background-color: var(--neutral-color);
     font-family: "Helvetica";
 }
 
@@ -29,12 +28,14 @@ body.open {
     user-select: none;
 }
 
+body,
 a,
 .article,
 #main-nav {
     color: var(--font-color);
 }
 
+body,
 #header,
 #main-nav {
     background-color: var(--neutral-color);
@@ -148,9 +149,9 @@ a {
     color: var(--accent-color);
 }
 
-#logo p {
-    color: var(--secondary-color);
-}
+/*#logo p {*/
+    /*color: var(--secondary-color);*/
+/*}*/
 
 #logo-link {
     display: inline-block;

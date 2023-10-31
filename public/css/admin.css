@@ -25,8 +25,31 @@ form label {
     resize: vertical;
     width: 600px;
     height: 500px;
+    color: var(--font-color);
+    background-color: var(--neutral-color);
 }
 
 #add-article button {
     display: inline-block;
+}
+
+input[type="submit"],
+button {
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+input[type="submit"],
+button,
+textarea,
+input {
+    outline: none;
+    color: var(--font-color);
+    background-color: var(--neutral-color);
+    border: 1px solid var(--font-color);
+}
+
+form input[type="submit"]:hover,
+form button:hover {
+    color: var(--neutral-color);
+    background-color: var(--font-color);
 }

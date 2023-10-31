@@ -17,10 +17,6 @@
             <span></span>
             <span></span>
     </div>
-    <label id="theme-button">
-        <input id="theme-button-checkbox" type="checkbox" size="17">
-        <span></span>
-    </label>
     <script>
         const menuCheckbox = document.getElementById("menu-checkbox");
         const mainNav = document.getElementById("main-nav");
@@ -31,23 +27,6 @@
             } else {
                 mainNav.classList.remove("open");
                 document.body.classList.remove("open");
-            }
-        })
-
-        const themeButton = document.getElementById("theme-button-checkbox");
-        const root = document.documentElement;
-        let current_theme = localStorage.getItem("theme");
-        if (current_theme === "dark") {
-            root.classList.add("dark-theme");
-            themeButton.checked = true;
-        }
-        themeButton.addEventListener("change", function() {
-            if (this.checked) {
-                localStorage.setItem("theme", "dark");
-                root.classList.add("dark-theme");
-            } else {
-                localStorage.setItem("theme", "light");
-                root.classList.remove("dark-theme");
             }
         })
     </script>
