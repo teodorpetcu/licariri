@@ -33,6 +33,11 @@ form label {
     display: inline-block;
 }
 
+textarea,
+input {
+    font-family: "Helvetica";
+}
+
 input[type="submit"],
 button {
     transition: color 0.2s ease, background-color 0.2s ease;
@@ -46,6 +51,8 @@ input {
     color: var(--font-color);
     background-color: var(--neutral-color);
     border: 1px solid var(--font-color);
+    padding: 4px;
+    margin-bottom: 5px;
 }
 
 form input[type="submit"]:hover,
