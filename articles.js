@@ -54,6 +54,7 @@ class ArticleDatabase {
     /**
      * Initialise the database tables if they haven't already been created
      */
+    // TODO: return status
     init = () => {
         this.db.exec(`
             CREATE TABLE IF NOT EXISTS articles
@@ -89,6 +90,7 @@ class ArticleDatabase {
      * Save an article's metadata to a database
      * @param {Article} article
      */
+    // TODO: handle errors via callbacks on the `exec` statements
     save_article = (article) => {
         this.db.exec(`
             INSERT INTO articles VALUES('${article.id}', '${article.title}', '${article.date}');
@@ -110,6 +112,7 @@ class ArticleDatabase {
      * @param {string} id
      * @returns {Promise<Article>}
      */
+    // TODO: return undefined if article is nonexistent
     search_article = async (id) => {
         let [title, date] = await this.get_article_meta(id);
         let authors = await this.get_article_authors(id);
@@ -123,6 +126,7 @@ class ArticleDatabase {
      * @param {integer} end - end of the slice (0-indexed)
      * @returns {Promise<Article[]>}
      */
+    // TODO: log error if there is one
     get_recent_articles = async (start, end) => {
         return new Promise((resolve, _) => {
             this.db.all(`SELECT * FROM articles ORDER BY date DESC`, (err, rows) => {
@@ -143,6 +147,7 @@ class ArticleDatabase {
      * @param {string} id
      * @returns {Promise<[string, string]>}
      */
+    // TODO: return undefined if article is nonexistent
     get_article_meta = async (id) => {
         return new Promise((resolve, _) => {
             return this.db.get(`SELECT * FROM articles WHERE id = '${id}'`, (err, row) => {
@@ -159,6 +164,7 @@ class ArticleDatabase {
      * @param {string} id
      * @returns {Promise<Author[]>}
      */
+    // TODO: return undefined if article is nonexistent
     get_article_authors = async (id) => {
         return new Promise((resolve, _) => {
             this.db.all(`SELECT * FROM article_authors WHERE id = '${id}'`, (err, rows) => {
@@ -175,6 +181,7 @@ class ArticleDatabase {
      * @param {string} id
      * @returns {Promise<string[]>}
      */
+    // TODO: return undefined if article is nonexistent
     get_article_tags = async (id) => {
         return new Promise((resolve, _) => {
             this.db.all(`SELECT * FROM article_tags WHERE id = '${id}'`, (err, rows) => {

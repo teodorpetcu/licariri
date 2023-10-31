@@ -8,6 +8,9 @@ const {UsersDatabase} = require("./admin.js");
 const articleDatabase = new ArticleDatabase(__dirname + "/articles/articles.sql");
 articleDatabase.init();
 
+const usersDatabase = new UsersDatabase(__dirname + "/articles/users.sql");
+usersDatabase.init();
+
 const app = express();
 const port = 8000;
 

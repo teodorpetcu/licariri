@@ -31,6 +31,7 @@ class UsersDatabase {
         this.path = path;
         this.db = new sqlite3.Database(path, (err) => {
             if (err) {
+                // TODO: handle error
                 console.error(err);
             } else {
                 console.log(`User database '${path}': ok`)
@@ -41,23 +42,26 @@ class UsersDatabase {
     /**
      * Initialise the database tables if they haven't already been created
      */
+    // TODO: return status
     init() {
         this.db.exec(`CREATE TABLE IF NOT EXISTS users
             (
                 id          TEXT NOT NULL,
                 password    TEXT NOT NULL,
-                UNIQUE (user_id)
+                UNIQUE (id)
             )`
         );
     }
 
     /**
      * Add an user's metadata to the database
-     * @param {string} id
-     * @param {string} pass - hashed password
+     * @param {string} id - ID of the user
+     * @param {string} pass - Plain-text password
      */
-    add_user(id, pass) {
-
+    //TODO: return status
+    async add_user(id, pass) {
+        let hash = await hashPassword(pass);
+        this.db.exec(`INSERT INTO users VALUES('${id}', '${hash}')`)
     }
 }
 
