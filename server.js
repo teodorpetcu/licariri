@@ -18,7 +18,12 @@ const port = 8000;
 
 const MAIN_PAGE_ARTICLE_COUNT = 9;
 
-const COOKIE_OPTIONS = {httpOnly: true, secure: true, sameSite: "strict"};
+const COOKIE_OPTIONS = {
+    httpOnly: true,
+    // TODO: set to true if HTTPS only
+    secure: false,
+    sameSite: "strict"
+};
 
 app.set("view engine", "ejs");
 
