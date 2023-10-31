@@ -1,13 +1,13 @@
 const sqlite3 = require("sqlite3");
 
 /**
- * @returns {string} - Today's date formatted YYYY-MM-DD
+ * @param {Date} date - Date to format
+ * @returns {string} - Date formatted YYYY-MM-DD
  */
-const todayFormatted = () => {
-    const today = new Date();
-    let yyyy = today.getFullYear();
-    let mm = today.getMonth() + 1; if (mm < 10) mm = `0${mm}`;
-    let dd = today.getDate(); if (dd < 10) dd = `0${dd}`;
+const formatDate = (date) => {
+    let yyyy = date.getFullYear();
+    let mm = date.getMonth() + 1; if (mm < 10) mm = `0${mm}`;
+    let dd = date.getDate(); if (dd < 10) dd = `0${dd}`;
     return `${yyyy}-${mm}-${dd}`;
 }
 
@@ -31,11 +31,12 @@ class Article {
      * @param {string} authors
      * @param {string} tags
      */
-    constructor(title, authors, tags, date = todayFormatted()) {
+    constructor(title, authors, tags, timestamp = new Date()) {
         this.title = title;
-        this.date = date;
         this.authors = authors;
         this.tags = tags;
+        this.timestamp = timestamp.valueOf();
+        this.date = formatDate(timestamp);
         this.id = this.article_id();
     }
 
@@ -72,7 +73,7 @@ class ArticleDatabase {
             (
                 id          TEXT NOT NULL,
                 title       TEXT NOT NULL,
-                date        TEXT,
+                timestamp   INT,
                 UNIQUE (id)
             );
             CREATE TABLE IF NOT EXISTS article_tags
@@ -104,7 +105,7 @@ class ArticleDatabase {
     // TODO: handle errors via callbacks on the `exec` statements
     save_article = (article) => {
         this.db.exec(`
-            INSERT INTO articles VALUES('${article.id}', '${article.title}', '${article.date}');
+            INSERT INTO articles VALUES('${article.id}', '${article.title}', '${article.timestamp}');
         `);
         for (let tag of article.tags) {
             this.db.exec(`
@@ -125,10 +126,10 @@ class ArticleDatabase {
      */
     // TODO: return undefined if article is nonexistent
     search_article = async (id) => {
-        let [title, date] = await this.get_article_meta(id);
+        let [title, timestamp] = await this.get_article_meta(id);
         let authors = await this.get_article_authors(id);
         let tags = await this.get_article_tags(id);
-        return new Article(title, authors, tags, date);
+        return new Article(title, authors, tags, timestamp);
     }
 
     /**
@@ -140,7 +141,7 @@ class ArticleDatabase {
     // TODO: log error if there is one
     get_recent_articles = async (start, end) => {
         return new Promise((resolve, _) => {
-            this.db.all(`SELECT * FROM articles ORDER BY date DESC`, (err, rows) => {
+            this.db.all(`SELECT * FROM articles ORDER BY timestamp DESC`, (err, rows) => {
                 if (err || rows === undefined) {
                     return resolve([]);
                 }
@@ -156,16 +157,16 @@ class ArticleDatabase {
      * with the given ID, and the second is the date this article was created.
      * If there is no article with this ID, then both elements are empty.
      * @param {string} id
-     * @returns {Promise<[string, string]>}
+     * @returns {Promise<[string, string|undefined]>}
      */
     // TODO: return undefined if article is nonexistent
     get_article_meta = async (id) => {
         return new Promise((resolve, _) => {
             return this.db.get(`SELECT * FROM articles WHERE id = '${id}'`, (err, row) => {
                 if (err || row === undefined) {
-                    return resolve(["", ""]);
+                    return resolve(["", undefined]);
                 }
-                return resolve([row.title, row.date])
+                return resolve([row.title, new Date(row.timestamp)])
             });
         })
     }
