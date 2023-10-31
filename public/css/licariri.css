@@ -1,6 +1,6 @@
 :root {
-    --main-color: rgba(224, 176, 255, 0.3);
-    --secondary-color: #002642;
+    --main-color: #E0B0FF30;
+    --secondary-color: ;
     --accent-color: #BD2D87;
     --accent-color-lower-opacity: #BD2D8770;
     --font-color: #02040F;
@@ -148,7 +148,7 @@ a {
     color: var(--accent-color);
 }
 
-#logo span {
+#logo p {
     color: var(--secondary-color);
 }
 
@@ -194,7 +194,7 @@ a {
     bottom: 2px;
     border-radius: 50%;
     background-color: var(--neutral-color);
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 #theme-button input:checked ~ span::before {
