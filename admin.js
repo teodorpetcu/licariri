@@ -59,9 +59,34 @@ class UsersDatabase {
      * @param {string} pass - Plain-text password
      */
     //TODO: return status
+    //TODO: handle eventual errors
     async add_user(id, pass) {
         let hash = await hashPassword(pass);
         this.db.exec(`INSERT INTO users VALUES('${id}', '${hash}')`)
+    }
+
+    /**
+     * Check if the given ID-password combination matches with what we have in
+     * the database
+     * @param {string} id - ID of the user
+     * @param {string} pass - Plain-text password
+     * @returns {Promise<boolean>}
+     */
+    async is_correct_login_combo(id, pass) {
+        return new Promise((resolve, _) => {
+            return this.db.get(`SELECT * FROM users WHERE id = '${id}'`, (err, row) => {
+                if (err) {
+                    // TODO: handle
+                    console.error(err);
+                } else if (row == undefined) {
+                    // ID does not exist in the database, but it makes no
+                    // difference when we're trying to authenticate
+                    return resolve(false);
+                } else {
+                    return resolve(validatePassword(pass, row.password));
+                }
+            });
+        })
     }
 }
 
