@@ -108,7 +108,7 @@ class ArticleDatabase {
     /**
      * Return all of the metadata associated with the ID of the given article
      * @param {string} id
-     * @returns {Article}
+     * @returns {Promise<Article>}
      */
     search_article = async (id) => {
         let [title, date] = await this.get_article_meta(id);

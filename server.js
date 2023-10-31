@@ -36,7 +36,7 @@ app.get("/publish", (_, res) => {
 
 app.get("/:article_id", async (req, res) => {
     const article_id = req.params.article_id;
-    const article = articleDatabase.search_article(article_id);
+    const article = await articleDatabase.search_article(article_id);
     const markdown = `./articles/${article_id}.md`
     fs.readFile(markdown, "utf8", (err, data) => {
         if (err) {
