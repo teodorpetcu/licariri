@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <title>Adaugă articol</title>
+    <%- include("meta"); %>
+    <link rel="stylesheet" type="text/css" href="/css/admin.css">
+</head>
+
+<body>
+    <div id="add-article">
+        <h1>Adaugă articol</h1>
+        <form action="/admin/add" method="post" autocomplete="off">
+            <div>
+                <label>Titlu:</label>
+                <input required type="text"
+                    name="title" placeholder="">
+            </div>
+
+            <div>
+                <label>Autori:</label>
+                <button type="button" id="authors-add">Adaugă</button>
+                <button type="button" id="authors-remove">Șterge</button>
+                <div id="authors">
+                </div>
+            </div>
+
+            <div>
+                <label>Tag-uri:</label>
+                <button type="button" id="tags-add">Adaugă</button>
+                <button type="button" id="tags-remove">Șterge</button>
+                <div id="tags">
+                </div>
+            </div>
+
+            <div>
+                <label>Text:</label>
+                <textarea required name="content"></textarea>
+            </div>
+
+            <div>
+                <input type="submit" value="Trimite">
+            </div>
+        </form>
+    </div>
+</body>
+
+<script>
+    const dynamicAuthorsList = () => {
+        const authorsContainer = document.getElementById("authors");
+        const authorsContainerAdd = document.getElementById("authors-add");
+        const authorsContainerRemove = document.getElementById("authors-remove");
+
+        authorsContainerAdd.addEventListener("click", () => {
+            let authorInput = document.createElement("input");
+            authorInput.name = "authors[]";
+            authorInput.type = "text";
+            authorsContainer.appendChild(authorInput);
+        })
+
+        authorsContainerRemove.addEventListener("click", () => {
+            if (authorsContainer.lastChild) {
+                authorsContainer.removeChild(authorsContainer.lastChild)
+            }
+        })
+    }
+
+    const dynamicTagsList = () => {
+        const tagsContainer = document.getElementById("tags");
+        const tagsContainerAdd = document.getElementById("tags-add");
+        const tagsContainerRemove = document.getElementById("tags-remove");
+
+        tagsContainerAdd.addEventListener("click", () => {
+            let tagInput = document.createElement("input");
+            tagInput.name = "tags[]";
+            tagInput.type = "text";
+            tagsContainer.appendChild(tagInput);
+        })
+
+        tagsContainerRemove.addEventListener("click", () => {
+            if (tagsContainer.lastChild) {
+                tagsContainer.removeChild(tagsContainer.lastChild)
+            }
+        })
+    }
+
+    dynamicAuthorsList();
+    dynamicTagsList();
+</script>
+
+</html>

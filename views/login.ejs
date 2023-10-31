@@ -2,26 +2,28 @@
 <html lang="ro">
 
 <head>
-    <title>Login</title>
+    <title>Autentificare</title>
     <%- include("meta"); %>
     <link rel="stylesheet" href="css/admin.css" type="text/css">
 </head>
 
 <body>
-    <div id="login-form">
-        <h1>Autentificare</h1>
-        <form action="/admin" method="post">
+    <h1>Autentificare</h1>
+    <form action="/admin" method="post">
+        <div>
             <label>Nume utilizator:</label>
             <input required type="text"
                 name="id" placeholder="">
+        </div>
+        <div>
             <label>Parolă:</label>
             <input required type="password"
                 name="password" placeholder="">
-            <br>
-            <br>
+        </div>
+        <div>
             <input type="submit" value="Logare">
-        </form>
-    </div>
+        </div>
+    </form>
 </body>
 
 </html>

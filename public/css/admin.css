@@ -1,11 +1,32 @@
-#login-form {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+body {
     text-align: center;
 }
 
-#login-form label {
+form {
+    display: grid;
+}
+
+form label {
     display: block;
+}
+
+#add-article #authors,
+#add-article #tags {
+    display: grid;
+    justify-content: center;
+}
+
+#add-aricle #authors input,
+#add-article #tags input {
+    display: block;
+}
+
+#add-article textarea {
+    resize: vertical;
+    width: 600px;
+    height: 500px;
+}
+
+#add-article button {
+    display: inline-block;
 }
