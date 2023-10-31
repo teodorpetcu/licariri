@@ -6,7 +6,7 @@ const cookieParser = require("cookie-parser");
 const crypto = require("crypto");
 
 const {ArticleDatabase} = require("./articles.js");
-const {UsersDatabase} = require("./admin.js");
+const {UsersDatabase, Session} = require("./admin.js");
 
 const articleDatabase = new ArticleDatabase(__dirname + "/articles/articles.sql");
 articleDatabase.init();
@@ -18,6 +18,8 @@ const app = express();
 const port = 8000;
 
 const MAIN_PAGE_ARTICLE_COUNT = 9;
+
+const COOKIE_OPTIONS = {httpOnly: true, secure: true, sameSite: "strict"};
 
 app.set("view engine", "ejs");
 
@@ -40,15 +42,17 @@ app.get("/query", (_req, res) => {
     res.redirect("/");
 })
 
-app.get("/publish", (_, res) => {
-    res.redirect("/");
-})
-
-const sessions = [];
+/**
+ * Determine whether the request belongs to an authorised user
+ * @returns {Promise<boolean>}
+ */
+const isAuthorisedRequest = async (req) => {
+    let sessionCookie = req.cookies.session;
+    return usersDatabase.has_session(sessionCookie);
+}
 
 app.get("/admin", async (req, res) => {
-    let sessionCookie = req.cookies.session;
-    if (sessions[sessionCookie]) {
+    if (await isAuthorisedRequest(req)) {
         res.send("Authorized");
     } else {
         res.render("login", {});
@@ -60,10 +64,9 @@ app.post("/admin", async (req, res) => {
     const id = req.body.id;
     const pass = req.body.password;
     if (await usersDatabase.is_correct_login_combo(id, pass)) {
-        const sessionID = crypto.randomBytes(64).toString("hex");
-        sessions[sessionID] = id;
-        res.cookie("session", sessionID, {httpOnly: true, secure: true, sameSite: "strict"});
-        res.status(200);
+        const session = new Session(id);
+        usersDatabase.add_session(session);
+        res.cookie("session", session.token, COOKIE_OPTIONS);
     }
     res.redirect("/admin");
 })

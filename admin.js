@@ -1,7 +1,10 @@
 const sqlite3 = require("sqlite3");
 
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt");
 const HASH_COST = 15;
+
+const crypto = require("crypto"); // for randomBytes
+const SESSION_TOKEN_LENGTH = 64; // bytes
 
 /**
  * Hash the given plain-text password using bcrypt
@@ -20,6 +23,16 @@ const hashPassword = async (password) => {
  */
 const validatePassword = async (password, hash) => {
     return bcrypt.compare(password, hash);
+}
+
+class Session {
+    constructor(user,
+                token = crypto.randomBytes(SESSION_TOKEN_LENGTH).toString("hex"),
+                timestamp = Date.now()) {
+        this.user = user;
+        this.token = token;
+        this.timestamp = timestamp;
+    }
 }
 
 class UsersDatabase {
@@ -49,6 +62,13 @@ class UsersDatabase {
                 id          TEXT NOT NULL,
                 password    TEXT NOT NULL,
                 UNIQUE (id)
+            );
+            CREATE TABLE IF NOT EXISTS sessions
+            (
+                user        TEXT NOT NULL,
+                token       TEXT NOT NULL,
+                timestamp   INT,
+                FOREIGN KEY (user) REFERENCES users (id)
             )`, (err) => {
                 if (err) {
                     console.error(err);
@@ -97,6 +117,37 @@ class UsersDatabase {
             });
         })
     }
+
+    /**
+     * Save the given session in the database
+     * @param session {Session}
+     */
+    // TODO: return status
+    async add_session(session) {
+        this.db.exec(`INSERT INTO sessions
+            VALUES ('${session.user}', '${session.token}', '${session.timestamp}')`)
+    }
+
+    /**
+     * Check if there is an existing session with the given token.
+     * @param {string} token - Token of the session
+     * @returns {Promise<boolean>}
+     */
+    // TODO: sanitise
+    async has_session(token) {
+        return new Promise((resolve)=> {
+            this.db.get(`SELECT * FROM sessions WHERE token = '${token}'`, (err, row) => {
+                if (err) {
+                    console.error(err);
+                } else if (row === undefined) {
+                    return resolve(false);
+                } else {
+                    return resolve(true);
+                }
+            })
+        });
+    }
 }
 
 module.exports.UsersDatabase = UsersDatabase;
+module.exports.Session = Session;
