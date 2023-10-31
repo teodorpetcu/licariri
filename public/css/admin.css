@@ -60,3 +60,9 @@ form button:hover {
     color: var(--neutral-color);
     background-color: var(--font-color);
 }
+
+@media (max-width: 600px) {
+    #add-article textarea {
+        width: 98%;
+    }
+}
