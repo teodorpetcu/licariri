@@ -34,6 +34,8 @@ app.get("/publish", (_, res) => {
     res.redirect("/");
 })
 
+
+// TODO: move articles to the `/articles` route
 app.get("/:article_id", async (req, res) => {
     const article_id = req.params.article_id;
     const article = await articleDatabase.search_article(article_id);
