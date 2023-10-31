@@ -6,7 +6,7 @@ class Author {
      * @param {string} name
      * @param {string} occupation
      */
-    constructor(name, occupation) {
+    constructor(name, occupation = "") {
         this.name = name;
         this.occupation = occupation;
     }
@@ -96,7 +96,7 @@ class ArticleDatabase {
             INSERT INTO articles VALUES('${article.id}', '${article.title}', '${article.date}');
         `);
         for (let tag of article.tags) {
-            this.exec(`
+            this.db.exec(`
                 INSERT INTO article_tags VALUES('${article.id}', '${tag}');
             `);
         }
@@ -195,3 +195,5 @@ class ArticleDatabase {
 }
 
 module.exports.ArticleDatabase = ArticleDatabase;
+module.exports.Article = Article;
+module.exports.Author = Author;
