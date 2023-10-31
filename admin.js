@@ -87,7 +87,10 @@ class UsersDatabase {
                 } else if (row == undefined) {
                     // ID does not exist in the database, but it makes no
                     // difference when we're trying to authenticate
-                    return resolve(false);
+                    //
+                    // That being said, we're still going to wait, so as to not
+                    // make the end-user realise that the ID doesn't exist
+                    return setTimeout(() => resolve(false), 2 * 1000); // 2sec
                 } else {
                     return resolve(validatePassword(pass, row.password));
                 }
