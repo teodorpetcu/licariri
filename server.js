@@ -3,9 +3,8 @@ const marked = require("marked");
 const fs = require("fs");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-const crypto = require("crypto");
 
-const {ArticleDatabase} = require("./articles.js");
+const {ArticleDatabase, Article, Author} = require("./articles.js");
 const {UsersDatabase, Session} = require("./admin.js");
 
 const articleDatabase = new ArticleDatabase(__dirname + "/articles/articles.sql");
@@ -23,7 +22,7 @@ const COOKIE_OPTIONS = {httpOnly: true, secure: true, sameSite: "strict"};
 
 app.set("view engine", "ejs");
 
-app.use(bodyParser.urlencoded({ extended: false, }));
+app.use(bodyParser.urlencoded({ extended: true, }));
 
 app.use(cookieParser());
 
@@ -46,20 +45,32 @@ app.get("/query", (_req, res) => {
  * Determine whether the request belongs to an authorised user
  * @returns {Promise<boolean>}
  */
-const isAuthorisedRequest = async (req) => {
+const isLoggedIn = async (req) => {
     let sessionCookie = req.cookies.session;
     return usersDatabase.has_session(sessionCookie);
 }
 
+/**
+ * Middleware; send status code 401 if the request doesn't belong to an
+ * authorised user
+ */
+const forbidUnauthorised = async (req, res, next) => {
+    if (!await isLoggedIn(req)) {
+        res.status(401).send();
+    } else {
+        next();
+    }
+}
+
 app.get("/admin", async (req, res) => {
-    if (await isAuthorisedRequest(req)) {
-        res.send("Authorized");
+    if (await isLoggedIn(req)) {
+        res.redirect("/admin/add")
     } else {
         res.render("login", {});
     }
 })
 
-// TODO: rate limit
+// TODO: limit the amount of login attempts
 app.post("/admin", async (req, res) => {
     const id = req.body.id;
     const pass = req.body.password;
@@ -69,6 +80,28 @@ app.post("/admin", async (req, res) => {
         res.cookie("session", session.token, COOKIE_OPTIONS);
     }
     res.redirect("/admin");
+})
+
+app.get("/admin/add", forbidUnauthorised, async (_, res) => {
+    res.render("add-article", {});
+})
+
+app.post("/admin/add", forbidUnauthorised, async (req, res) => {
+    const title = req.body.title;
+    const authors = req.body.authors
+                    ? req.body.authors.map((a) => new Author(a))
+                    : [];
+    const tags = req.body.tags
+                    ? req.body.tags
+                    : [];
+    const content = req.body.content;
+
+    const article = new Article(title, authors, tags);
+
+    fs.writeFileSync(__dirname + `/articles/${article.id}.md`, content);
+    articleDatabase.save_article(article);
+
+    res.redirect(`/${article.id}`);
 })
 
 // TODO: move articles to the `/articles` route
