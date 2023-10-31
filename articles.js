@@ -1,5 +1,16 @@
 const sqlite3 = require("sqlite3");
 
+/**
+ * @returns {string} - Today's date formatted YYYY-MM-DD
+ */
+const todayFormatted = () => {
+    const today = new Date();
+    let yyyy = today.getFullYear();
+    let mm = today.getMonth() + 1; if (mm < 10) mm = `0${mm}`;
+    let dd = today.getDate(); if (dd < 10) dd = `0${dd}`;
+    return `${yyyy}-${mm}-${dd}`;
+}
+
 class Author {
     /**
      * Information used to identify an author
@@ -20,7 +31,7 @@ class Article {
      * @param {string} authors
      * @param {string} tags
      */
-    constructor(title, date, authors, tags) {
+    constructor(title, authors, tags, date = todayFormatted()) {
         this.title = title;
         this.date = date;
         this.authors = authors;
@@ -117,7 +128,7 @@ class ArticleDatabase {
         let [title, date] = await this.get_article_meta(id);
         let authors = await this.get_article_authors(id);
         let tags = await this.get_article_tags(id);
-        return new Article(title, date, authors, tags);
+        return new Article(title, authors, tags, date);
     }
 
     /**
