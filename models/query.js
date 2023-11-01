@@ -47,7 +47,7 @@ class QueryDatabase extends Database {
      * @param {string} contents - Contents of the article
      */
     indexArticle = async (id, contents) => {
-        let uniqueWords = [... new Set(contents.replace(/[^0-9A-z\-'ăîâșțéèÿùüïôœàæêëûîâç]/g, " ").split(/\s+/))];
+        let uniqueWords = [... new Set(contents.toLowerCase().replace(/[^0-9A-z\-'ăîâșțéèÿùüïôœàæêëûîâç]/g, " ").split(/\s+/))];
         this.db.serialize(() => {
             this.db.get("SELECT last_insert_rowid() as rowid", (err, row) => {
                 // TODO: handle
