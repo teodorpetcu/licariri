@@ -149,5 +149,7 @@ class UsersDatabase {
     }
 }
 
-module.exports.UsersDatabase = UsersDatabase;
-module.exports.Session = Session;
+module.exports = {
+    UsersDatabase,
+    Session,
+};

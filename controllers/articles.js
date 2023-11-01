@@ -1,0 +1,68 @@
+const marked = require("marked");
+const fs = require("fs");
+
+const { Author, Article } = require("../models/types.js");
+const { ArticleDatabase } = require("../models/articles.js");
+
+const {
+    ARTICLE_DATABASE_PATH,
+    ARTICLE_CONTENTS_PATH,
+    MAIN_PAGE_ARTICLE_COUNT,
+} = require("../config.js");
+
+const articleDatabase = new ArticleDatabase(ARTICLE_DATABASE_PATH);
+articleDatabase.init();
+
+const get_mainPage = async (req, res) => {
+    let page = req.query.page ? req.query.page : 1;
+    let article_page = await articleDatabase.get_recent_articles(
+        MAIN_PAGE_ARTICLE_COUNT * (page - 1),
+        MAIN_PAGE_ARTICLE_COUNT * (page)
+    );
+    res.render("main", {article_page})
+}
+
+const get_queryPage = async (_, res) => {
+    res.redirect("/");
+}
+
+const get_articlePage = async (req, res) => {
+    const article_id = req.params.article_id;
+    const article = await articleDatabase.search_article(article_id);
+    const markdown = `${ARTICLE_CONTENTS_PATH}/${article_id}.md`
+    fs.readFile(markdown, "utf8", (err, data) => {
+        if (err) {
+            // TODO: make a 404 page
+            article.contents = "";
+            res.render("article", {article});
+        } else {
+            article.contents = marked.parse(data.toString());
+            res.render("article", {article});
+        }
+    })
+}
+
+const post_adminAddArticle = async (req, res) => {
+    const title = req.body.title;
+    const authors = req.body.authors
+                    ? req.body.authors.map((a) => new Author(a))
+                    : [];
+    const tags = req.body.tags
+                    ? req.body.tags
+                    : [];
+    const content = req.body.content;
+
+    const article = new Article(title, authors, tags);
+
+    fs.writeFileSync(`${ARTICLE_CONTENTS_PATH}/${article.id}.md`, content);
+    articleDatabase.save_article(article);
+
+    res.redirect(`/${article.id}`);
+}
+
+module.exports = {
+    get_mainPage,
+    get_queryPage,
+    get_articlePage,
+    post_adminAddArticle,
+};

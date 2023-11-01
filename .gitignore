@@ -131,6 +131,6 @@ dist
 
 
 # Project-specific
-pages/
-articles/
-public/images/
+#config.js
+data/
+public/
