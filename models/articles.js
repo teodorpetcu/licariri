@@ -1,20 +1,13 @@
-const sqlite3 = require("sqlite3");
-
 const { Author, Article } = require("./types.js");
+const { Database } = require("./database.js");
 
-class ArticleDatabase {
+class ArticleDatabase extends Database {
     /**
      * Interpret the database at the given path as for article storage
+     * @param {string} path
      */
     constructor(path) {
-        this.path = path;
-        this.db = new sqlite3.Database(path, (err) => {
-            if (err) {
-                console.error(err)
-            } else {
-                console.log(`Article database '${this.path}': ok`);
-            }
-        })
+        super(path);
     }
 
     /**
@@ -47,7 +40,7 @@ class ArticleDatabase {
             if (err) {
                 console.error(err);
             } else {
-                console.log(`Article database '${this.path}' tables: ok`);
+                console.log(`database '${this.path}' tables: ok`);
             }
         });
     }

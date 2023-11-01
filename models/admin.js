@@ -1,10 +1,10 @@
-const sqlite3 = require("sqlite3");
-
 const bcrypt = require("bcrypt");
 const HASH_COST = 15;
 
 const crypto = require("crypto"); // for randomBytes
 const SESSION_TOKEN_LENGTH = 64; // bytes
+
+const { Database } = require("./database.js");
 
 /**
  * Hash the given plain-text password using bcrypt
@@ -35,21 +35,13 @@ class Session {
     }
 }
 
-class UsersDatabase {
+class UsersDatabase extends Database {
     /**
      * Interface to a database holding authentication information
      * @param {string} path
      */
     constructor(path) {
-        this.path = path;
-        this.db = new sqlite3.Database(path, (err) => {
-            if (err) {
-                // TODO: handle error
-                console.error(err);
-            } else {
-                console.log(`User database '${this.path}': ok`)
-            }
-        })
+        super(path);
     }
 
     /**
@@ -73,7 +65,7 @@ class UsersDatabase {
                 if (err) {
                     console.error(err);
                 } else {
-                    console.log(`User database '${this.path}' tables: ok`)
+                    console.log(`database '${this.path}' tables: ok`)
                 }
             }
         );
