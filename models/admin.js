@@ -56,7 +56,7 @@ class UsersDatabase {
      * Initialise the database tables if they haven't already been created
      */
     // TODO: return status
-    init() {
+    init = () => {
         this.db.exec(`CREATE TABLE IF NOT EXISTS users
             (
                 id          TEXT NOT NULL,
@@ -86,9 +86,9 @@ class UsersDatabase {
      */
     //TODO: return status
     //TODO: handle eventual errors
-    async add_user(id, pass) {
+    add_user = async (id, pass) => {
         let hash = await hashPassword(pass);
-        this.db.exec(`INSERT INTO users VALUES('${id}', '${hash}')`)
+        this.db.run('INSERT INTO users VALUES(?, ?)', [id, hash]);
     }
 
     /**
@@ -98,9 +98,9 @@ class UsersDatabase {
      * @param {string} pass - Plain-text password
      * @returns {Promise<boolean>}
      */
-    async is_correct_login_combo(id, pass) {
-        return new Promise((resolve, _) => {
-            return this.db.get(`SELECT * FROM users WHERE id = '${id}'`, (err, row) => {
+    is_correct_login_combo = async (id, pass) => {
+        return new Promise((resolve) => {
+            return this.db.get('SELECT * FROM users WHERE id = ?', [id], (err, row) => {
                 if (err) {
                     // TODO: handle
                     console.error(err);
@@ -123,9 +123,9 @@ class UsersDatabase {
      * @param session {Session}
      */
     // TODO: return status
-    async add_session(session) {
-        this.db.exec(`INSERT INTO sessions
-            VALUES ('${session.user}', '${session.token}', '${session.timestamp}')`)
+    add_session = async (session) => {
+        this.db.run('INSERT INTO sessions VALUES (?, ?, ?)',
+            [session.user, session.token, session.timestamp]);
     }
 
     /**
@@ -134,9 +134,9 @@ class UsersDatabase {
      * @returns {Promise<boolean>}
      */
     // TODO: sanitise
-    async has_session(token) {
+    has_session = async (token) => {
         return new Promise((resolve)=> {
-            this.db.get(`SELECT * FROM sessions WHERE token = '${token}'`, (err, row) => {
+            this.db.get('SELECT * FROM sessions WHERE token = ?', [token], (err, row) => {
                 if (err) {
                     console.error(err);
                 } else if (row === undefined) {

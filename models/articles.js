@@ -56,20 +56,17 @@ class ArticleDatabase {
      * Save an article's metadata to a database
      * @param {Article} article
      */
-    // TODO: handle errors via callbacks on the `exec` statements
+    // TODO: handle errors via callbacks on the 'exec' statements
     save_article = (article) => {
-        this.db.exec(`
-            INSERT INTO articles VALUES('${article.id}', '${article.title}', '${article.timestamp}');
-        `);
+        this.db.run('INSERT INTO articles VALUES(?, ?, ?)',
+            [article.id, article.title, article.timestamp]);
         for (let tag of article.tags) {
-            this.db.exec(`
-                INSERT INTO article_tags VALUES('${article.id}', '${tag}');
-            `);
+            this.db.run('INSERT INTO article_tags VALUES(?, ?)'
+                [article.id, tag]);
         }
         for (let author of article.authors) {
-            this.db.exec(`
-                INSERT INTO article_authors VALUES('${article.id}', '${author.name}', '${author.occupation}');
-            `);
+            this.db.run('INSERT INTO article_tags VALUES(?, ?, ?)'
+                [article.id, author.name, author.occupation]);
         }
     }
 
@@ -87,7 +84,7 @@ class ArticleDatabase {
     }
 
     /**
-     * Get a slice of the most recent articles, from `start` to `end`
+     * Get a slice of the most recent articles, from 'start' to 'end'
      * @param {integer} start - beginning of the slice (0-indexed)
      * @param {integer} end - end of the slice (0-indexed)
      * @returns {Promise<Article[]>}
@@ -95,7 +92,7 @@ class ArticleDatabase {
     // TODO: log error if there is one
     get_recent_articles = async (start, end) => {
         return new Promise((resolve, _) => {
-            this.db.all(`SELECT * FROM articles ORDER BY timestamp DESC`, (err, rows) => {
+            this.db.all('SELECT * FROM articles ORDER BY timestamp DESC', (err, rows) => {
                 if (err || rows === undefined) {
                     return resolve([]);
                 }
@@ -116,7 +113,7 @@ class ArticleDatabase {
     // TODO: return undefined if article is nonexistent
     get_article_meta = async (id) => {
         return new Promise((resolve, _) => {
-            return this.db.get(`SELECT * FROM articles WHERE id = '${id}'`, (err, row) => {
+            return this.db.get('SELECT * FROM articles WHERE id = ?', [id], (err, row) => {
                 if (err || row === undefined) {
                     return resolve(["", undefined]);
                 }
@@ -126,14 +123,14 @@ class ArticleDatabase {
     }
 
     /**
-     * Return the array of `Author`s that are associated with the given article ID
+     * Return the array of 'Author's that are associated with the given article ID
      * @param {string} id
      * @returns {Promise<Author[]>}
      */
     // TODO: return undefined if article is nonexistent
     get_article_authors = async (id) => {
         return new Promise((resolve, _) => {
-            this.db.all(`SELECT * FROM article_authors WHERE id = '${id}'`, (err, rows) => {
+            this.db.all('SELECT * FROM article_authors WHERE id = ?', [id], (err, rows) => {
                 if (err || rows === undefined) {
                     return resolve([]);
                 }
@@ -150,7 +147,7 @@ class ArticleDatabase {
     // TODO: return undefined if article is nonexistent
     get_article_tags = async (id) => {
         return new Promise((resolve, _) => {
-            this.db.all(`SELECT * FROM article_tags WHERE id = '${id}'`, (err, rows) => {
+            this.db.all('SELECT * FROM article_tags WHERE id = ?', [id], (err, rows) => {
                 if (err || rows === undefined) {
                     return resolve([]);
                 }
