@@ -1,5 +1,6 @@
-const { USERS_DATABASE_PATH } = require("../config.js");
+const { USERS_DATABASE_PATH, COOKIE_OPTIONS } = require("../config.js");
 const { UsersDatabase, Session } = require("../models/admin.js");
+
 
 const usersDatabase = new UsersDatabase(USERS_DATABASE_PATH);
 usersDatabase.init();
