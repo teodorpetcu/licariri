@@ -6,7 +6,8 @@
     "description": "",
     "main": "server.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "init": "mkdir -p data/ && mkdir -p public/articles && mkdir -p public/images"
     },
     "dependencies": {
         "express": "^4.18.2",
