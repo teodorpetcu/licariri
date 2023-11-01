@@ -42,7 +42,8 @@ class Article {
      * @returns {string} ID of the article
      */
     article_id() {
-        return this.date + "-" + this.title.toLowerCase().replace(/[ \t\n]/g, "-");
+        return (this.date + "-" + this.title.toLowerCase().replace(/[ \t\n]/g, "-"))
+            .replace(/[\?&\/\\]/g, "");
     }
 }
 
