@@ -13,18 +13,24 @@ class QueryDatabase extends Database {
      * Create the database tables if they don't exist already.
      */
     init = () => {
-        // This can be further optimised space-wise by creating a table which
-        // contains all the words, therefore making the mappings table contain
-        // only pairs of indexes, thereby making the cost of repetition minimal
+        // I sure hope this approach is faster than reading all files and
+        // scanning them?
         this.db.exec(`CREATE TABLE IF NOT EXISTS mappings
             (
-                id              INT,
+                article     INT,
+                word        INT,
+                FOREIGN KEY (article) REFERENCES articles (rowid),
+                FOREIGN KEY (word) REFERENCES words (rowid)
+            );
+            CREATE TABLE IF NOT EXISTS words
+            (
                 word            TEXT NOT NULL,
-                FOREIGN KEY (id) REFERENCES articles (rowid)
+                UNIQUE (word)
             );
             CREATE TABLE IF NOT EXISTS articles
             (
-                article_id      TEXT NOT NULL
+                article_id      TEXT NOT NULL,
+                UNIQUE (article_id)
             );`,
             (err) => {
                 if (err) {
@@ -43,20 +49,25 @@ class QueryDatabase extends Database {
     indexArticle = async (id, contents) => {
         let uniqueWords = [... new Set(contents.replace(/[^A-z\-]/g, " ").split(/\s+/))];
         this.db.serialize(() => {
-            let rowid = 1;
             this.db.get("SELECT last_insert_rowid() as rowid", (err, row) => {
                 // TODO: handle
                 if (err) {
                     console.error(err);
                 } else {
-                    rowid = row.rowid + 1;
-                    let stmt = this.db.prepare("INSERT INTO mappings VALUES (?, ?)");
+                    let rowid = row.rowid + 1;
+                    let words_stmt = this.db.prepare("INSERT OR IGNORE INTO words VALUES (?)");
+                    let stmt = this.db.prepare("INSERT INTO mappings VALUES (?, (SELECT rowid FROM words WHERE word = ?))");
                     for (let word of uniqueWords) {
+                        words_stmt.run([word]);
                         stmt.run([rowid, word]);
                     }
-                    stmt.finalize((err) => {
+                    words_stmt.finalize((err) => {
                         if (!err) {
-                            this.db.run("INSERT INTO articles VALUES (?)", [id]);
+                            stmt.finalize((err) => {
+                                if (!err) {
+                                    this.db.run("INSERT INTO articles VALUES (?)", [id]);
+                                }
+                            });
                         }
                     });
                 }
