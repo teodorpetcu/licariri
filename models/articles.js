@@ -61,11 +61,11 @@ class ArticleDatabase {
         this.db.run('INSERT INTO articles VALUES(?, ?, ?)',
             [article.id, article.title, article.timestamp]);
         for (let tag of article.tags) {
-            this.db.run('INSERT INTO article_tags VALUES(?, ?)'
+            this.db.run('INSERT INTO article_tags VALUES(?, ?)',
                 [article.id, tag]);
         }
         for (let author of article.authors) {
-            this.db.run('INSERT INTO article_tags VALUES(?, ?, ?)'
+            this.db.run('INSERT INTO article_authors VALUES(?, ?, ?)',
                 [article.id, author.name, author.occupation]);
         }
     }
