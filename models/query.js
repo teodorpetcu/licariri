@@ -13,15 +13,19 @@ class QueryDatabase extends Database {
      * Create the database tables if they don't exist already.
      */
     init = () => {
-        // TODO: make more efficient space-wise by associating a word with a
-        // number and having that number map to an article ID inside a different
-        // table
-        this.db.exec(`CREATE TABLE IF NOT EXISTS words
+        // This can be further optimised space-wise by creating a table which
+        // contains all the words, therefore making the mappings table contain
+        // only pairs of indexes, thereby making the cost of repetition minimal
+        this.db.exec(`CREATE TABLE IF NOT EXISTS mappings
             (
-                article_id      TEXT NOT NULL,
+                id              INT,
                 word            TEXT NOT NULL,
-                UNIQUE (word, article_id)
-            )`,
+                FOREIGN KEY (id) REFERENCES articles (rowid)
+            );
+            CREATE TABLE IF NOT EXISTS articles
+            (
+                article_id      TEXT NOT NULL
+            );`,
             (err) => {
                 if (err) {
                     console.error(err);
@@ -39,11 +43,24 @@ class QueryDatabase extends Database {
     indexArticle = async (id, contents) => {
         let uniqueWords = [... new Set(contents.replace(/[^A-z\-]/g, " ").split(/\s+/))];
         this.db.serialize(() => {
-            let stmt = this.db.prepare("INSERT INTO words VALUES (?, ?)");
-            for (let word of uniqueWords) {
-                stmt.run([id, word]);
-            }
-            stmt.finalize();
+            let rowid = 1;
+            this.db.get("SELECT last_insert_rowid() as rowid", (err, row) => {
+                // TODO: handle
+                if (err) {
+                    console.error(err);
+                } else {
+                    rowid = row.rowid + 1;
+                    let stmt = this.db.prepare("INSERT INTO mappings VALUES (?, ?)");
+                    for (let word of uniqueWords) {
+                        stmt.run([rowid, word]);
+                    }
+                    stmt.finalize((err) => {
+                        if (!err) {
+                            this.db.run("INSERT INTO articles VALUES (?)", [id]);
+                        }
+                    });
+                }
+            })
         });
     }
 }
