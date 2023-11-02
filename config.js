@@ -12,4 +12,6 @@ module.exports = {
         secure: false,
         sameSite: "strict"
     },
+    SESSION_TOKEN_LENGTH: 64,
+    HASH_COST: 15,
 };

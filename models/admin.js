@@ -1,10 +1,9 @@
 const bcrypt = require("bcrypt");
-const HASH_COST = 15;
-
 const crypto = require("crypto"); // for randomBytes
-const SESSION_TOKEN_LENGTH = 64; // bytes
 
 const { Database } = require("./database.js");
+
+const { HASH_COST, SESSION_TOKEN_LENGTH } = require("../config.js");
 
 /**
  * Hash the given plain-text password using bcrypt
