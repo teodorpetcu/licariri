@@ -148,6 +148,38 @@ class ArticleDatabase extends Database {
             });
         })
     }
+
+    /**
+     * Return the array of article IDs that the given author wrote
+     * @param {string} author - Name of the author
+     * @returns {Promise<string[]>}
+     */
+    search_articles_by_author = async (author) => {
+        return new Promise((resolve, _) => {
+            this.db.all('SELECT id FROM article_authors WHERE author = ?', [author], (err, rows) => {
+                if (err || rows === undefined) {
+                    return resolve([]);
+                }
+                return resolve(rows.map((row) => row.id));
+            });
+        });
+    }
+
+    /**
+     * Return the array of article IDs that have the given tag
+     * @param {string} tag
+     * @returns {Promise<string[]>}
+     */
+    search_articles_by_tag = async (tag) => {
+        return new Promise((resolve, _) => {
+            this.db.all('SELECT id FROM article_tags WHERE tag = ?', [tag], (err, rows) => {
+                if (err || rows === undefined) {
+                    return resolve([]);
+                }
+                return resolve(rows.map((row) => row.id));
+            });
+        });
+    }
 }
 
 module.exports = {

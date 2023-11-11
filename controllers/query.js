@@ -13,9 +13,25 @@ const articleDatabase = new ArticleDatabase(ARTICLE_DATABASE_PATH);
 articleDatabase.init();
 
 const get_queryPage = async (req, res) => {
+    let searchResultsIDs = [];
+    let searchResults = [];
+
+    let author = req.query.author;
+    let tag = req.query.tag;
     let text = req.query.text;
-    let searchResultsIDs = await queryDatabase.findArticles(text);
-    let searchResults = await Promise.all(searchResultsIDs.map(async (id) => await articleDatabase.search_article(id)));
+
+    if (author) {
+        searchResultsIDs = searchResultsIDs.concat(await articleDatabase.search_articles_by_author(author));
+    }
+    if (tag) {
+        searchResultsIDs = searchResultsIDs.concat(await articleDatabase.search_articles_by_tag(tag));
+    }
+    if (text) {
+        searchResultsIDs = searchResultsIDs.concat(await queryDatabase.findArticles(text));
+    }
+
+    searchResults = await Promise.all(searchResultsIDs.map(async (id) => await articleDatabase.search_article(id)));
+
     res.render("query", {articles: searchResults});
 }
 
