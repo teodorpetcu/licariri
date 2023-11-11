@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <title>Căutare</title>
+    <%- include("meta"); %>
+</head>
+
+<body>
+    <%- include("header"); %>
+    <%- include("theme"); %>
+    <div id="page-body">
+        <div class="article-snippets-container">
+            <% if (articles !== undefined) { %>
+                <h1>Rezultatele căutării:</h1>
+                <%- include("article-snippets-grid"); %>
+            <% } else { %>
+                <h1>Ne pare rău, nu s-a găsit niciun rezultat</h1>
+            <% } %>
+        </div>
+    </div>
+</body>
+
+</html>

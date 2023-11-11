@@ -1,0 +1,17 @@
+<div class="grid">
+<% for (article of articles) { %>
+    <div class="article-snippet">
+        <% if (article.has_thumbnail) { %>
+            <div style="text-align: center">
+                <a href="<%= article.id %>" class="title"><img src="images/<%= article.id %>"></a>
+            </div>
+        <% } %>
+        <a href="<%= article.id %>" class="title"><%= article.title %></a>
+        <%- include("authors") %>
+        <div class="description">
+            <%= article.description %>
+        </div>
+        <%- include("tags") %>
+    </div>
+<% } %>
+</div>

@@ -91,13 +91,13 @@ a {
     text-justify: auto;
 }
 
-.article-container {
+.article-snippets-container {
     margin: 15px auto;
     padding: 0px 0px;
     max-width: 1200px;
 }
 
-.article-container .grid {
+.article-snippets-container .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 3fr));
     gap: 1rem;

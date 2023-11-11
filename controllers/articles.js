@@ -3,27 +3,28 @@ const fs = require("fs");
 
 const { Author, Article } = require("../models/types.js");
 const { ArticleDatabase } = require("../models/articles.js");
+const { QueryDatabase } = require("../models/query.js");
 
 const {
     ARTICLE_DATABASE_PATH,
     ARTICLE_CONTENTS_PATH,
     MAIN_PAGE_ARTICLE_COUNT,
+    QUERY_DATABASE_PATH,
 } = require("../config.js");
 
 const articleDatabase = new ArticleDatabase(ARTICLE_DATABASE_PATH);
 articleDatabase.init();
 
+const queryDatabase = new QueryDatabase(QUERY_DATABASE_PATH);
+queryDatabase.init();
+
 const get_mainPage = async (req, res) => {
     let page = req.query.page ? req.query.page : 1;
-    let article_page = await articleDatabase.get_recent_articles(
+    let articles = await articleDatabase.get_recent_articles(
         MAIN_PAGE_ARTICLE_COUNT * (page - 1),
         MAIN_PAGE_ARTICLE_COUNT * (page)
     );
-    res.render("main", {article_page})
-}
-
-const get_queryPage = async (_, res) => {
-    res.redirect("/");
+    res.render("main", {articles})
 }
 
 const get_articlePage = async (req, res) => {
@@ -55,6 +56,7 @@ const post_adminAddArticle = async (req, res) => {
     const article = new Article(title, authors, tags);
 
     fs.writeFileSync(`${ARTICLE_CONTENTS_PATH}/${article.id}.md`, content);
+    queryDatabase.indexArticle(article.id, content);
     articleDatabase.save_article(article);
 
     res.redirect(`/${article.id}`);
@@ -62,7 +64,6 @@ const post_adminAddArticle = async (req, res) => {
 
 module.exports = {
     get_mainPage,
-    get_queryPage,
     get_articlePage,
     post_adminAddArticle,
 };

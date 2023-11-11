@@ -4,10 +4,13 @@ const cookieParser = require("cookie-parser");
 
 const {
     get_mainPage,
-    get_queryPage,
     get_articlePage,
     post_adminAddArticle,
 } = require("./controllers/articles.js")
+
+const {
+    get_queryPage,
+} = require("./controllers/query.js");
 
 const {
     forbidUnauthorised,
