@@ -2,6 +2,25 @@ body {
     text-align: center;
 }
 
+#admin-pannel {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#admin-pannel a {
+    padding: 10px;
+    border: 1px solid var(--snippet-border-color);
+    background-color: var(--main-color);
+    text-decoration: 1px solid underline;
+    transition: color 0.2s ease;
+}
+
+#admin-pannel a:hover {
+    color: var(--accent-color);
+}
+
 form {
     display: grid;
 }
@@ -53,6 +72,14 @@ input {
     border: 1px solid var(--font-color);
     padding: 4px;
     margin-bottom: 5px;
+    transition: border 0.2s ease;
+}
+
+input[type="submit"]:focus,
+button:focus,
+textarea:focus,
+input:focus {
+    border: 1px solid var(--accent-color);
 }
 
 form input[type="submit"]:hover,

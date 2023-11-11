@@ -27,7 +27,7 @@ const forbidUnauthorised = async (req, res, next) => {
 
 const get_adminPageView = async (req, res) => {
     if (await isLoggedIn(req)) {
-        res.redirect("/admin/add")
+        res.render("admin", {});
     } else {
         res.render("login", {});
     }
