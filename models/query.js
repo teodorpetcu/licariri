@@ -49,12 +49,12 @@ class QueryDatabase extends Database {
     indexArticle = async (id, contents) => {
         let uniqueWords = [... new Set(contents.toLowerCase().replace(/[^0-9A-z\-'ăîâșțéèÿùüïôœàæêëûîâç]/g, " ").split(/\s+/))];
         this.db.serialize(() => {
-            this.db.get("SELECT last_insert_rowid() as rowid", (err, row) => {
-                // TODO: handle
+            this.db.get("SELECT COUNT(*) FROM articles", (err, row) => {
                 if (err) {
+                    // TODO: handle
                     console.error(err);
                 } else {
-                    let rowid = row.rowid + 1;
+                    let rowid = row["COUNT(*)"] + 1;
                     let words_stmt = this.db.prepare("INSERT OR IGNORE INTO words VALUES (?)");
                     let stmt = this.db.prepare("INSERT INTO mappings VALUES (?, (SELECT rowid FROM words WHERE word = ?))");
                     for (let word of uniqueWords) {
