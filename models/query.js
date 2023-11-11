@@ -74,6 +74,33 @@ class QueryDatabase extends Database {
             })
         });
     }
+
+    /**
+     * Return a list of all article IDs that contain the given pattern in their
+     * text
+     * @param {string} pattern
+     * @returns {Promise<string[]>}
+     */
+    findArticles = (pattern) => {
+        pattern = '%' + pattern + '%';
+        return new Promise((resolve) => {
+            this.db.all(`SELECT article_id FROM articles
+                WHERE rowid IN
+                    (SELECT article FROM mappings
+                        WHERE word IN
+                            (SELECT rowid FROM words WHERE word LIKE ?))`,
+                [pattern],
+                (err, rows) => {
+                    if (err) {
+                        // TODO: handle
+                        console.error(err);
+                    } else {
+                        return resolve(rows.map((r) => r.article_id));
+                    }
+                }
+            );
+        })
+    }
 }
 
 module.exports = {
