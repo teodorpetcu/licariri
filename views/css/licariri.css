@@ -5,6 +5,7 @@
     --accent-color-lower-opacity: #8000d770;
     --font-color: #02040F;
     --neutral-color: #E5DADA;
+    --snippet-border-color: #00000042;
     /* #002642 #840032 #E59500 #E5DADA #02040F */
     /* #63089c #00000049 #f4e9e9 #d4b0e9 */
 }
@@ -12,6 +13,7 @@
 :root.dark-theme {
     --font-color: #E5DADA;
     --neutral-color: #02040F;
+    --snippet-border-color: #ffffff42;
 }
 
 body {
@@ -103,7 +105,7 @@ a {
 
 .article-snippet {
     background-color: var(--main-color);
-    border: 1px solid #00000042;
+    border: 1px solid var(--snippet-border-color);
     padding: 15px 15px;
 }
 
