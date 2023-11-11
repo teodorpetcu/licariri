@@ -47,7 +47,9 @@ class QueryDatabase extends Database {
      * @param {string} contents - Contents of the article
      */
     indexArticle = async (id, contents) => {
-        let uniqueWords = [... new Set(contents.toLowerCase().replace(/[^0-9A-z\-'ăîâșțéèÿùüïôœàæêëûîâç]/g, " ").split(/\s+/))];
+        let lowercase = contents.toLowerCase();
+        let validWords = lowercase.replace(/[^0-9A-z\-'ăîâșțéèÿùüïôœàæêëûîâç]/g, " ").split(/\s+/);
+        let uniqueWords = [... new Set(validWords.filter((word) => word))];
         this.db.serialize(() => {
             this.db.get("SELECT COUNT(*) FROM articles", (err, row) => {
                 if (err) {
