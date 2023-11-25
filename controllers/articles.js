@@ -46,13 +46,16 @@ const get_articlePage = async (req, res) => {
 
 const post_adminAddArticle = async (req, res) => {
     const title = req.body.title;
-    const authors = req.body["authors[]"]
+    const authors = Array.isArray(req.body["authors[]"])
                     ? req.body["authors[]"].map((a) => new Author(a))
-                    : [];
-    const tags = req.body["tags[]"]
+                    : (typeof req.body["authors[]"] === "string"
+                        ? [new Author(req.body["authors[]"])]
+                        : []);
+    const tags = Array.isArray(req.body["tags[]"])
                     ? req.body["tags[]"]
-                    : [];
-    console.log(req.body);
+                    : (typeof req.body["tags[]"] === "string"
+                        ? [req.body["tags[]"]]
+                        : []);
     // Escape HTML tags and backslashes
     // NOTE: only article contents are interpreted as HTML by EJS, so only they
     // need to be sanitised
