@@ -12,17 +12,17 @@
     <div id="page-body">
         <div class="article">
             <div class="headline">
+                <% if (article.thumbnail) { %>
+                    <div style="text-align: center">
+                        <img src="images/<%= article.id %>">
+                    </div>
+                <% } %>
                 <h1><%= article.title %></h1>
                 <div>
                     <%- include("authors") %>
                     <span style="float: right; opacity: 0.3;"><%= article.date %></span>
                 </div>
                 <%- include("tags") %>
-                <% if (article.thumbnail) { %>
-                    <div style="text-align: center">
-                        <img src="images/<%= article.id %>">
-                    </div>
-                <% } %>
             </div>
             <div class="contents">
                 <%- article.contents %>
