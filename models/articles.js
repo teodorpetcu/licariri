@@ -124,7 +124,7 @@ class ArticleDatabase extends Database {
     // TODO: return undefined if article is nonexistent
     get_article_authors = async (id) => {
         return new Promise((resolve, _) => {
-            this.db.all('SELECT * FROM article_authors WHERE id = ?', [id], (err, rows) => {
+            this.db.all('SELECT author FROM article_authors WHERE id = ? ORDER BY author ASC', [id], (err, rows) => {
                 if (err || rows === undefined) {
                     return resolve([]);
                 }
@@ -141,7 +141,7 @@ class ArticleDatabase extends Database {
     // TODO: return undefined if article is nonexistent
     get_article_tags = async (id) => {
         return new Promise((resolve, _) => {
-            this.db.all('SELECT * FROM article_tags WHERE id = ?', [id], (err, rows) => {
+            this.db.all('SELECT tag FROM article_tags WHERE id = ? ORDER BY tag ASC', [id], (err, rows) => {
                 if (err || rows === undefined) {
                     return resolve([]);
                 }
