@@ -1,6 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const ip = require("ip");
+
+const serverPrivateIP = ip.address();
 
 const {
     get_mainPage,
@@ -49,6 +52,6 @@ app.get("/:article_id", get_articlePage);
 
 // TODO: ensure that we first connect to all the databases before starting to
 // listen on the internet
-app.listen(LISTENING_PORT, () => {
-    console.log(`Web server up (http://localhost:${LISTENING_PORT})`);
+app.listen(LISTENING_PORT, async () => {
+    console.log(`Web server up (http://${serverPrivateIP}:${LISTENING_PORT})`);
 });

@@ -13,6 +13,8 @@ const articleDatabase = new ArticleDatabase(ARTICLE_DATABASE_PATH);
 articleDatabase.init();
 
 const get_queryPage = async (req, res) => {
+    // TODO: maybe send the data to the client and do the searching client-side somehow?
+    // or, you know, write a proper API to handle querying.
     let searchResultsIDs = [];
     let searchResults = [];
 
