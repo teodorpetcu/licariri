@@ -46,12 +46,13 @@ const get_articlePage = async (req, res) => {
 
 const post_adminAddArticle = async (req, res) => {
     const title = req.body.title;
-    const authors = req.body.authors
-                    ? req.body.authors.map((a) => new Author(a))
+    const authors = req.body["authors[]"]
+                    ? req.body["authors[]"].map((a) => new Author(a))
                     : [];
-    const tags = req.body.tags
-                    ? req.body.tags
+    const tags = req.body["tags[]"]
+                    ? req.body["tags[]"]
                     : [];
+    console.log(req.body);
     // Escape HTML tags and backslashes
     // NOTE: only article contents are interpreted as HTML by EJS, so only they
     // need to be sanitised
