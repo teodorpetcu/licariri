@@ -1,7 +1,7 @@
 <div class="grid">
 <% for (article of articles) { %>
     <div class="article-snippet">
-        <% if (article.has_thumbnail) { %>
+        <% if (article.thumbnail) { %>
             <div style="text-align: center">
                 <a href="<%= article.id %>" class="title"><img src="images/<%= article.id %>"></a>
             </div>

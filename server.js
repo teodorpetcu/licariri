@@ -37,6 +37,8 @@ app.use(cookieParser());
 
 app.use("/css", express.static(__dirname + "/views/css"));
 
+app.use("/images", express.static(__dirname + "/public/images"));
+
 app.get("/", get_mainPage);
 
 app.get("/query", get_queryPage);

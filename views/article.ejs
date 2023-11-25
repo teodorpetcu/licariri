@@ -18,7 +18,7 @@
                     <span style="float: right; opacity: 0.3;"><%= article.date %></span>
                 </div>
                 <%- include("tags") %>
-                <% if (article.has_thumbnail) { %>
+                <% if (article.thumbnail) { %>
                     <div style="text-align: center">
                         <img src="images/<%= article.id %>">
                     </div>
