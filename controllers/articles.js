@@ -57,7 +57,7 @@ const post_adminAddArticle = async (req, res) => {
 
     const article = new Article(title, authors, tags, undefined, thumbnail ? true : false);
 
-    if (/^image/.test(thumbnail.mimetype)) {
+    if (thumbnail && /^image/.test(thumbnail.mimetype)) {
         fs.writeFileSync(`${ARTICLE_IMAGES_PATH}/${article.id}`, thumbnail.data);
     }
 
