@@ -52,7 +52,11 @@ const post_adminAddArticle = async (req, res) => {
     const tags = req.body.tags
                     ? req.body.tags
                     : [];
-    const content = req.body.content;
+    // Escape HTML tags and backslashes
+    // NOTE: only article contents are interpreted as HTML by EJS, so only they
+    // need to be sanitised
+    const content = req.body.content.replace(/([<>\\])/g, "\\$1");
+
     let thumbnail = req.files ? req.files.thumbnail : undefined;
 
     const article = new Article(title, authors, tags, undefined, thumbnail ? true : false);
