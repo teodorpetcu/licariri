@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const fileUpload = require("express-fileupload");
 const ip = require("ip");
 
 const serverPrivateIP = ip.address();
@@ -27,6 +28,8 @@ const { LISTENING_PORT } = require("./config.js");
 const app = express();
 
 app.set("view engine", "ejs");
+
+app.use(fileUpload());
 
 app.use(bodyParser.urlencoded({ extended: true, }));
 

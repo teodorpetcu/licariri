@@ -21,6 +21,7 @@ class ArticleDatabase extends Database {
                 id          TEXT NOT NULL,
                 title       TEXT NOT NULL,
                 timestamp   INT,
+                thumbnail   TEXT NOT NULL,
                 UNIQUE (id)
             );
             CREATE TABLE IF NOT EXISTS article_tags
@@ -51,8 +52,8 @@ class ArticleDatabase extends Database {
      */
     // TODO: handle errors via callbacks on the 'exec' statements
     save_article = (article) => {
-        this.db.run('INSERT INTO articles VALUES(?, ?, ?)',
-            [article.id, article.title, article.timestamp]);
+        this.db.run('INSERT INTO articles VALUES(?, ?, ?, ?)',
+            [article.id, article.title, article.timestamp, article.thumbnail ? article.thumbnail : ""]);
         for (let tag of article.tags) {
             this.db.run('INSERT INTO article_tags VALUES(?, ?)',
                 [article.id, tag]);
@@ -70,10 +71,10 @@ class ArticleDatabase extends Database {
      */
     // TODO: return undefined if article is nonexistent
     search_article = async (id) => {
-        let [title, timestamp] = await this.get_article_meta(id);
+        let [title, timestamp, thumbnail] = await this.get_article_meta(id);
         let authors = await this.get_article_authors(id);
         let tags = await this.get_article_tags(id);
-        return new Article(title, authors, tags, timestamp);
+        return new Article(title, authors, tags, timestamp, thumbnail);
     }
 
     /**
@@ -101,7 +102,7 @@ class ArticleDatabase extends Database {
      * with the given ID, and the second is the date this article was created.
      * If there is no article with this ID, then both elements are empty.
      * @param {string} id
-     * @returns {Promise<[string, string|undefined]>}
+     * @returns {Promise<[string, string|undefined, string]>}
      */
     // TODO: return undefined if article is nonexistent
     get_article_meta = async (id) => {
@@ -110,7 +111,7 @@ class ArticleDatabase extends Database {
                 if (err || row === undefined) {
                     return resolve(["", undefined]);
                 }
-                return resolve([row.title, new Date(row.timestamp)])
+                return resolve([row.title, new Date(row.timestamp), row.thumbnail])
             });
         })
     }

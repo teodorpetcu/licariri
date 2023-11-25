@@ -8,6 +8,7 @@ const { QueryDatabase } = require("../models/query.js");
 const {
     ARTICLE_DATABASE_PATH,
     ARTICLE_CONTENTS_PATH,
+    ARTICLE_IMAGES_PATH,
     MAIN_PAGE_ARTICLE_COUNT,
     QUERY_DATABASE_PATH,
 } = require("../config.js");
@@ -52,8 +53,13 @@ const post_adminAddArticle = async (req, res) => {
                     ? req.body.tags
                     : [];
     const content = req.body.content;
+    let thumbnail = req.files ? req.files.thumbnail : undefined;
 
-    const article = new Article(title, authors, tags);
+    const article = new Article(title, authors, tags, undefined, thumbnail ? true : false);
+
+    if (/^image/.test(thumbnail.mimetype)) {
+        fs.writeFileSync(`${ARTICLE_IMAGES_PATH}/${article.id}`, thumbnail.data);
+    }
 
     fs.writeFileSync(`${ARTICLE_CONTENTS_PATH}/${article.id}.md`, content);
     queryDatabase.indexArticle(article.id, content);

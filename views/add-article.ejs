@@ -11,11 +11,17 @@
     <%- include("theme"); %>
     <div id="add-article">
         <h1>Adaugă articol</h1>
-        <form action="/admin/add" method="post" autocomplete="off">
+        <form action="/admin/add" method="post" autocomplete="off" enctype="multipart/form-data">
             <div>
                 <label>Titlu:</label>
                 <input required type="text"
                     name="title" placeholder="">
+            </div>
+
+            <div>
+                <label>Imagine:</label>
+                <input type="file" accept="image/*"
+                    name="thumbnail">
             </div>
 
             <div>

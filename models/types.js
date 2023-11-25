@@ -25,15 +25,17 @@ class Article {
     /**
      * Metadata related to an article
      * @param {string} title
-     * @param {string} date
      * @param {string} authors
      * @param {string} tags
+     * @param {Date} date
+     * @param {boolean} thumbnail
      */
-    constructor(title, authors, tags, timestamp = new Date()) {
+    constructor(title, authors, tags, timestamp = new Date(), thumbnail = false) {
         this.title = title;
         this.authors = authors;
         this.tags = tags;
         this.timestamp = timestamp.valueOf();
+        this.thumbnail = thumbnail;
         this.date = formatDate(timestamp);
         this.id = this.article_id();
     }
