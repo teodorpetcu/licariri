@@ -19,6 +19,7 @@ class ArticleDatabase extends Database {
             CREATE TABLE IF NOT EXISTS articles
             (
                 id          TEXT NOT NULL,
+                user        TEXT NOT NULL,
                 title       TEXT NOT NULL,
                 timestamp   INT,
                 thumbnail   TEXT NOT NULL,
@@ -49,11 +50,12 @@ class ArticleDatabase extends Database {
     /**
      * Save an article's metadata to a database
      * @param {Article} article
+     * @param {string} user_id
      */
     // TODO: handle errors via callbacks on the 'exec' statements
-    save_article = (article) => {
-        this.db.run('INSERT INTO articles VALUES(?, ?, ?, ?)',
-            [article.id, article.title, article.timestamp, article.thumbnail ? article.thumbnail : ""]);
+    save_article = (article, user_id) => {
+        this.db.run('INSERT INTO articles VALUES(?, ?, ?, ?, ?)',
+            [article.id, user_id, article.title, article.timestamp, article.thumbnail ? article.thumbnail : ""]);
         for (let tag of article.tags) {
             this.db.run('INSERT INTO article_tags VALUES(?, ?)',
                 [article.id, tag]);

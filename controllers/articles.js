@@ -56,6 +56,7 @@ const post_adminAddArticle = async (req, res) => {
                     : (typeof req.body["tags[]"] === "string"
                         ? [req.body["tags[]"]]
                         : []);
+    const user_id = req.user.id;
     // Escape HTML tags and backslashes
     // NOTE: only article contents are interpreted as HTML by EJS, so only they
     // need to be sanitised
@@ -71,7 +72,7 @@ const post_adminAddArticle = async (req, res) => {
 
     fs.writeFileSync(`${ARTICLE_CONTENTS_PATH}/${article.id}.md`, content);
     queryDatabase.indexArticle(article.id, content);
-    articleDatabase.save_article(article);
+    articleDatabase.save_article(article, user_id);
 
     res.redirect(`/${article.id}`);
 }

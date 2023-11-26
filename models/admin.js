@@ -24,11 +24,19 @@ const validatePassword = async (password, hash) => {
     return bcrypt.compare(password, hash);
 }
 
+class User {
+    constructor(id, name, privilege) {
+        this.id = id;
+        this.name = name;
+        this.privilege = privilege;
+    }
+}
+
 class Session {
-    constructor(user,
+    constructor(user_id,
                 token = crypto.randomBytes(SESSION_TOKEN_LENGTH).toString("hex"),
                 timestamp = Date.now()) {
-        this.user = user;
+        this.user_id = user_id;
         this.token = token;
         this.timestamp = timestamp;
     }
@@ -51,6 +59,8 @@ class UsersDatabase extends Database {
         this.db.exec(`CREATE TABLE IF NOT EXISTS users
             (
                 id          TEXT NOT NULL,
+                name        TEXT NOT NULL,
+                privilege   INT,
                 password    TEXT NOT NULL,
                 UNIQUE (id)
             );
@@ -77,9 +87,9 @@ class UsersDatabase extends Database {
      */
     //TODO: return status
     //TODO: handle eventual errors
-    add_user = async (id, pass) => {
+    add_user = async (user, pass) => {
         let hash = await hashPassword(pass);
-        this.db.run('INSERT INTO users VALUES(?, ?)', [id, hash]);
+        this.db.run('INSERT INTO users VALUES(?, ?, ?, ?)', [user.id, user.name, user.privilege, hash]);
     }
 
     /**
@@ -116,24 +126,25 @@ class UsersDatabase extends Database {
     // TODO: return status
     add_session = async (session) => {
         this.db.run('INSERT INTO sessions VALUES (?, ?, ?)',
-            [session.user, session.token, session.timestamp]);
+            [session.user_id, session.token, session.timestamp]);
     }
 
     /**
-     * Check if there is an existing session with the given token.
+     * Return the User ID that the session belongs to, or undefined, if there is
+     * no such session.
      * @param {string} token - Token of the session
-     * @returns {Promise<boolean>}
+     * @returns {Promise<string|undefined>}
      */
-    // TODO: sanitise
-    has_session = async (token) => {
+    get_session = async (token) => {
         return new Promise((resolve)=> {
-            this.db.get('SELECT * FROM sessions WHERE token = ?', [token], (err, row) => {
+            this.db.get('SELECT user FROM sessions WHERE token = ?', [token], (err, row) => {
                 if (err) {
                     console.error(err);
+                    return resolve(undefined);
                 } else if (row === undefined) {
-                    return resolve(false);
+                    return resolve(undefined);
                 } else {
-                    return resolve(true);
+                    return resolve(row.user);
                 }
             })
         });

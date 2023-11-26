@@ -5,28 +5,32 @@ const usersDatabase = new UsersDatabase(USERS_DATABASE_PATH);
 usersDatabase.init();
 
 /**
- * Determine whether the request belongs to an authorised user
- * @returns {Promise<boolean>}
+ * Return the user ID of the session that the coookie points to, or undefined if
+ * there is none
+ * @returns {Promise<string|undefined>}
  */
-const isLoggedIn = async (req) => {
+const getUserSession = async (req) => {
     let sessionCookie = req.cookies.session;
-    return usersDatabase.has_session(sessionCookie);
+    return usersDatabase.get_session(sessionCookie);
 }
 
 /**
- * Middleware; send status code 401 if the request doesn't belong to an
- * authorised user
+ * Middleware: return 401 to all requests that have no (valid) session token
+ *
+ * On requests that are authorised, attach `user.id` to the `req` object.
  */
 const forbidUnauthorised = async (req, res, next) => {
-    if (!await isLoggedIn(req)) {
+    let user_id = await getUserSession(req);
+    if (!user_id) {
         res.status(401).send();
     } else {
+        req.user = {id: user_id};
         next();
     }
 }
 
 const get_adminPageView = async (req, res) => {
-    if (await isLoggedIn(req)) {
+    if (await getUserSession(req)) {
         res.render("admin", {});
     } else {
         res.render("login", {});
