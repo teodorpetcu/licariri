@@ -62,7 +62,11 @@ button {
     transition: color 0.2s ease, background-color 0.2s ease;
 }
 
-input[type="submit"],
+input[type="file"] {
+    padding: 4px;
+    text-align: center;
+}
+
 button,
 textarea,
 input {
@@ -75,7 +79,12 @@ input {
     transition: border 0.2s ease;
 }
 
-input[type="submit"]:focus,
+button:hover,
+textarea:hover,
+input:hover {
+    border: 1px dashed var(--accent-color);
+}
+
 button:focus,
 textarea:focus,
 input:focus {
