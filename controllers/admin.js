@@ -7,11 +7,11 @@ usersDatabase.init();
 /**
  * Return the user ID of the session that the coookie points to, or undefined if
  * there is none
- * @returns {Promise<string|undefined>}
+ * @returns {Promise<User|undefined>}
  */
-const getUserSession = async (req) => {
+const getSessionUser = async (req) => {
     let sessionCookie = req.cookies.session;
-    return usersDatabase.get_session(sessionCookie);
+    return usersDatabase.get_session_user(sessionCookie);
 }
 
 /**
@@ -20,17 +20,17 @@ const getUserSession = async (req) => {
  * On requests that are authorised, attach `user.id` to the `req` object.
  */
 const forbidUnauthorised = async (req, res, next) => {
-    let user_id = await getUserSession(req);
-    if (!user_id) {
+    let user = await getSessionUser(req);
+    if (!user) {
         res.status(401).send();
     } else {
-        req.user = {id: user_id};
+        req.user = user;
         next();
     }
 }
 
 const get_adminPageView = async (req, res) => {
-    if (await getUserSession(req)) {
+    if (await getSessionUser(req)) {
         res.render("admin", {});
     } else {
         res.render("login", {});

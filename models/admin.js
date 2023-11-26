@@ -82,7 +82,7 @@ class UsersDatabase extends Database {
 
     /**
      * Add an user's metadata to the database
-     * @param {string} id - ID of the user
+     * @param {User} user - User object
      * @param {string} pass - Plain-text password
      */
     //TODO: return status
@@ -130,21 +130,22 @@ class UsersDatabase extends Database {
     }
 
     /**
-     * Return the User ID that the session belongs to, or undefined, if there is
+     * Return the User that the given token belongs to, or undefined if there is
      * no such session.
      * @param {string} token - Token of the session
-     * @returns {Promise<string|undefined>}
+     * @returns {Promise<User|undefined>}
      */
-    get_session = async (token) => {
+    // Hopefully this does not take too much time to do for every request?
+    get_session_user = async (token) => {
         return new Promise((resolve)=> {
-            this.db.get('SELECT user FROM sessions WHERE token = ?', [token], (err, row) => {
+            this.db.get('SELECT * FROM users WHERE id IN (SELECT user FROM sessions WHERE token = ?)', [token], (err, row) => {
                 if (err) {
                     console.error(err);
                     return resolve(undefined);
                 } else if (row === undefined) {
                     return resolve(undefined);
                 } else {
-                    return resolve(row.user);
+                    return resolve(new User(row.id, row.name, row.privilege));
                 }
             })
         });
