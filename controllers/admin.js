@@ -49,7 +49,13 @@ const post_adminLoginCheck = async (req, res) => {
 }
 
 const get_adminAddArticlePage = async (_, res) => {
-    res.render("add-article", {});
+    let emptyArticle = {
+        title: "",
+        authors: [],
+        tags: [],
+        content: "",
+    }
+    res.render("add-or-modify-article", {action: "add", defaults: emptyArticle});
 }
 
 module.exports = {
