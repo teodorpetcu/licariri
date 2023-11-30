@@ -31,7 +31,7 @@ const forbidUnauthorised = async (req, res, next) => {
 
 const get_adminPageView = async (req, res) => {
     if (req.user) {
-        res.render("admin", {});
+        res.render("admin", {user_management: req.user.privilege == USER_PRIVILEGES["SUPERUSER"]});
     } else {
         res.render("login", {});
     }

@@ -73,6 +73,7 @@ form label {
 }
 
 textarea,
+select,
 input {
     font-family: "Helvetica";
 }
@@ -89,6 +90,7 @@ input[type="file"] {
 
 button,
 textarea,
+select,
 input {
     outline: none;
     color: var(--font-color);
@@ -101,12 +103,14 @@ input {
 
 button:hover,
 textarea:hover,
+select:hover,
 input:hover {
     border: 1px dashed var(--accent-color);
 }
 
 button:focus,
 textarea:focus,
+select:focus
 input:focus {
     border: 1px solid var(--accent-color);
 }
@@ -115,6 +119,10 @@ form input[type="submit"]:hover,
 form button:hover {
     color: var(--neutral-color);
     background-color: var(--font-color);
+}
+
+select {
+    cursor: pointer;
 }
 
 @media (max-width: 600px) {
