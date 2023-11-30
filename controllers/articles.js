@@ -95,9 +95,16 @@ const post_adminModifyArticle = async (req, res) => {
     if (article_publisher == req.user.id) {
         await articleDatabase.remove_article(original_article_id)
         await queryDatabase.unindex(original_article_id);
+        if (!req.files) {
+            req.files = {thumbnail: {
+                mimetype: "image",
+                // TODO: find a more efficient way to do this
+                data: fs.readFileSync(`${ARTICLE_IMAGES_PATH}/${original_article_id}`)
+            }}
+        }
         post_adminAddArticle(req, res);
     } else {
-        res.status(401).send();
+        res.redirect("/admin/modify");
     }
 }
 
