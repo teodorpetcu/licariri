@@ -66,6 +66,14 @@ class ArticleDatabase extends Database {
         }
     }
 
+    remove_article = (id) => {
+        this.db.run('DELETE from articles WHERE id = ?', [id], (err) => {
+            if (err) {
+                console.errorr(err);
+            }
+        });
+    }
+
     /**
      * Return all of the metadata associated with the ID of the given article
      * @param {string} id
@@ -113,27 +121,39 @@ class ArticleDatabase extends Database {
                 return Promise.all(rows.map((row) => this.search_article(row.id)))
                     .then((values) => resolve(values));
             });
-        })
-
+        });
     }
 
     /**
-     * Return an array: the first element is the title of the title associated
-     * with the given ID, and the second is the date this article was created.
-     * If there is no article with this ID, then both elements are empty.
+     * Return the ID of the user that published the given article ID, or
+     * undefined if the article ID has not been found
+     * @param {string} id - ID of the article
+     */
+    get_article_publisher = async (id) => {
+        return new Promise((resolve, _) => {
+            return this.db.get('SELECT user FROM articles WHERE id = ?', [id], (err, row) => {
+                if (err || row === undefined) {
+                    return resolve(undefined);
+                }
+                return resolve(row.user)
+            });
+        });
+    }
+
+    /**
      * @param {string} id
-     * @returns {Promise<[string, string|undefined, string]>}
+     * @returns {Promise<[string, string|undefined, string, string]>}
      */
     // TODO: return undefined if article is nonexistent
     get_article_meta = async (id) => {
         return new Promise((resolve, _) => {
             return this.db.get('SELECT * FROM articles WHERE id = ?', [id], (err, row) => {
                 if (err || row === undefined) {
-                    return resolve(["", undefined]);
+                    return resolve(undefined);
                 }
                 return resolve([row.title, new Date(row.timestamp), row.thumbnail])
             });
-        })
+        });
     }
 
     /**
@@ -150,7 +170,7 @@ class ArticleDatabase extends Database {
                 }
                 return resolve(rows.map((row) => new Author(row.author, row.author_occupation)));
             });
-        })
+        });
     }
 
     /**
@@ -167,7 +187,7 @@ class ArticleDatabase extends Database {
                 }
                 return resolve(rows.map((row) => row.tag));
             });
-        })
+        });
     }
 
     /**
