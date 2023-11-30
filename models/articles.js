@@ -66,11 +66,12 @@ class ArticleDatabase extends Database {
         }
     }
 
-    remove_article = (id) => {
-        this.db.run('DELETE from articles WHERE id = ?', [id], (err) => {
-            if (err) {
-                console.errorr(err);
-            }
+    remove_article = async (id) => {
+        return new Promise((resolve) => {
+            this.db.run('DELETE from articles WHERE id = ?', [id]);
+            this.db.run('DELETE from article_authors WHERE id = ?', [id]);
+            this.db.run('DELETE from article_tags WHERE id = ?', [id]);
+            return resolve();
         });
     }
 

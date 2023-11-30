@@ -77,6 +77,14 @@ class QueryDatabase extends Database {
         });
     }
 
+    unindex = async (article_id) => {
+        return new Promise((resolve) => {
+            this.db.run("DELETE FROM mappings WHERE (SELECT rowid FROM articles WHERE article_id = ?)", [article_id]);
+            this.db.run("DELETE FROM articles WHERE article_id = ?", [article_id]);
+            return resolve();
+        })
+    }
+
     /**
      * Return a list of all article IDs that contain the given pattern in their
      * text

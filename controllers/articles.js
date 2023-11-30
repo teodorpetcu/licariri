@@ -93,7 +93,8 @@ const post_adminModifyArticle = async (req, res) => {
     const original_article_id = req.params.article_id;
     let article_publisher = await articleDatabase.get_article_publisher(original_article_id);
     if (article_publisher == req.user.id) {
-        articleDatabase.remove_article(original_article_id)
+        await articleDatabase.remove_article(original_article_id)
+        await queryDatabase.unindex(original_article_id);
         post_adminAddArticle(req, res);
     } else {
         res.status(401).send();
@@ -109,7 +110,8 @@ const post_adminRemoveArticle = async (req, res) => {
     let article_id = req.body.id;
     let article_publisher = await articleDatabase.get_article_publisher(article_id);
     if (article_publisher == req.user.id) {
-        articleDatabase.remove_article(article_id)
+        await articleDatabase.remove_article(article_id)
+        await queryDatabase.unindex(article_id);
     }
     res.redirect("/admin/remove");
 }
