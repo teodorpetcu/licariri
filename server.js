@@ -12,6 +12,9 @@ const {
     get_adminRemoveArticle,
     post_adminAddArticle,
     post_adminRemoveArticle,
+    get_adminModifyArticle,
+    get_adminModifyArticlePage,
+    post_adminModifyArticle,
 } = require("./controllers/articles.js")
 
 const {
@@ -58,6 +61,12 @@ app.post("/admin/add", identifyAuthorizedUser, forbidUnauthorised, post_adminAdd
 app.get("/admin/remove", identifyAuthorizedUser, forbidUnauthorised, get_adminRemoveArticle);
 
 app.post("/admin/remove", identifyAuthorizedUser, forbidUnauthorised, post_adminRemoveArticle);
+
+app.get("/admin/modify", identifyAuthorizedUser, forbidUnauthorised, get_adminModifyArticle);
+
+app.get("/admin/modify/:article_id", identifyAuthorizedUser, forbidUnauthorised, get_adminModifyArticlePage);
+
+app.post("/admin/modify/:article_id", identifyAuthorizedUser, forbidUnauthorised, post_adminModifyArticle);
 
 // TODO: move articles to the `/articles` route
 app.get("/:article_id", get_articlePage);

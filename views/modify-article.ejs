@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <title>Licăriri</title>
+    <%- include("meta"); %>
+    <link rel="stylesheet" type="text/css" href="/css/admin.css">
+</head>
+
+<body>
+    <%- include("theme"); %>
+    <div id="remove-article">
+        <h1>Modifică articol</h1>
+        <% for (article of articles) { %>
+            <div class="article-item">
+                <a href="/<%= article.id %>">«<i><%= article.title %></i>»</a>,
+                publicat <%= article.date %>
+                <a href="/admin/modify/<%= article.id %>">Modifică</a>
+            </div>
+        <% } %>
+    </div>
+</body>
+
+</html>

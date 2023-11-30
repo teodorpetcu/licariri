@@ -77,6 +77,29 @@ const post_adminAddArticle = async (req, res) => {
     res.redirect(`/${article.id}`);
 }
 
+const get_adminModifyArticle = async (req, res) => {
+    let articles = await articleDatabase.search_articles_by_publisher(req.user.id);
+    res.render("modify-article.ejs", {articles})
+}
+
+const get_adminModifyArticlePage = async (req, res) => {
+    const article_id = req.params.article_id;
+    let article = await articleDatabase.search_article(article_id);
+    article.content = fs.readFileSync(`${ARTICLE_CONTENTS_PATH}/${article.id}.md`);
+    res.render("add-or-modify-article", {action: `modify/${article_id}`, defaults: article});
+}
+
+const post_adminModifyArticle = async (req, res) => {
+    const original_article_id = req.params.article_id;
+    let article_publisher = await articleDatabase.get_article_publisher(original_article_id);
+    if (article_publisher == req.user.id) {
+        articleDatabase.remove_article(original_article_id)
+        post_adminAddArticle(req, res);
+    } else {
+        res.status(401).send();
+    }
+}
+
 const get_adminRemoveArticle = async (req, res) => {
     let articles = await articleDatabase.search_articles_by_publisher(req.user.id);
     res.render("remove-article.ejs", {articles});
@@ -94,7 +117,10 @@ const post_adminRemoveArticle = async (req, res) => {
 module.exports = {
     get_mainPage,
     get_articlePage,
-    get_adminRemoveArticle,
     post_adminAddArticle,
+    get_adminRemoveArticle,
     post_adminRemoveArticle,
+    get_adminModifyArticle,
+    get_adminModifyArticlePage,
+    post_adminModifyArticle,
 };
