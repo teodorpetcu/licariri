@@ -13,7 +13,7 @@
         <h1>Șterge articol</h1>
         <% for (article of articles) { %>
             <div class="article-item">
-                <a href="/<%= article.id %>">«<i><%= article.title %></i>»</a>,
+                <a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>,
                 publicat <%= article.date %>
                 <form action="/admin/remove" method="post">
                     <input type="hidden" name="id"

@@ -13,7 +13,7 @@
         <h1>Modifică articol</h1>
         <% for (article of articles) { %>
             <div class="article-item">
-                <a href="/<%= article.id %>">«<i><%= article.title %></i>»</a>,
+                <a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>,
                 publicat <%= article.date %>
                 <a href="/admin/modify/<%= article.id %>">Modifică</a>
             </div>

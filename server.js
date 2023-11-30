@@ -69,7 +69,7 @@ app.get("/admin/modify/:article_id", identifyAuthorizedUser, forbidUnauthorised,
 app.post("/admin/modify/:article_id", identifyAuthorizedUser, forbidUnauthorised, post_adminModifyArticle);
 
 // TODO: move articles to the `/articles` route
-app.get("/:article_id", get_articlePage);
+app.get("/articles/:article_id", get_articlePage);
 
 // TODO: ensure that we first connect to all the databases before starting to
 // listen on the internet

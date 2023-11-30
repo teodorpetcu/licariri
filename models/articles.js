@@ -150,7 +150,8 @@ class ArticleDatabase extends Database {
         return new Promise((resolve, _) => {
             return this.db.get('SELECT * FROM articles WHERE id = ?', [id], (err, row) => {
                 if (err || row === undefined) {
-                    return resolve(undefined);
+                    console.log(id, row);
+                    return resolve(["", undefined, ""]);
                 }
                 return resolve([row.title, new Date(row.timestamp), row.thumbnail])
             });
