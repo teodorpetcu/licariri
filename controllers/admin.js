@@ -5,32 +5,32 @@ const usersDatabase = new UsersDatabase(USERS_DATABASE_PATH);
 usersDatabase.init();
 
 /**
- * Return the user ID of the session that the coookie points to, or undefined if
- * there is none
- * @returns {Promise<User|undefined>}
+ * Middleware: look at the cookies on the request and attach user information to
+ * `req.user`, if the session token is valid, or `undefined`, if invalid.
  */
-const getSessionUser = async (req) => {
+const identifyAuthorizedUser = async (req, _, next) => {
     let sessionCookie = req.cookies.session;
-    return usersDatabase.get_session_user(sessionCookie);
+    req.user = await usersDatabase.get_session_user(sessionCookie);
+    next();
 }
 
 /**
  * Middleware: return 401 to all requests that have no (valid) session token
  *
- * On requests that are authorised, attach `user.id` to the `req` object.
+ * On requests that are authorised, attach `user` to the `req` object.
+ *
+ * Must be used in conjunction with `identifyAuthorizedUser`
  */
 const forbidUnauthorised = async (req, res, next) => {
-    let user = await getSessionUser(req);
-    if (!user) {
-        res.status(401).send();
-    } else {
-        req.user = user;
+    if (req.user) {
         next();
+    } else {
+        res.status(401).send();
     }
 }
 
 const get_adminPageView = async (req, res) => {
-    if (await getSessionUser(req)) {
+    if (req.user) {
         res.render("admin", {});
     } else {
         res.render("login", {});
@@ -53,6 +53,7 @@ const get_adminAddArticlePage = async (_, res) => {
 }
 
 module.exports = {
+    identifyAuthorizedUser,
     forbidUnauthorised,
     get_adminPageView,
     get_adminAddArticlePage,

@@ -17,6 +17,7 @@ const {
 } = require("./controllers/query.js");
 
 const {
+    identifyAuthorizedUser,
     forbidUnauthorised,
     get_adminPageView,
     get_adminAddArticlePage,
@@ -43,14 +44,14 @@ app.get("/", get_mainPage);
 
 app.get("/query", get_queryPage);
 
-app.get("/admin", get_adminPageView);
+app.get("/admin", identifyAuthorizedUser, get_adminPageView);
 
 // TODO: limit the amount of login attempts
 app.post("/admin", post_adminLoginCheck);
 
-app.get("/admin/add", forbidUnauthorised, get_adminAddArticlePage);
+app.get("/admin/add", identifyAuthorizedUser, forbidUnauthorised, get_adminAddArticlePage);
 
-app.post("/admin/add", forbidUnauthorised, post_adminAddArticle);
+app.post("/admin/add", identifyAuthorizedUser, forbidUnauthorised, post_adminAddArticle);
 
 // TODO: move articles to the `/articles` route
 app.get("/:article_id", get_articlePage);
