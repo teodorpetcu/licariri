@@ -153,6 +153,7 @@ class UsersDatabase extends Database {
 }
 
 module.exports = {
+    User,
     UsersDatabase,
     Session,
 };

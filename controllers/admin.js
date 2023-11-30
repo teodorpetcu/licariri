@@ -1,5 +1,5 @@
-const { USERS_DATABASE_PATH, COOKIE_OPTIONS } = require("../config.js");
-const { UsersDatabase, Session } = require("../models/admin.js");
+const { USERS_DATABASE_PATH, COOKIE_OPTIONS, USER_PRIVILEGES } = require("../config.js");
+const { UsersDatabase, User, Session } = require("../models/admin.js");
 
 const usersDatabase = new UsersDatabase(USERS_DATABASE_PATH);
 usersDatabase.init();
@@ -25,7 +25,7 @@ const forbidUnauthorised = async (req, res, next) => {
     if (req.user) {
         next();
     } else {
-        res.status(401).send();
+        res.sendStatus(401);
     }
 }
 
@@ -58,10 +58,31 @@ const get_adminAddArticlePage = async (_, res) => {
     res.render("add-or-modify-article", {action: "add", defaults: emptyArticle});
 }
 
+const get_adminAddUserPage = async (req, res) => {
+    if (req.user.privilege < USER_PRIVILEGES["SUPERUSER"]) {
+        res.sendStatus(401);
+    } else {
+        res.render("add-user", {});
+    }
+}
+
+const post_adminAddUser = async (req, res) => {
+    if (req.user.privilege < USER_PRIVILEGES["SUPERUSER"]) {
+        res.sendStatus(401);
+    } else {
+        let privilege = USER_PRIVILEGES[req.body.privilege];
+        let user = new User(req.body.id, req.body.name, privilege);
+        await usersDatabase.add_user(user, req.body.password);
+        res.sendStatus(200);
+    }
+}
+
 module.exports = {
     identifyAuthorizedUser,
     forbidUnauthorised,
     get_adminPageView,
     get_adminAddArticlePage,
     post_adminLoginCheck,
+    get_adminAddUserPage,
+    post_adminAddUser,
 }

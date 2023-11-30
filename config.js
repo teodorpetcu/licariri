@@ -5,6 +5,11 @@ module.exports = {
     QUERY_DATABASE_PATH: __dirname + "/data/query.sql",
     ARTICLE_CONTENTS_PATH: __dirname + "/public/articles",
     ARTICLE_IMAGES_PATH: __dirname + "/public/images",
+    USER_PRIVILEGES: {
+        SUPERUSER: 100,
+        COORDONATOR: 50,
+        USER: 10,
+    },
     MAIN_PAGE_ARTICLE_COUNT: 9,
     COOKIE_OPTIONS: {
         httpOnly: true,

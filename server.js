@@ -27,6 +27,8 @@ const {
     get_adminPageView,
     get_adminAddArticlePage,
     post_adminLoginCheck,
+    get_adminAddUserPage,
+    post_adminAddUser,
 } = require("./controllers/admin.js")
 
 const { LISTENING_PORT } = require("./config.js");
@@ -68,7 +70,10 @@ app.get("/admin/modify/:article_id", identifyAuthorizedUser, forbidUnauthorised,
 
 app.post("/admin/modify/:article_id", identifyAuthorizedUser, forbidUnauthorised, post_adminModifyArticle);
 
-// TODO: move articles to the `/articles` route
+app.get("/admin/user/add", identifyAuthorizedUser, forbidUnauthorised, get_adminAddUserPage);
+
+app.post("/admin/user/add", identifyAuthorizedUser, forbidUnauthorised, post_adminAddUser);
+
 app.get("/articles/:article_id", get_articlePage);
 
 // TODO: ensure that we first connect to all the databases before starting to
