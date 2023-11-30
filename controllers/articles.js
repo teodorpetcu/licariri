@@ -77,8 +77,14 @@ const post_adminAddArticle = async (req, res) => {
     res.redirect(`/${article.id}`);
 }
 
+const get_adminRemoveArticle = async (req, res) => {
+    let articles = await articleDatabase.search_articles_by_publisher(req.user.id);
+    res.render("remove-article.ejs", {articles});
+}
+
 module.exports = {
     get_mainPage,
     get_articlePage,
+    get_adminRemoveArticle,
     post_adminAddArticle,
 };

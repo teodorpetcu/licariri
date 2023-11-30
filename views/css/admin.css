@@ -9,16 +9,38 @@ body {
     transform: translate(-50%, -50%);
 }
 
-#admin-pannel a {
-    padding: 10px;
+#admin-pannel a,
+#remove-article a {
+    width: 120px;
     border: 1px solid var(--snippet-border-color);
     background-color: var(--main-color);
     text-decoration: 1px solid underline;
     transition: color 0.2s ease;
 }
 
-#admin-pannel a:hover {
+#admin-pannel a {
+    display: block;
+    margin: 0px auto;
+    padding: 10px;
+}
+
+#admin-pannel a:hover,
+#remove-article a:hover {
     color: var(--accent-color);
+}
+
+#admin-pannel a,
+#remove-article a {
+    margin: 0px auto;
+    width: 120px;
+    border: 1px solid var(--snippet-border-color);
+    background-color: var(--main-color);
+    text-decoration: 1px solid underline;
+    transition: color 0.2s ease;
+}
+
+.article-item {
+    padding-bottom: 15px;
 }
 
 form {

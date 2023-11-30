@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <title>Licăriri</title>
+    <%- include("meta"); %>
+    <link rel="stylesheet" type="text/css" href="/css/admin.css">
+</head>
+
+<body>
+    <%- include("theme"); %>
+    <div id="remove-article">
+        <h1>Șterge articol</h1>
+        <% for (article of articles) { %>
+            <div class="article-item">
+                <a href="/<%= article.id %>">«<i><%= article.title %></i>»</a>,
+                publicat <%= article.date %>
+                <form action="/admin/remove" method="post">
+                    <input type="hidden" name="id"
+                        value="<%= article.id %>">
+                    <div>
+                        <input type="submit" onclick="return confirm('Sigur vrei să ștergi articolul?')" value="ȘTERGE"></button>
+                    </div>
+                </form>
+            </div>
+        <% } %>
+    </div>
+</body>
+
+</html>

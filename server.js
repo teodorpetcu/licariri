@@ -9,6 +9,7 @@ const serverPrivateIP = ip.address();
 const {
     get_mainPage,
     get_articlePage,
+    get_adminRemoveArticle,
     post_adminAddArticle,
 } = require("./controllers/articles.js")
 
@@ -52,6 +53,10 @@ app.post("/admin", post_adminLoginCheck);
 app.get("/admin/add", identifyAuthorizedUser, forbidUnauthorised, get_adminAddArticlePage);
 
 app.post("/admin/add", identifyAuthorizedUser, forbidUnauthorised, post_adminAddArticle);
+
+app.get("/admin/remove", identifyAuthorizedUser, forbidUnauthorised, get_adminRemoveArticle);
+
+//app.post("/admin/remove", identifyAuthorizedUser, forbidUnauthorised, post_adminRemoveArticle);
 
 // TODO: move articles to the `/articles` route
 app.get("/:article_id", get_articlePage);

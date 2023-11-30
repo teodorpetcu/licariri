@@ -88,7 +88,7 @@ class ArticleDatabase extends Database {
     // TODO: log error if there is one
     get_recent_articles = async (start, end) => {
         return new Promise((resolve, _) => {
-            this.db.all('SELECT * FROM articles ORDER BY timestamp DESC', (err, rows) => {
+            this.db.all('SELECT id FROM articles ORDER BY timestamp DESC', (err, rows) => {
                 if (err || rows === undefined) {
                     return resolve([]);
                 }
@@ -96,7 +96,25 @@ class ArticleDatabase extends Database {
                 return Promise.all(rows.map((row) => this.search_article(row.id)))
                     .then((values) => resolve(values));
             });
+        });
+    }
+
+    /**
+     * Return all the articles belonging to the specified user, sorted by
+     * timestamp
+     * @param {string} user_id
+     */
+    search_articles_by_publisher = async (user_id) => {
+        return new Promise((resolve, _) => {
+            this.db.all('SELECT id FROM articles WHERE user = ? ORDER BY timestamp DESC', [user_id], (err, rows) => {
+                if (err || rows === undefined) {
+                    return resolve([]);
+                }
+                return Promise.all(rows.map((row) => this.search_article(row.id)))
+                    .then((values) => resolve(values));
+            });
         })
+
     }
 
     /**
