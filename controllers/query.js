@@ -29,6 +29,7 @@ const get_queryPage = async (req, res) => {
         author = any;
         tag = any;
         text = any;
+        searchResultsIDs = searchResultsIDs.concat(await articleDatabase.search_articles_by_title(any));
     }
     // NOTE: if the `any` flag is NOT specified, then we return the articles
     // that match ALL of the provided criteria

@@ -109,6 +109,21 @@ class ArticleDatabase extends Database {
     }
 
     /**
+     * Return the articles whose titles contian the given word
+     * @param {string} pattern
+     */
+    search_articles_by_title = async (pattern) => {
+        return new Promise((resolve) => {
+            this.db.all('SELECT id FROM articles WHERE title LIKE ?', [`%${pattern}%`], (err, rows) => {
+                if (err || rows === undefined) {
+                    return resolve([]);
+                }
+                return resolve(rows.map((row) => row.id));
+            });
+        });
+    }
+
+    /**
      * Return all the articles belonging to the specified user, sorted by
      * timestamp
      * @param {string} user_id
@@ -150,7 +165,6 @@ class ArticleDatabase extends Database {
         return new Promise((resolve, _) => {
             return this.db.get('SELECT * FROM articles WHERE id = ?', [id], (err, row) => {
                 if (err || row === undefined) {
-                    console.log(id, row);
                     return resolve(["", undefined, ""]);
                 }
                 return resolve([row.title, new Date(row.timestamp), row.thumbnail])
