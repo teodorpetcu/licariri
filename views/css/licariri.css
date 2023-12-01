@@ -219,7 +219,7 @@ a {
 #searchbar,
 #searchbar input,
 #searchbar button,
-#searchbar button img {
+#searchbar button svg {
     background-color: var(--searchbar-color);
     border-radius: 1.2rem;
 }
@@ -255,9 +255,13 @@ a {
     cursor: pointer;
 }
 
-#searchbar button img {
+#searchbar button svg {
     height: 100%;
     aspect-ratio: 1;
+}
+
+#searchbar button svg path {
+    fill: var(--font-color);
 }
 
 @media (max-width: 1023px) {
