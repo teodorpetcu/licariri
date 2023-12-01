@@ -93,6 +93,16 @@ class UsersDatabase extends Database {
     }
 
     /**
+     * Change the given user's password
+     * @param {User} user - User object
+     * @param {string} pass - Plain-text password
+     */
+    change_password = async (user, pass) => {
+        let hash = await hashPassword(pass);
+        this.db.run('UPDATE users SET password = ? WHERE id = ?', [hash, user.id]);
+    }
+
+    /**
      * Check if the given ID-password combination matches with what we have in
      * the database
      * @param {string} id - ID of the user

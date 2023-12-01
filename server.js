@@ -29,6 +29,8 @@ const {
     post_adminLoginCheck,
     get_adminAddUserPage,
     post_adminAddUser,
+    get_adminChangeUserPassword,
+    post_adminChangeUserPassword,
 } = require("./controllers/admin.js")
 
 const { LISTENING_PORT } = require("./config.js");
@@ -73,6 +75,10 @@ app.post("/admin/modify/:article_id", identifyAuthorizedUser, forbidUnauthorised
 app.get("/admin/user/add", identifyAuthorizedUser, forbidUnauthorised, get_adminAddUserPage);
 
 app.post("/admin/user/add", identifyAuthorizedUser, forbidUnauthorised, post_adminAddUser);
+
+app.get("/admin/user/password", identifyAuthorizedUser, forbidUnauthorised, get_adminChangeUserPassword);
+
+app.post("/admin/user/password", identifyAuthorizedUser, forbidUnauthorised, post_adminChangeUserPassword);
 
 app.get("/articles/:article_id", get_articlePage);
 

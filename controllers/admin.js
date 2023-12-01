@@ -77,6 +77,19 @@ const post_adminAddUser = async (req, res) => {
     }
 }
 
+const get_adminChangeUserPassword = async (_, res) => {
+    res.render("change-password");
+}
+
+const post_adminChangeUserPassword = async (req, res) => {
+    if (await usersDatabase.is_correct_login_combo(req.user.id, req.body.original)) {
+        await usersDatabase.change_password(req.user, req.body.password);
+        res.sendStatus(200);
+    } else {
+        res.sendStatus(401);
+    }
+}
+
 module.exports = {
     identifyAuthorizedUser,
     forbidUnauthorised,
@@ -85,4 +98,6 @@ module.exports = {
     post_adminLoginCheck,
     get_adminAddUserPage,
     post_adminAddUser,
+    get_adminChangeUserPassword,
+    post_adminChangeUserPassword,
 }
