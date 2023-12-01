@@ -20,10 +20,12 @@ const get_queryPage = async (req, res) => {
     let author = req.query.author;
     let tag = req.query.tag;
     let text = req.query.text;
-    let message = "Rezultatele căutării:";
+    let success_message = "Rezultatele căutării:";
+    let failure_message = "Ne pare rău, nu am putut găsi nimic!";
 
     if (any) {
         message = `Rezultatele căutării pentru: ${any}`;
+        failure_message = `Ne pare rău, nu am putut găsi nimic pentru: ${any}`;
         author = any;
         tag = any;
         text = any;
@@ -47,7 +49,8 @@ const get_queryPage = async (req, res) => {
             searchResultsIDs = searchResultsIDs.filter((id) => foundArticleIDs.includes(id));
         }
         if (!tag && !text) {
-            message = `Articole scrise de ${author}:`;
+            success_message = `Articole scrise de ${author}:`;
+            failure_message = `Ne pare rău, nu am putut găsi nici un articol scris de ${author}`;
         }
     }
     if (tag) {
@@ -58,7 +61,8 @@ const get_queryPage = async (req, res) => {
             searchResultsIDs = searchResultsIDs.filter((id) => foundArticleIDs.includes(id));
         }
         if (!author && !text) {
-            message = `Articole cu tag-ul ${tag}:`;
+            success_message = `Articole cu tag-ul #${tag}:`;
+            failure_message = `Ne pare rău, nu am putut găsi nici un articol cu tag-ul #${tag}`;
         }
     }
     if (text) {
@@ -69,7 +73,8 @@ const get_queryPage = async (req, res) => {
             searchResultsIDs = searchResultsIDs.filter((id) => foundArticleIDs.includes(id));
         }
         if (!author && !tag) {
-            message = `Articole ce conțin: ${text}`;
+            success_message = `Articole ce conțin «${text}»`;
+            failure_message = `Ne pare rău, nu am putut găsi nici un articol care să conțină «${text}»`;
         }
     }
 
@@ -77,7 +82,7 @@ const get_queryPage = async (req, res) => {
 
     searchResults = await Promise.all(searchResultsIDs.map(async (id) => await articleDatabase.search_article(id)));
 
-    res.render("query", {articles: searchResults, message});
+    res.render("query", {articles: searchResults, success_message, failure_message});
 }
 
 module.exports = {

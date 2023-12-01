@@ -10,12 +10,12 @@
     <%- include("header"); %>
     <%- include("theme"); %>
     <div id="page-body">
-        <div class="article-snippets-container">
-            <% if (articles !== undefined) { %>
-                <h1><%= message %></h1>
+        <div class="article-snippets-container" style="text-align: center">
+            <% if (articles.length > 0) { %>
+                <h1><%= success_message %></h1>
                 <%- include("article-snippets-grid"); %>
             <% } else { %>
-                <h1>Ne pare rău, nu s-a găsit niciun rezultat</h1>
+                <h1><%= failure_message %></h1>
             <% } %>
         </div>
     </div>
