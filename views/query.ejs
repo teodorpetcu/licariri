@@ -12,7 +12,7 @@
     <div id="page-body">
         <div class="article-snippets-container">
             <% if (articles !== undefined) { %>
-                <h1>Rezultatele căutării:</h1>
+                <h1><%= message %></h1>
                 <%- include("article-snippets-grid"); %>
             <% } else { %>
                 <h1>Ne pare rău, nu s-a găsit niciun rezultat</h1>

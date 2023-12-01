@@ -74,7 +74,7 @@ const post_adminAddArticle = async (req, res) => {
     queryDatabase.indexArticle(article.id, content);
     articleDatabase.save_article(article, user_id);
 
-    res.redirect(`/${article.id}`);
+    res.redirect(`/articles/${article.id}`);
 }
 
 const get_adminModifyArticle = async (req, res) => {
