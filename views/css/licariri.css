@@ -6,6 +6,8 @@
     --font-color: #02040F;
     --neutral-color: #E5DADA;
     --snippet-border-color: #00000042;
+    --searchbar-color: #E5D0D0;
+    --searchbar-text-color: var(--font-color);
     /* #002642 #840032 #E59500 #E5DADA #02040F */
     /* #63089c #00000049 #f4e9e9 #d4b0e9 */
 }
@@ -14,6 +16,7 @@
     --font-color: #E5DADA;
     --neutral-color: #02040F;
     --snippet-border-color: #ffffff42;
+    --searchbar-color: #02142F;
 }
 
 body {
@@ -184,7 +187,7 @@ a {
     left: 0;
     width: 38px;
     height: 21px;
-    border-radius: 34px;;
+    border-radius: 34px;
     background-color: var(--font-color);
     transition: background-color 0.2s ease;
 }
@@ -209,6 +212,54 @@ a {
     background-color: var(--accent-color);
 }
 
+#searchbar-container {
+    z-index: 4;
+}
+
+#searchbar,
+#searchbar input,
+#searchbar button,
+#searchbar button img {
+    background-color: var(--searchbar-color);
+    border-radius: 1.2rem;
+}
+
+#searchbar {
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+#searchbar input {
+    color: var(--searchbar-text-color);
+    width: 100%;
+    height: auto;
+    border: 0px;
+    outline: none;
+    padding: 0px 10px;
+    font-size: 1.2rem;
+}
+
+#searchbar input:focus {
+    color: var(--accent-color);
+}
+
+#searchbar button {
+    height: 80%;
+    margin-top: auto;
+    margin-bottom: auto;
+    padding-left: 0px;
+    padding-right: 10px;
+    border: 0px;
+    outline: none;
+    cursor: pointer;
+}
+
+#searchbar button img {
+    height: 100%;
+    aspect-ratio: 1;
+}
+
 @media (max-width: 1023px) {
     #logo {
         padding-left: 10px;
@@ -230,6 +281,14 @@ a {
         transition: top 0.3s ease;
         top: -100%;
         height: 100%;
+    }
+
+    #searchbar-container {
+        padding-top: 15px;
+        padding-bottom: 15px;
+        height: 60px;
+        width: 80%;
+        margin: 0 auto;
     }
 
     #main-nav.open {
@@ -309,6 +368,14 @@ a {
         margin: 0px auto;
         padding: 5px 0px 5px 0px;
         border-top: solid 1px var(--font-color);
+    }
+
+    #searchbar-container {
+        position: absolute;
+        width: 300px;
+        height: 50px;
+        top: 10px;
+        right: 10px;
     }
 
     #main-nav a {
