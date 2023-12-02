@@ -52,12 +52,16 @@ class QueryDatabase extends Database {
         let validWords = lowercase.replace(/[^0-9A-z\-'ăîâșțéèÿùüïôœàæêëûîâç]/g, " ").split(/\s+/);
         let uniqueWords = [... new Set(validWords.filter((word) => word))];
         this.db.serialize(() => {
-            this.db.get("SELECT COUNT(*) FROM articles", (err, row) => {
+            // evil sqlite hack
+            // this could probably fail, so the best way to handle this is
+            // likely to insert the article ID into the `articles` table and
+            // then check for `last_insert_rowid()`, although I can't be
+            // bothered
+            this.db.get("SELECT rowid as num FROM articles ORDER BY rowid DESC limit 1", (err, row) => {
                 if (err) {
-                    // TODO: handle
                     logger.error(`database '${this.path}': ${err}`);
                 } else {
-                    let rowid = row["COUNT(*)"] + 1;
+                    let rowid = row.num + 1;
                     let words_stmt = this.db.prepare("INSERT OR IGNORE INTO words VALUES (?)");
                     let stmt = this.db.prepare("INSERT INTO mappings VALUES (?, (SELECT rowid FROM words WHERE word = ?))");
                     for (let word of uniqueWords) {
@@ -88,7 +92,7 @@ class QueryDatabase extends Database {
      */
     unindexArticle = async (article_id) => {
         return new Promise((resolve) => {
-            this.db.run("DELETE FROM mappings WHERE (SELECT rowid FROM articles WHERE article_id = ?)",
+            this.db.run("DELETE FROM mappings WHERE rowid IN (SELECT rowid FROM articles WHERE article_id = ?)",
                 [article_id],
                 this.errorLogger
             );
