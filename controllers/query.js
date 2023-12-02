@@ -33,6 +33,7 @@ const get_queryPage = async (req, res) => {
         exactMatch = false;
         articleIDs = articleIDs.concat(await articleDatabase.searchArticleIDs("title", any, exactMatch));
     }
+
     // NOTE: if the `any` flag is NOT specified, then we return the articles
     // that match ALL of the provided criteria
     //

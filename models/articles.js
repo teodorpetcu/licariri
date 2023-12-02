@@ -104,10 +104,13 @@ class ArticleDatabase extends Database {
             }
 
             let table = "articles";
+            let orderBy = "timestamp";
             if (key == "tag") {
                 table = "article_tags";
+                orderBy = "tag"
             } else if (key == "author") {
                 table = "article_authors";
+                orderBy = "author";
             }
 
             let stmt = `SELECT id FROM ${table}`;
@@ -119,7 +122,7 @@ class ArticleDatabase extends Database {
                 stmt += ` WHERE ${key} LIKE ?`;
                 value = `%${value}%`;
             }
-            stmt += ' ORDER BY timestamp DESC';
+            stmt += ` ORDER BY ${orderBy} DESC`;
 
             this.db.all(stmt, [value], (err, rows) => {
                 if (err || rows === undefined) {
