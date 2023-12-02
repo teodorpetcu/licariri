@@ -55,20 +55,20 @@ class QueryDatabase extends Database {
             this.db.get("SELECT COUNT(*) FROM articles", (err, row) => {
                 if (err) {
                     // TODO: handle
-                    logger.error(`couldn't access '${this.path}': ${err}`);
+                    logger.error(`database '${this.path}': ${err}`);
                 } else {
                     let rowid = row["COUNT(*)"] + 1;
                     let words_stmt = this.db.prepare("INSERT OR IGNORE INTO words VALUES (?)");
                     let stmt = this.db.prepare("INSERT INTO mappings VALUES (?, (SELECT rowid FROM words WHERE word = ?))");
                     for (let word of uniqueWords) {
-                        words_stmt.run([word]);
-                        stmt.run([rowid, word]);
+                        words_stmt.run([word], this.errorLogger);
+                        stmt.run([rowid, word], this.errorLogger);
                     }
                     words_stmt.finalize((err) => {
                         if (!err) {
                             stmt.finalize((err) => {
                                 if (!err) {
-                                    this.db.run("INSERT INTO articles VALUES (?)", [id]);
+                                    this.db.run("INSERT INTO articles VALUES (?)", [id], this.errorLogger);
                                 }
                             });
                         }
@@ -88,8 +88,14 @@ class QueryDatabase extends Database {
      */
     unindexArticle = async (article_id) => {
         return new Promise((resolve) => {
-            this.db.run("DELETE FROM mappings WHERE (SELECT rowid FROM articles WHERE article_id = ?)", [article_id]);
-            this.db.run("DELETE FROM articles WHERE article_id = ?", [article_id]);
+            this.db.run("DELETE FROM mappings WHERE (SELECT rowid FROM articles WHERE article_id = ?)",
+                [article_id],
+                this.errorLogger
+            );
+            this.db.run("DELETE FROM articles WHERE article_id = ?",
+                [article_id],
+                this.errorLogger
+            );
             return resolve();
         })
     }
@@ -112,7 +118,7 @@ class QueryDatabase extends Database {
                 (err, rows) => {
                     if (err) {
                         // TODO: handle
-                        logger.error(`couldn't access '${this.path}': ${err}`);
+                        logger.error(`database '${this.path}': ${err}`);
                     } else {
                         return resolve(rows.map((r) => r.article_id));
                     }

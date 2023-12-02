@@ -9,6 +9,7 @@ class Database {
      */
     constructor(path) {
         this.path = path;
+        this.errorLogger = (err) => {if (err) {logger.error(`database '${this.path}': ${err}`)}};
         this.db = new sqlite3.Database(path, (err) => {
             if (err) {
                 logger.error(`database '${this.path}': ${err}`);

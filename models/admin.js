@@ -100,7 +100,10 @@ class UsersDatabase extends Database {
     //TODO: handle eventual errors
     addUser = async (user, pass) => {
         let hash = await hashPassword(pass);
-        this.db.run('INSERT INTO users VALUES(?, ?, ?, ?)', [user.id, user.name, user.privilege, hash]);
+        this.db.run('INSERT INTO users VALUES(?, ?, ?, ?)',
+            [user.id, user.name, user.privilege, hash],
+            this.errorLogger
+        );
     }
 
     /**
@@ -110,7 +113,10 @@ class UsersDatabase extends Database {
      */
     changePassword = async (user, pass) => {
         let hash = await hashPassword(pass);
-        this.db.run('UPDATE users SET password = ? WHERE id = ?', [hash, user.id]);
+        this.db.run('UPDATE users SET password = ? WHERE id = ?',
+            [hash, user.id],
+            this.errorLogger
+        );
     }
 
     /**
@@ -125,7 +131,7 @@ class UsersDatabase extends Database {
             return this.db.get('SELECT * FROM users WHERE id = ?', [id], (err, row) => {
                 if (err) {
                     // TODO: handle
-                    logger.error(`couldn't access '${this.path}': ${err}`);
+                    logger.error(`database '${this.path}': ${err}`);
                 } else if (row == undefined) {
                     // ID does not exist in the database, but it makes no
                     // difference when we're trying to authenticate
@@ -147,7 +153,9 @@ class UsersDatabase extends Database {
     // TODO: return status
     addSession = async (session) => {
         this.db.run('INSERT INTO sessions VALUES (?, ?, ?)',
-            [session.user_id, session.token, session.timestamp]);
+            [session.user_id, session.token, session.timestamp],
+            this.errorLogger
+        );
     }
 
     /**
@@ -161,7 +169,7 @@ class UsersDatabase extends Database {
         return new Promise((resolve)=> {
             this.db.get('SELECT * FROM users WHERE id IN (SELECT user FROM sessions WHERE token = ?)', [token], (err, row) => {
                 if (err) {
-                    logger.error(`couldn't access '${this.path}': ${err}`);
+                    logger.error(`database '${this.path}': ${err}`);
                     return resolve(undefined);
                 } else if (row === undefined) {
                     return resolve(undefined);

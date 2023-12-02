@@ -52,17 +52,23 @@ class ArticleDatabase extends Database {
      * @param {Article} article
      * @param {string} user_id
      */
-    // TODO: handle errors via callbacks on the 'exec' statements
     saveArticle = (article, user_id) => {
         this.db.run('INSERT INTO articles VALUES(?, ?, ?, ?, ?)',
-            [article.id, user_id, article.title, article.timestamp, article.thumbnail ? article.thumbnail : ""]);
+            [article.id, user_id, article.title, article.timestamp, article.thumbnail ? article.thumbnail : ""],
+            this.errorLogger
+        );
+
         for (let tag of article.tags) {
             this.db.run('INSERT INTO article_tags VALUES(?, ?)',
-                [article.id, tag]);
+                [article.id, tag],
+                this.errorLogger
+            );
         }
         for (let author of article.authors) {
             this.db.run('INSERT INTO article_authors VALUES(?, ?)',
-                [article.id, author.name]);
+                [article.id, author.name],
+                this.errorLogger
+            );
         }
     }
 
@@ -72,9 +78,9 @@ class ArticleDatabase extends Database {
      */
     removeArticle = async (id) => {
         return new Promise((resolve) => {
-            this.db.run('DELETE from articles WHERE id = ?', [id]);
-            this.db.run('DELETE from article_authors WHERE id = ?', [id]);
-            this.db.run('DELETE from article_tags WHERE id = ?', [id]);
+            this.db.run('DELETE from articles WHERE id = ?', [id], this.errorLogger);
+            this.db.run('DELETE from article_authors WHERE id = ?', [id], this.errorLogger);
+            this.db.run('DELETE from article_tags WHERE id = ?', [id], this.errorLogger);
             return resolve();
         });
     }
