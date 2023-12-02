@@ -101,26 +101,34 @@ class QueryDatabase extends Database {
     }
 
     /**
-     * Return a list of all article IDs that contain the given pattern in their
-     * text
-     * @param {string} pattern
+     * Return a list of the article IDs that contain *all* the given
+     * words/patterns (delimited by whitespace) in their text
+     *
+     * @param {string} words
      * @returns {Promise<string[]>}
      */
-    findArticles = (pattern) => {
-        pattern = '%' + pattern + '%';
+    findArticles = (words) => {
+        words = words.split(" ").map((word) => `%${word}%`);
         return new Promise((resolve) => {
-            this.db.all(`SELECT article_id FROM articles
-                WHERE rowid IN
-                    (SELECT article FROM mappings
-                        WHERE word IN
-                            (SELECT rowid FROM words WHERE word LIKE ?))`,
-                [pattern],
+            let stmt = "";
+            for (let i = 0; i < words.length; i++) {
+                if (i != 0) {
+                    stmt += `INTERSECT\n`;
+                }
+                stmt += `SELECT article_id FROM articles
+                    WHERE rowid IN
+                        (SELECT article FROM mappings
+                            WHERE word IN
+                                (SELECT rowid FROM words WHERE word LIKE ?))\n`;
+            }
+            this.db.all(stmt,
+                words,
                 (err, rows) => {
                     if (err) {
                         // TODO: handle
                         logger.error(`database '${this.path}': ${err}`);
                     } else {
-                        return resolve(rows.map((r) => r.article_id));
+                        return resolve(rows.map((row) => row.article_id));
                     }
                 }
             );
