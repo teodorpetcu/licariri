@@ -84,7 +84,8 @@ const get_queryPage = async (req, res) => {
 
     articleIDs = [... new Set(articleIDs)];
 
-    searchResults = await Promise.all(articleIDs.map(async (id) => articleDatabase.getArticle(id)));
+    searchResults = await Promise.all(articleIDs.map(async (id) => articleDatabase.getArticle(id)))
+    searchResults.sort((a,b) => b.timestamp - a.timestamp);
 
     res.render("query", {articles: searchResults, successMessage, failureMessage});
 }
