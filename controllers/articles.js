@@ -70,6 +70,13 @@ const post_adminAddArticle = async (req, res) => {
 
     const article = new Article(title, authors, tags, undefined, thumbnail ? true : false);
 
+    // An article with this ID already exists; abort
+    if (await articleDatabase.getArticleMeta(article.id)) {
+        // TODO: maybe implement error checking client-side as well
+        res.status(403).send(`<p>Un articol cu același titlu, publicat tot azi, există deja.</p><a href=\"/admin/modify/${article.id}\">Poate vrei să-l modifici?</a>`);
+        return;
+    }
+
     if (thumbnail && /^image/.test(thumbnail.mimetype)) {
         fs.writeFileSync(`${ARTICLE_IMAGES_PATH}/${article.id}`, thumbnail.data);
     }
