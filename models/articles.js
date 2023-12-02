@@ -35,7 +35,6 @@ class ArticleDatabase extends Database {
             (
                 id                  TEXT NOT NULL,
                 author              TEXT NOT NULL,
-                author_occupation   TEXT,
                 FOREIGN KEY (id) REFERENCES articles (id)
             );
         `, (err) => {
@@ -53,7 +52,7 @@ class ArticleDatabase extends Database {
      * @param {string} user_id
      */
     // TODO: handle errors via callbacks on the 'exec' statements
-    save_article = (article, user_id) => {
+    saveArticle = (article, user_id) => {
         this.db.run('INSERT INTO articles VALUES(?, ?, ?, ?, ?)',
             [article.id, user_id, article.title, article.timestamp, article.thumbnail ? article.thumbnail : ""]);
         for (let tag of article.tags) {
@@ -61,12 +60,16 @@ class ArticleDatabase extends Database {
                 [article.id, tag]);
         }
         for (let author of article.authors) {
-            this.db.run('INSERT INTO article_authors VALUES(?, ?, ?)',
-                [article.id, author.name, author.occupation]);
+            this.db.run('INSERT INTO article_authors VALUES(?, ?)',
+                [article.id, author.name]);
         }
     }
 
-    remove_article = async (id) => {
+    /**
+     * Remove all entries in the database associated with the given ID
+     * @param {id} - Article ID
+     */
+    removeArticle = async (id) => {
         return new Promise((resolve) => {
             this.db.run('DELETE from articles WHERE id = ?', [id]);
             this.db.run('DELETE from article_authors WHERE id = ?', [id]);
@@ -76,45 +79,36 @@ class ArticleDatabase extends Database {
     }
 
     /**
-     * Return all of the metadata associated with the ID of the given article
-     * @param {string} id
-     * @returns {Promise<Article>}
+     * Return the list of article IDs that match the search parameters, or
+     * `undefined` if the `key` property is not one of `["title", "user", "author",
+     * "tag", undefined]`
+     *
+     * If `key` is `undefined`, then all articles are returned
+     *
+     * @param {string|undefined} key - Valid values are
+     * @param {string} value
+     * @returns {Promise<string[]|undefined>}
      */
-    // TODO: return undefined if article is nonexistent
-    search_article = async (id) => {
-        let [title, timestamp, thumbnail] = await this.get_article_meta(id);
-        let authors = await this.get_article_authors(id);
-        let tags = await this.get_article_tags(id);
-        return new Article(title, authors, tags, timestamp, thumbnail);
-    }
-
-    /**
-     * Get a slice of the most recent articles, from 'start' to 'end'
-     * @param {integer} start - beginning of the slice (0-indexed)
-     * @param {integer} end - end of the slice (0-indexed)
-     * @returns {Promise<Article[]>}
-     */
-    // TODO: log error if there is one
-    get_recent_articles = async (start, end) => {
-        return new Promise((resolve, _) => {
-            this.db.all('SELECT id FROM articles ORDER BY timestamp DESC', (err, rows) => {
-                if (err || rows === undefined) {
-                    return resolve([]);
-                }
-                rows = rows.slice(start, end);
-                return Promise.all(rows.map((row) => this.search_article(row.id)))
-                    .then((values) => resolve(values));
-            });
-        });
-    }
-
-    /**
-     * Return the articles whose titles contian the given word
-     * @param {string} pattern
-     */
-    search_articles_by_title = async (pattern) => {
+    searchArticleIDs = async (key, value) => {
         return new Promise((resolve) => {
-            this.db.all('SELECT id FROM articles WHERE title LIKE ?', [`%${pattern}%`], (err, rows) => {
+            let validKeyValues = ["title", "user", "tag", "author", undefined]
+            if (! validKeyValues.includes(key)) {
+                return resolve(undefined);
+            }
+
+            let table = "articles";
+            if (key == "tag") {
+                table = "article_tags";
+            } else if (key == "author") {
+                table = "article_authors";
+            }
+
+            let stmt = `SELECT id FROM ${table} WHERE ${key} = ?`;
+            if (key == undefined){
+                stmt = `SELECT id FROM articles`;
+            }
+
+            this.db.all(stmt, [value], (err, rows) => {
                 if (err || rows === undefined) {
                     return resolve([]);
                 }
@@ -124,50 +118,46 @@ class ArticleDatabase extends Database {
     }
 
     /**
-     * Return all the articles belonging to the specified user, sorted by
-     * timestamp
-     * @param {string} user_id
+     * Return the list of articles that match the search parameters, or
+     * `undefined` if the `key` property is not one of `["title", "user",
+     * "author", "tag", undefined]`
+     *
+     * If `key` is `undefined`, then all articles are returned
+     *
+     * @param {string|undefined} key
+     * @param {string} value
+     * @returns {Promise<Article[]|undefined>}
      */
-    search_articles_by_publisher = async (user_id) => {
-        return new Promise((resolve, _) => {
-            this.db.all('SELECT id FROM articles WHERE user = ? ORDER BY timestamp DESC', [user_id], (err, rows) => {
-                if (err || rows === undefined) {
-                    return resolve([]);
-                }
-                return Promise.all(rows.map((row) => this.search_article(row.id)))
-                    .then((values) => resolve(values));
-            });
-        });
+    searchArticles = async (key, value) => {
+        let articleIDs = await this.searchArticleIDs(key, value);
+        if (!articleIDs) return undefined;
+        return Promise.all(articleIDs.map((id) => this.getArticle(id)));
     }
 
     /**
-     * Return the ID of the user that published the given article ID, or
-     * undefined if the article ID has not been found
-     * @param {string} id - ID of the article
+     * Return all of the metadata associated with the ID of the given article
+     * @param {string} id
+     * @returns {Promise<Article|undefined>}
      */
-    get_article_publisher = async (id) => {
-        return new Promise((resolve, _) => {
-            return this.db.get('SELECT user FROM articles WHERE id = ?', [id], (err, row) => {
-                if (err || row === undefined) {
-                    return resolve(undefined);
-                }
-                return resolve(row.user)
-            });
-        });
+    getArticle = async (id) => {
+        let [article, _] = await this.getArticleMeta(id);
+        if (! article) return undefined;
+        article.authors = await this.getArticleAuthors(id);
+        article.tags = await this.getArticleTags(id);
+        return article;
     }
 
     /**
      * @param {string} id
-     * @returns {Promise<[string, string|undefined, string, string]>}
+     * @returns {Promise<[Article|undefined, User]>}
      */
-    // TODO: return undefined if article is nonexistent
-    get_article_meta = async (id) => {
-        return new Promise((resolve, _) => {
+    getArticleMeta = async (id) => {
+        return new Promise((resolve) => {
             return this.db.get('SELECT * FROM articles WHERE id = ?', [id], (err, row) => {
                 if (err || row === undefined) {
-                    return resolve(["", undefined, ""]);
+                    return resolve((undefined, undefined));
                 }
-                return resolve([row.title, new Date(row.timestamp), row.thumbnail])
+                return resolve([new Article(row.title, [], [], new Date(row.timestamp), row.thumbnail), row.user]);
             });
         });
     }
@@ -178,13 +168,13 @@ class ArticleDatabase extends Database {
      * @returns {Promise<Author[]>}
      */
     // TODO: return undefined if article is nonexistent
-    get_article_authors = async (id) => {
+    getArticleAuthors = async (id) => {
         return new Promise((resolve, _) => {
             this.db.all('SELECT author FROM article_authors WHERE id = ? ORDER BY author ASC', [id], (err, rows) => {
                 if (err || rows === undefined) {
                     return resolve([]);
                 }
-                return resolve(rows.map((row) => new Author(row.author, row.author_occupation)));
+                return resolve(rows.map((row) => new Author(row.author)));
             });
         });
     }
@@ -195,45 +185,13 @@ class ArticleDatabase extends Database {
      * @returns {Promise<string[]>}
      */
     // TODO: return undefined if article is nonexistent
-    get_article_tags = async (id) => {
+    getArticleTags = async (id) => {
         return new Promise((resolve, _) => {
             this.db.all('SELECT tag FROM article_tags WHERE id = ? ORDER BY tag ASC', [id], (err, rows) => {
                 if (err || rows === undefined) {
                     return resolve([]);
                 }
                 return resolve(rows.map((row) => row.tag));
-            });
-        });
-    }
-
-    /**
-     * Return the array of article IDs that the given author wrote
-     * @param {string} author - Name of the author
-     * @returns {Promise<string[]>}
-     */
-    search_articles_by_author = async (author) => {
-        return new Promise((resolve, _) => {
-            this.db.all('SELECT id FROM article_authors WHERE author = ?', [author], (err, rows) => {
-                if (err || rows === undefined) {
-                    return resolve([]);
-                }
-                return resolve(rows.map((row) => row.id));
-            });
-        });
-    }
-
-    /**
-     * Return the array of article IDs that have the given tag
-     * @param {string} tag
-     * @returns {Promise<string[]>}
-     */
-    search_articles_by_tag = async (tag) => {
-        return new Promise((resolve, _) => {
-            this.db.all('SELECT id FROM article_tags WHERE tag = ?', [tag], (err, rows) => {
-                if (err || rows === undefined) {
-                    return resolve([]);
-                }
-                return resolve(rows.map((row) => row.id));
             });
         });
     }

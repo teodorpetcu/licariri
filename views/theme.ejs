@@ -5,8 +5,8 @@
 <script>
     const themeButton = document.getElementById("theme-button-checkbox");
     const root = document.documentElement;
-    let current_theme = localStorage.getItem("theme");
-    if (current_theme === "dark") {
+    let currentTheme = localStorage.getItem("theme");
+    if (currentTheme === "dark") {
         root.classList.add("dark-theme");
         themeButton.checked = true;
     }

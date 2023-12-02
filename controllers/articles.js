@@ -21,17 +21,18 @@ queryDatabase.init();
 
 const get_mainPage = async (req, res) => {
     let page = req.query.page ? req.query.page : 1;
-    let articles = await articleDatabase.get_recent_articles(
-        MAIN_PAGE_ARTICLE_COUNT * (page - 1),
-        MAIN_PAGE_ARTICLE_COUNT * (page)
-    );
-    res.render("main", {articles})
+    let articles = await articleDatabase.searchArticles();
+    let articlePage = articles.slice(
+            MAIN_PAGE_ARTICLE_COUNT * (page - 1),
+            MAIN_PAGE_ARTICLE_COUNT * (page)
+        );
+    res.render("main", {articles: articlePage});
 }
 
 const get_articlePage = async (req, res) => {
-    const article_id = req.params.article_id;
-    const article = await articleDatabase.search_article(article_id);
-    const markdown = `${ARTICLE_CONTENTS_PATH}/${article_id}.md`
+    const articleID = req.params.articleID;
+    const article = await articleDatabase.getArticle(articleID);
+    const markdown = `${ARTICLE_CONTENTS_PATH}/${articleID}.md`
     fs.readFile(markdown, "utf8", (err, data) => {
         if (err) {
             // TODO: make a 404 page
@@ -72,34 +73,34 @@ const post_adminAddArticle = async (req, res) => {
 
     fs.writeFileSync(`${ARTICLE_CONTENTS_PATH}/${article.id}.md`, content);
     queryDatabase.indexArticle(article.id, content);
-    articleDatabase.save_article(article, user_id);
+    articleDatabase.saveArticle(article, user_id);
 
     res.redirect(`/articles/${article.id}`);
 }
 
-const get_adminModifyArticle = async (req, res) => {
-    let articles = await articleDatabase.search_articles_by_publisher(req.user.id);
+const get_adminListModifiableArticles = async (req, res) => {
+    let articles = await articleDatabase.searchArticles("user", req.user.id);
     res.render("modify-article.ejs", {articles})
 }
 
-const get_adminModifyArticlePage = async (req, res) => {
-    const article_id = req.params.article_id;
-    let article = await articleDatabase.search_article(article_id);
+const get_adminModifyArticle = async (req, res) => {
+    const articleID = req.params.articleID;
+    let article = await articleDatabase.getArticle(articleID);
     article.content = fs.readFileSync(`${ARTICLE_CONTENTS_PATH}/${article.id}.md`);
-    res.render("add-or-modify-article", {action: `modify/${article_id}`, defaults: article});
+    res.render("add-or-modify-article", {action: `modify/${articleID}`, defaults: article});
 }
 
 const post_adminModifyArticle = async (req, res) => {
-    const original_article_id = req.params.article_id;
-    let article_publisher = await articleDatabase.get_article_publisher(original_article_id);
-    if (article_publisher == req.user.id) {
-        await articleDatabase.remove_article(original_article_id)
-        await queryDatabase.unindex(original_article_id);
+    const originalArticleID = req.params.articleID;
+    let [_, articlePublisher] = await articleDatabase.getArticleMeta(originalArticleID);
+    if (articlePublisher == req.user.id) {
+        await articleDatabase.removeArticle(originalArticleID)
+        await queryDatabase.unindexArticle(originalArticleID);
         if (!req.files) {
             req.files = {thumbnail: {
                 mimetype: "image",
                 // TODO: find a more efficient way to do this
-                data: fs.readFileSync(`${ARTICLE_IMAGES_PATH}/${original_article_id}`)
+                data: fs.readFileSync(`${ARTICLE_IMAGES_PATH}/${originalArticleID}`)
             }}
         }
         post_adminAddArticle(req, res);
@@ -109,16 +110,16 @@ const post_adminModifyArticle = async (req, res) => {
 }
 
 const get_adminRemoveArticle = async (req, res) => {
-    let articles = await articleDatabase.search_articles_by_publisher(req.user.id);
+    let articles = await articleDatabase.searchArticles("user", req.user.id);
     res.render("remove-article.ejs", {articles});
 }
 
 const post_adminRemoveArticle = async (req, res) => {
-    let article_id = req.body.id;
-    let article_publisher = await articleDatabase.get_article_publisher(article_id);
-    if (article_publisher == req.user.id) {
-        await articleDatabase.remove_article(article_id)
-        await queryDatabase.unindex(article_id);
+    let articleID = req.body.id;
+    let [_, articlePublisher] = await articleDatabase.getArticleMeta(articleID);
+    if (articlePublisher == req.user.id) {
+        await articleDatabase.removeArticle(articleID)
+        await queryDatabase.unindexArticle(articleID);
     }
     res.redirect("/admin/remove");
 }
@@ -129,7 +130,7 @@ module.exports = {
     post_adminAddArticle,
     get_adminRemoveArticle,
     post_adminRemoveArticle,
+    get_adminListModifiableArticles,
     get_adminModifyArticle,
-    get_adminModifyArticlePage,
     post_adminModifyArticle,
 };

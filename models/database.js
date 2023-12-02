@@ -2,8 +2,8 @@ const sqlite3 = require("sqlite3");
 
 class Database {
     /**
-    * Open an SQLITE connection to the given path
-    * @param {string} path
+     * Open an SQLITE connection to the given path
+     * @param {string} path
      */
     constructor(path) {
         this.path = path;

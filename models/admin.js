@@ -25,6 +25,11 @@ const validatePassword = async (password, hash) => {
 }
 
 class User {
+    /**
+     * @param {string} id
+     * @param {string} name
+     * @param {number} privilege
+     */
     constructor(id, name, privilege) {
         this.id = id;
         this.name = name;
@@ -33,6 +38,11 @@ class User {
 }
 
 class Session {
+    /**
+     * @param {string} user_id
+     * @param {string} token - Optional; default: random bytes
+     * @param {Date} timestamp - Optional; default: current Unix time
+     */
     constructor(user_id,
                 token = crypto.randomBytes(SESSION_TOKEN_LENGTH).toString("hex"),
                 timestamp = Date.now()) {
@@ -87,7 +97,7 @@ class UsersDatabase extends Database {
      */
     //TODO: return status
     //TODO: handle eventual errors
-    add_user = async (user, pass) => {
+    addUser = async (user, pass) => {
         let hash = await hashPassword(pass);
         this.db.run('INSERT INTO users VALUES(?, ?, ?, ?)', [user.id, user.name, user.privilege, hash]);
     }
@@ -97,7 +107,7 @@ class UsersDatabase extends Database {
      * @param {User} user - User object
      * @param {string} pass - Plain-text password
      */
-    change_password = async (user, pass) => {
+    changePassword = async (user, pass) => {
         let hash = await hashPassword(pass);
         this.db.run('UPDATE users SET password = ? WHERE id = ?', [hash, user.id]);
     }
@@ -109,7 +119,7 @@ class UsersDatabase extends Database {
      * @param {string} pass - Plain-text password
      * @returns {Promise<boolean>}
      */
-    is_correct_login_combo = async (id, pass) => {
+    isCorrectLoginCombo = async (id, pass) => {
         return new Promise((resolve) => {
             return this.db.get('SELECT * FROM users WHERE id = ?', [id], (err, row) => {
                 if (err) {
@@ -134,7 +144,7 @@ class UsersDatabase extends Database {
      * @param session {Session}
      */
     // TODO: return status
-    add_session = async (session) => {
+    addSession = async (session) => {
         this.db.run('INSERT INTO sessions VALUES (?, ?, ?)',
             [session.user_id, session.token, session.timestamp]);
     }
@@ -146,7 +156,7 @@ class UsersDatabase extends Database {
      * @returns {Promise<User|undefined>}
      */
     // Hopefully this does not take too much time to do for every request?
-    get_session_user = async (token) => {
+    getSessionUser = async (token) => {
         return new Promise((resolve)=> {
             this.db.get('SELECT * FROM users WHERE id IN (SELECT user FROM sessions WHERE token = ?)', [token], (err, row) => {
                 if (err) {

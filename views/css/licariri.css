@@ -6,7 +6,7 @@
     --font-color: #02040F;
     --neutral-color: #E5DADA;
     --snippet-border-color: #00000042;
-    --searchbar-color: #E5D0D0;
+    --searchbar-color: #E0C0CF;
     --searchbar-text-color: var(--font-color);
     /* #002642 #840032 #E59500 #E5DADA #02040F */
     /* #63089c #00000049 #f4e9e9 #d4b0e9 */
@@ -240,9 +240,9 @@ a {
     font-size: 1.2rem;
 }
 
-#searchbar input:focus {
-    color: var(--accent-color);
-}
+/*#searchbar input:focus {*/
+    /*color: var(--accent-color);*/
+/*}*/
 
 #searchbar button {
     height: 80%;

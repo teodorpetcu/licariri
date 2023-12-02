@@ -11,22 +11,18 @@ const formatDate = (date) => {
 
 class Author {
     /**
-     * Information used to identify an author
      * @param {string} name
-     * @param {string} occupation
      */
-    constructor(name, occupation = "") {
+    constructor(name) {
         this.name = name;
-        this.occupation = occupation;
     }
 }
 
 class Article {
     /**
-     * Metadata related to an article
      * @param {string} title
-     * @param {string} authors
-     * @param {string} tags
+     * @param {Author[]} authors
+     * @param {string[]} tags
      * @param {Date} date
      * @param {boolean} thumbnail
      */
@@ -37,13 +33,13 @@ class Article {
         this.timestamp = timestamp.valueOf();
         this.thumbnail = thumbnail;
         this.date = formatDate(timestamp);
-        this.id = this.article_id();
+        this.id = this.articleID();
     }
 
     /**
      * @returns {string} ID of the article
      */
-    article_id() {
+    articleID() {
         return (this.date + "-" + this.title.toLowerCase().replace(/[ \t\n]/g, "-"))
             .replace(/[\?&\/\\]/g, "");
     }

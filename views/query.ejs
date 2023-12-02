@@ -12,10 +12,10 @@
     <div id="page-body">
         <div class="article-snippets-container" style="text-align: center">
             <% if (articles.length > 0) { %>
-                <h1><%= success_message %></h1>
+                <h1><%= successMessage %></h1>
                 <%- include("article-snippets-grid"); %>
             <% } else { %>
-                <h1><%= failure_message %></h1>
+                <h1><%= failureMessage %></h1>
             <% } %>
         </div>
     </div>

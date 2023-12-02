@@ -77,7 +77,15 @@ class QueryDatabase extends Database {
         });
     }
 
-    unindex = async (article_id) => {
+    /**
+     * Remove the word mappings for the article with the given ID, including the
+     * entry for the article itself, from the database
+     *
+     * Note that this does not remove the words, even if they remain unmapped to
+     * anything.
+     * @param {string} article_id
+     */
+    unindexArticle = async (article_id) => {
         return new Promise((resolve) => {
             this.db.run("DELETE FROM mappings WHERE (SELECT rowid FROM articles WHERE article_id = ?)", [article_id]);
             this.db.run("DELETE FROM articles WHERE article_id = ?", [article_id]);

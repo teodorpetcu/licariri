@@ -8,9 +8,9 @@ usersDatabase.init();
  * Middleware: look at the cookies on the request and attach user information to
  * `req.user`, if the session token is valid, or `undefined`, if invalid.
  */
-const identifyAuthorizedUser = async (req, _, next) => {
+const identifyAuthorisedUser = async (req, _, next) => {
     let sessionCookie = req.cookies.session;
-    req.user = await usersDatabase.get_session_user(sessionCookie);
+    req.user = await usersDatabase.getSessionUser(sessionCookie);
     next();
 }
 
@@ -19,7 +19,7 @@ const identifyAuthorizedUser = async (req, _, next) => {
  *
  * On requests that are authorised, attach `user` to the `req` object.
  *
- * Must be used in conjunction with `identifyAuthorizedUser`
+ * Must be used in conjunction with `identifyAuthorisedUser`
  */
 const forbidUnauthorised = async (req, res, next) => {
     if (req.user) {
@@ -29,9 +29,9 @@ const forbidUnauthorised = async (req, res, next) => {
     }
 }
 
-const get_adminPageView = async (req, res) => {
+const get_adminPannelPage = async (req, res) => {
     if (req.user) {
-        res.render("admin", {user_management: req.user.privilege == USER_PRIVILEGES["SUPERUSER"]});
+        res.render("admin", {canManageUsers: req.user.privilege == USER_PRIVILEGES["SUPERUSER"]});
     } else {
         res.render("login", {});
     }
@@ -40,15 +40,15 @@ const get_adminPageView = async (req, res) => {
 const post_adminLoginCheck = async (req, res) => {
     const id = req.body.id;
     const pass = req.body.password;
-    if (await usersDatabase.is_correct_login_combo(id, pass)) {
+    if (await usersDatabase.isCorrectLoginCombo(id, pass)) {
         const session = new Session(id);
-        usersDatabase.add_session(session);
+        usersDatabase.addSession(session);
         res.cookie("session", session.token, COOKIE_OPTIONS);
     }
     res.redirect("/admin");
 }
 
-const get_adminAddArticlePage = async (_, res) => {
+const get_adminAddArticle = async (_, res) => {
     let emptyArticle = {
         title: "",
         authors: [],
@@ -72,7 +72,7 @@ const post_adminAddUser = async (req, res) => {
     } else {
         let privilege = USER_PRIVILEGES[req.body.privilege];
         let user = new User(req.body.id, req.body.name, privilege);
-        await usersDatabase.add_user(user, req.body.password);
+        await usersDatabase.addUser(user, req.body.password);
         res.sendStatus(200);
     }
 }
@@ -82,8 +82,8 @@ const get_adminChangeUserPassword = async (_, res) => {
 }
 
 const post_adminChangeUserPassword = async (req, res) => {
-    if (await usersDatabase.is_correct_login_combo(req.user.id, req.body.original)) {
-        await usersDatabase.change_password(req.user, req.body.password);
+    if (await usersDatabase.isCorrectLoginCombo(req.user.id, req.body.original)) {
+        await usersDatabase.changePassword(req.user, req.body.password);
         res.sendStatus(200);
     } else {
         res.sendStatus(401);
@@ -91,10 +91,10 @@ const post_adminChangeUserPassword = async (req, res) => {
 }
 
 module.exports = {
-    identifyAuthorizedUser,
+    identifyAuthorisedUser,
     forbidUnauthorised,
-    get_adminPageView,
-    get_adminAddArticlePage,
+    get_adminPannelPage,
+    get_adminAddArticle,
     post_adminLoginCheck,
     get_adminAddUserPage,
     post_adminAddUser,

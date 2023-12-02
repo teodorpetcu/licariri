@@ -13,23 +13,23 @@ const articleDatabase = new ArticleDatabase(ARTICLE_DATABASE_PATH);
 articleDatabase.init();
 
 const get_queryPage = async (req, res) => {
-    let searchResultsIDs = [];
+    let articleIDs = [];
     let searchResults = [];
 
     let any = req.query.any;
     let author = req.query.author;
     let tag = req.query.tag;
     let text = req.query.text;
-    let success_message = "Rezultatele căutării:";
-    let failure_message = "Ne pare rău, nu am putut găsi nimic!";
+    let successMessage = "Rezultatele căutării:";
+    let failureMessage = "Ne pare rău, nu am putut găsi nimic!";
 
     if (any) {
         message = `Rezultatele căutării pentru: ${any}`;
-        failure_message = `Ne pare rău, nu am putut găsi nimic pentru: ${any}`;
+        failureMessage = `Ne pare rău, nu am putut găsi nimic pentru: ${any}`;
         author = any;
         tag = any;
         text = any;
-        searchResultsIDs = searchResultsIDs.concat(await articleDatabase.search_articles_by_title(any));
+        articleIDs = articleIDs.concat(await articleDatabase.searchArticleIDs("title", any));
     }
     // NOTE: if the `any` flag is NOT specified, then we return the articles
     // that match ALL of the provided criteria
@@ -43,47 +43,47 @@ const get_queryPage = async (req, res) => {
     // handle this it would be ideal if the page wouldn't refresh every time.
 
     if (author) {
-        let foundArticleIDs = await articleDatabase.search_articles_by_author(author);
-        if (any || !searchResultsIDs.length) {
-            searchResultsIDs = searchResultsIDs.concat(foundArticleIDs);
+        let foundArticleIDs = await articleDatabase.searchArticleIDs("author", author);
+        if (any || !articleIDs.length) {
+            articleIDs = articleIDs.concat(foundArticleIDs);
         } else {
-            searchResultsIDs = searchResultsIDs.filter((id) => foundArticleIDs.includes(id));
+            articleIDs = articleIDs.filter((id) => foundArticleIDs.includes(id));
         }
         if (!tag && !text) {
-            success_message = `Articole scrise de ${author}:`;
-            failure_message = `Ne pare rău, nu am putut găsi nici un articol scris de ${author}`;
+            successMessage = `Articole scrise de ${author}:`;
+            failureMessage = `Ne pare rău, nu am putut găsi nici un articol scris de ${author}`;
         }
     }
     if (tag) {
-        let foundArticleIDs = await articleDatabase.search_articles_by_tag(tag);
-        if (any || !searchResultsIDs.length) {
-            searchResultsIDs = searchResultsIDs.concat(foundArticleIDs);
+        let foundArticleIDs = await articleDatabase.searchArticleIDs("tag", tag);
+        if (any || !articleIDs.length) {
+            articleIDs = articleIDs.concat(foundArticleIDs);
         } else {
-            searchResultsIDs = searchResultsIDs.filter((id) => foundArticleIDs.includes(id));
+            articleIDs = articleIDs.filter((id) => foundArticleIDs.includes(id));
         }
         if (!author && !text) {
-            success_message = `Articole cu tag-ul #${tag}:`;
-            failure_message = `Ne pare rău, nu am putut găsi nici un articol cu tag-ul #${tag}`;
+            successMessage = `Articole cu tag-ul #${tag}:`;
+            failureMessage = `Ne pare rău, nu am putut găsi nici un articol cu tag-ul #${tag}`;
         }
     }
     if (text) {
         let foundArticleIDs = await queryDatabase.findArticles(text);
-        if (any || !searchResultsIDs.length) {
-            searchResultsIDs = searchResultsIDs.concat(foundArticleIDs);
+        if (any || !articleIDs.length) {
+            articleIDs = articleIDs.concat(foundArticleIDs);
         } else {
-            searchResultsIDs = searchResultsIDs.filter((id) => foundArticleIDs.includes(id));
+            articleIDs = articleIDs.filter((id) => foundArticleIDs.includes(id));
         }
         if (!author && !tag) {
-            success_message = `Articole ce conțin «${text}»`;
-            failure_message = `Ne pare rău, nu am putut găsi nici un articol care să conțină «${text}»`;
+            successMessage = `Articole ce conțin «${text}»`;
+            failureMessage = `Ne pare rău, nu am putut găsi nici un articol care să conțină «${text}»`;
         }
     }
 
-    searchResultsIDs = [... new Set(searchResultsIDs)];
+    articleIDs = [... new Set(articleIDs)];
 
-    searchResults = await Promise.all(searchResultsIDs.map(async (id) => await articleDatabase.search_article(id)));
+    searchResults = await Promise.all(articleIDs.map(async (id) => articleDatabase.getArticle(id)));
 
-    res.render("query", {articles: searchResults, success_message, failure_message});
+    res.render("query", {articles: searchResults, successMessage, failureMessage});
 }
 
 module.exports = {
