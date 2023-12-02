@@ -119,6 +119,7 @@ class ArticleDatabase extends Database {
                 stmt += ` WHERE ${key} LIKE ?`;
                 value = `%${value}%`;
             }
+            stmt += ' ORDER BY timestamp DESC';
 
             this.db.all(stmt, [value], (err, rows) => {
                 if (err || rows === undefined) {

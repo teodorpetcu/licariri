@@ -61,6 +61,9 @@ const post_adminAddArticle = async (req, res) => {
     // Escape HTML tags and backslashes
     // NOTE: only article contents are interpreted as HTML by EJS, so only they
     // need to be sanitised
+    //
+    // However, this affects code blocks, where everything is interpreted
+    // literally.
     const content = req.body.content.replace(/([<>\\])/g, "\\$1");
 
     let thumbnail = req.files ? req.files.thumbnail : undefined;
@@ -92,11 +95,11 @@ const get_adminModifyArticle = async (req, res) => {
 
 const post_adminModifyArticle = async (req, res) => {
     const originalArticleID = req.params.articleID;
-    let [_, articlePublisher] = await articleDatabase.getArticleMeta(originalArticleID);
+    let [originalArticle, articlePublisher] = await articleDatabase.getArticleMeta(originalArticleID);
     if (articlePublisher == req.user.id) {
         await articleDatabase.removeArticle(originalArticleID)
         await queryDatabase.unindexArticle(originalArticleID);
-        if (!req.files) {
+        if (!req.files && originalArticle.thumbnail) {
             req.files = {thumbnail: {
                 mimetype: "image",
                 // TODO: find a more efficient way to do this
