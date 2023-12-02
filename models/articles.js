@@ -89,7 +89,7 @@ class ArticleDatabase extends Database {
      * @param {string} value
      * @returns {Promise<string[]|undefined>}
      */
-    searchArticleIDs = async (key, value) => {
+    searchArticleIDs = async (key, value, exact = false) => {
         return new Promise((resolve) => {
             let validKeyValues = ["title", "user", "tag", "author", undefined]
             if (! validKeyValues.includes(key)) {
@@ -103,9 +103,14 @@ class ArticleDatabase extends Database {
                 table = "article_authors";
             }
 
-            let stmt = `SELECT id FROM ${table} WHERE ${key} = ?`;
+            let stmt = `SELECT id FROM ${table}`;
             if (key == undefined){
                 stmt = `SELECT id FROM articles`;
+            } else if (exact) {
+                stmt += ` WHERE ${key} = ?`;
+            } else {
+                stmt += ` WHERE ${key} LIKE ?`;
+                value = `%${value}%`;
             }
 
             this.db.all(stmt, [value], (err, rows) => {

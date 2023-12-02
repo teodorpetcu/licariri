@@ -20,6 +20,7 @@ const get_queryPage = async (req, res) => {
     let author = req.query.author;
     let tag = req.query.tag;
     let text = req.query.text;
+    let exactMatch = true;
     let successMessage = "Rezultatele căutării:";
     let failureMessage = "Ne pare rău, nu am putut găsi nimic!";
 
@@ -29,7 +30,8 @@ const get_queryPage = async (req, res) => {
         author = any;
         tag = any;
         text = any;
-        articleIDs = articleIDs.concat(await articleDatabase.searchArticleIDs("title", any));
+        exactMatch = false;
+        articleIDs = articleIDs.concat(await articleDatabase.searchArticleIDs("title", any, exactMatch));
     }
     // NOTE: if the `any` flag is NOT specified, then we return the articles
     // that match ALL of the provided criteria
@@ -43,7 +45,7 @@ const get_queryPage = async (req, res) => {
     // handle this it would be ideal if the page wouldn't refresh every time.
 
     if (author) {
-        let foundArticleIDs = await articleDatabase.searchArticleIDs("author", author);
+        let foundArticleIDs = await articleDatabase.searchArticleIDs("author", author, exactMatch);
         if (any || !articleIDs.length) {
             articleIDs = articleIDs.concat(foundArticleIDs);
         } else {
@@ -55,7 +57,7 @@ const get_queryPage = async (req, res) => {
         }
     }
     if (tag) {
-        let foundArticleIDs = await articleDatabase.searchArticleIDs("tag", tag);
+        let foundArticleIDs = await articleDatabase.searchArticleIDs("tag", tag, exactMatch);
         if (any || !articleIDs.length) {
             articleIDs = articleIDs.concat(foundArticleIDs);
         } else {
