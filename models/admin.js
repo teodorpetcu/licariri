@@ -4,6 +4,7 @@ const crypto = require("crypto"); // for randomBytes
 const { Database } = require("./database.js");
 
 const { HASH_COST, SESSION_TOKEN_LENGTH } = require("../config.js");
+const { logger } = require("../logger.js");
 
 /**
  * Hash the given plain-text password using bcrypt
@@ -80,11 +81,11 @@ class UsersDatabase extends Database {
                 token       TEXT NOT NULL,
                 timestamp   INT,
                 FOREIGN KEY (user) REFERENCES users (id)
-            )`, (err) => {
+            );`, (err) => {
                 if (err) {
-                    console.error(err);
+                    logger.error(`database '${this.path}' tables: ${err}`);
                 } else {
-                    console.log(`database '${this.path}' tables: ok`)
+                    logger.info(`database '${this.path}' tables: ok`);
                 }
             }
         );
@@ -124,7 +125,7 @@ class UsersDatabase extends Database {
             return this.db.get('SELECT * FROM users WHERE id = ?', [id], (err, row) => {
                 if (err) {
                     // TODO: handle
-                    console.error(err);
+                    logger.error(`couldn't access '${this.path}': ${err}`);
                 } else if (row == undefined) {
                     // ID does not exist in the database, but it makes no
                     // difference when we're trying to authenticate
@@ -160,7 +161,7 @@ class UsersDatabase extends Database {
         return new Promise((resolve)=> {
             this.db.get('SELECT * FROM users WHERE id IN (SELECT user FROM sessions WHERE token = ?)', [token], (err, row) => {
                 if (err) {
-                    console.error(err);
+                    logger.error(`couldn't access '${this.path}': ${err}`);
                     return resolve(undefined);
                 } else if (row === undefined) {
                     return resolve(undefined);

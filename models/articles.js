@@ -1,5 +1,6 @@
 const { Author, Article } = require("./types.js");
 const { Database } = require("./database.js");
+const { logger } = require("../logger.js");
 
 class ArticleDatabase extends Database {
     /**
@@ -36,14 +37,14 @@ class ArticleDatabase extends Database {
                 id                  TEXT NOT NULL,
                 author              TEXT NOT NULL,
                 FOREIGN KEY (id) REFERENCES articles (id)
-            );
-        `, (err) => {
-            if (err) {
-                console.error(err);
-            } else {
-                console.log(`database '${this.path}' tables: ok`);
+            );`, (err) => {
+                if (err) {
+                    logger.error(`database '${this.path}' tables: ${err}`);
+                } else {
+                    logger.info(`database '${this.path}' tables: ok`);
+                }
             }
-        });
+        );
     }
 
     /**

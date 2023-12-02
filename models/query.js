@@ -1,4 +1,5 @@
 const { Database } = require("./database.js");
+const { logger } = require("../logger.js");
 
 class QueryDatabase extends Database {
     /**
@@ -31,14 +32,14 @@ class QueryDatabase extends Database {
             (
                 article_id      TEXT NOT NULL,
                 UNIQUE (article_id)
-            );`,
-            (err) => {
+            );`, (err) => {
                 if (err) {
-                    console.error(err);
+                    logger.error(`database '${this.path}' tables: ${err}`);
                 } else {
-                    console.log(`database '${this.path}' tables: ok`);
+                    logger.info(`database '${this.path}' tables: ok`);
                 }
-            });
+            }
+        );
     }
 
     /**
@@ -54,7 +55,7 @@ class QueryDatabase extends Database {
             this.db.get("SELECT COUNT(*) FROM articles", (err, row) => {
                 if (err) {
                     // TODO: handle
-                    console.error(err);
+                    logger.error(`couldn't access '${this.path}': ${err}`);
                 } else {
                     let rowid = row["COUNT(*)"] + 1;
                     let words_stmt = this.db.prepare("INSERT OR IGNORE INTO words VALUES (?)");
@@ -111,7 +112,7 @@ class QueryDatabase extends Database {
                 (err, rows) => {
                     if (err) {
                         // TODO: handle
-                        console.error(err);
+                        logger.error(`couldn't access '${this.path}': ${err}`);
                     } else {
                         return resolve(rows.map((r) => r.article_id));
                     }

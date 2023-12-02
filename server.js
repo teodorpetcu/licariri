@@ -38,12 +38,15 @@ const {
 
 const { LISTENING_PORT } = require("./config.js");
 
+const { logger, requestLogger } = require("./logger.js");
+
 const app = express();
 
 app.set("view engine", "ejs");
 app.use(fileUpload());
 app.use(bodyParser.urlencoded({ extended: true, }));
 app.use(cookieParser());
+app.use(requestLogger);
 
 app.use("/css", express.static(__dirname + "/views/css"));
 app.use("/images", express.static(__dirname + "/public/images"));
@@ -72,5 +75,5 @@ app.post("/admin/user/password", identifyAuthorisedUser, forbidUnauthorised, pos
 // TODO: ensure that we first connect to all the databases before starting to
 // listen on the internet
 app.listen(LISTENING_PORT, async () => {
-    console.log(`Web server up (http://${serverPrivateIP}:${LISTENING_PORT})`);
+    logger.info(`web server up (http://${serverPrivateIP}:${LISTENING_PORT})`);
 });
