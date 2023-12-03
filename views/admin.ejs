@@ -30,10 +30,11 @@
                     <a class="action-button" href="/admin/modify/<%= article.id %>"><!--
                         --><input type="submit" value="Modifică"></input><!--
                     --></a>
+                    <span style="padding: 20px;"></span>
                     <form action="/admin/remove" method="post">
                         <input type="hidden" name="id"
                             value="<%= article.id %>">
-                        <input type="submit" onclick="return confirm('Sigur vrei să ștergi articolul?')" value="ȘTERGE"></input>
+                        <input type="submit" onclick="return confirm(`Sigur vrei să ștergi articolul?`)" value="ȘTERGE" style="background-color: #BB0000"></input>
                     </form>
                 </div>
             </div>
