@@ -1,8 +1,12 @@
-const { USERS_DATABASE_PATH, COOKIE_OPTIONS, USER_PRIVILEGES } = require("../config.js");
+const { USERS_DATABASE_PATH, ARTICLE_DATABASE_PATH, COOKIE_OPTIONS, USER_PRIVILEGES } = require("../config.js");
 const { UsersDatabase, User, Session } = require("../models/admin.js");
+const { ArticleDatabase } = require("../models/articles.js");
 
 const usersDatabase = new UsersDatabase(USERS_DATABASE_PATH);
 usersDatabase.init();
+
+const articleDatabase = new ArticleDatabase(ARTICLE_DATABASE_PATH);
+articleDatabase.init();
 
 /**
  * Middleware: look at the cookies on the request and attach user information to
@@ -31,7 +35,8 @@ const forbidUnauthorised = async (req, res, next) => {
 
 const get_adminPannelPage = async (req, res) => {
     if (req.user) {
-        res.render("admin", {canManageUsers: req.user.privilege == USER_PRIVILEGES["SUPERUSER"]});
+        let articles = await articleDatabase.searchArticles("user", req.user.id);
+        res.render("admin", {articles, canManageUsers: req.user.privilege == USER_PRIVILEGES["SUPERUSER"]});
     } else {
         res.render("login", {});
     }

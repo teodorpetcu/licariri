@@ -88,11 +88,6 @@ const post_adminAddArticle = async (req, res) => {
     res.redirect(`/articles/${article.id}`);
 }
 
-const get_adminListModifiableArticles = async (req, res) => {
-    let articles = await articleDatabase.searchArticles("user", req.user.id);
-    res.render("modify-article.ejs", {articles})
-}
-
 const get_adminModifyArticle = async (req, res) => {
     const articleID = req.params.articleID;
     let article = await articleDatabase.getArticle(articleID);
@@ -115,13 +110,8 @@ const post_adminModifyArticle = async (req, res) => {
         }
         post_adminAddArticle(req, res);
     } else {
-        res.redirect("/admin/modify");
+        res.redirect("/admin");
     }
-}
-
-const get_adminRemoveArticle = async (req, res) => {
-    let articles = await articleDatabase.searchArticles("user", req.user.id);
-    res.render("remove-article.ejs", {articles});
 }
 
 const post_adminRemoveArticle = async (req, res) => {
@@ -131,16 +121,14 @@ const post_adminRemoveArticle = async (req, res) => {
         await articleDatabase.removeArticle(articleID)
         await queryDatabase.unindexArticle(articleID);
     }
-    res.redirect("/admin/remove");
+    res.redirect("/admin");
 }
 
 module.exports = {
     get_mainPage,
     get_articlePage,
     post_adminAddArticle,
-    get_adminRemoveArticle,
     post_adminRemoveArticle,
-    get_adminListModifiableArticles,
     get_adminModifyArticle,
     post_adminModifyArticle,
 };

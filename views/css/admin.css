@@ -2,33 +2,34 @@ body {
     text-align: center;
 }
 
-#admin-pannel {
+#account-pannel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 30%;
+    height: 100%;
+    border-right: 1px solid var(--font-color);
+}
+
+#article-pannel {
     position: absolute;
-    top: 30%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 0;
+    right: 0;
+    width: 70%;
 }
 
-#admin-pannel a,
-#remove-article a {
-    border: 1px solid var(--snippet-border-color);
-    background-color: var(--main-color);
-    text-decoration: 1px solid underline;
-    transition: color 0.2s ease;
-}
-
-#admin-pannel a {
+#account-pannel a {
     display: block;
     padding: 10px;
 }
 
-#admin-pannel a:hover,
-#remove-article a:hover {
+#account-pannel a:hover,
+#article-pannel a:hover {
     color: var(--accent-color);
 }
 
-#admin-pannel a,
-#remove-article a {
+#account-pannel a,
+#article-pannel a {
     margin: 0px auto;
     width: 120px;
     border: 1px solid var(--snippet-border-color);
@@ -39,6 +40,10 @@ body {
 
 .article-item {
     padding-bottom: 15px;
+}
+
+.article-item form {
+    display: inline-block;
 }
 
 form {

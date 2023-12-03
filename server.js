@@ -9,8 +9,6 @@ const serverPrivateIP = ip.address();
 const {
     get_mainPage,
     get_articlePage,
-    get_adminRemoveArticle,
-    get_adminListModifiableArticles,
     get_adminModifyArticle,
 
     post_adminAddArticle,
@@ -59,8 +57,6 @@ app.get("/articles/:articleID", get_articlePage);
 app.get("/admin", identifyAuthorisedUser, get_adminPannelPage);
 
 app.get("/admin/add", identifyAuthorisedUser, forbidUnauthorised, get_adminAddArticle);
-app.get("/admin/remove", identifyAuthorisedUser, forbidUnauthorised, get_adminRemoveArticle);
-app.get("/admin/modify", identifyAuthorisedUser, forbidUnauthorised, get_adminListModifiableArticles);
 app.get("/admin/modify/:articleID", identifyAuthorisedUser, forbidUnauthorised, get_adminModifyArticle);
 app.get("/admin/user/add", identifyAuthorisedUser, forbidUnauthorised, get_adminAddUserPage);
 app.get("/admin/user/password", identifyAuthorisedUser, forbidUnauthorised, get_adminChangeUserPassword);

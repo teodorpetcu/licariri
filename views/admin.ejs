@@ -9,16 +9,33 @@
 
 <body>
     <%- include("theme"); %>
-    <div id="admin-pannel">
+    <div id="account-pannel">
         <h1>Panou de administrare</h1>
         <a href="/admin/add">Adaugă articol</a>
-        <a href="/admin/remove">Șterge articole</a>
-        <a href="/admin/modify">Modifică articole</a>
         <br>
         <a href="/admin/user/password">Schimbă-ți parola</a>
         <br>
         <% if (canManageUsers) { %>
             <a href="/admin/user/add">Adaugă utilizator</a>
+        <% } %>
+    </div>
+    <div id="article-pannel">
+        <h1>Articole</h1>
+        <% for (article of articles) { %>
+            <div class="article-item">
+                <a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>,
+                publicat <%= article.date %>
+                <div>
+                    <a href="/admin/modify/<%= article.id %>"><!--
+                    --><input type="submit" value="Modifică"></input><!--
+                    --></a>
+                    <form action="/admin/remove" method="post">
+                        <input type="hidden" name="id"
+                            value="<%= article.id %>">
+                        <input type="submit" onclick="return confirm('Sigur vrei să ștergi articolul?')" value="ȘTERGE"></input>
+                    </form>
+                </div>
+            </div>
         <% } %>
     </div>
 </body>

@@ -96,7 +96,7 @@ class ArticleDatabase extends Database {
      * @param {string} value
      * @returns {Promise<string[]|undefined>}
      */
-    searchArticleIDs = async (key, value, exact = false) => {
+    searchArticleIDs = async (key, value, exact = true) => {
         return new Promise((resolve) => {
             let validKeyValues = ["title", "user", "tag", "author", undefined]
             if (! validKeyValues.includes(key)) {
