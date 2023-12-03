@@ -52,16 +52,12 @@ class QueryDatabase extends Database {
         let validWords = lowercase.replace(/[^0-9A-z\-'ăîâșțéèÿùüïôœàæêëûîâç]/g, " ").split(/\s+/);
         let uniqueWords = [... new Set(validWords.filter((word) => word))];
         this.db.serialize(() => {
-            // evil sqlite hack
-            // this could probably fail, so the best way to handle this is
-            // likely to insert the article ID into the `articles` table and
-            // then check for `last_insert_rowid()`, although I can't be
-            // bothered
-            this.db.get("SELECT rowid as num FROM articles ORDER BY rowid DESC limit 1", (err, row) => {
+            this.db.run("INSERT INTO articles VALUES (?)", [id], this.errorLogger);
+            this.db.get("SELECT rowid as num FROM articles WHERE article_id = ?", [id], (err, row) => {
                 if (err) {
                     logger.error(`database '${this.path}': ${err}`);
                 } else {
-                    let rowid = row.num + 1;
+                    let rowid = row.num;
                     let words_stmt = this.db.prepare("INSERT OR IGNORE INTO words VALUES (?)");
                     let stmt = this.db.prepare("INSERT INTO mappings VALUES (?, (SELECT rowid FROM words WHERE word = ?))");
                     for (let word of uniqueWords) {
@@ -69,16 +65,14 @@ class QueryDatabase extends Database {
                         stmt.run([rowid, word], this.errorLogger);
                     }
                     words_stmt.finalize((err) => {
-                        if (!err) {
-                            stmt.finalize((err) => {
-                                if (!err) {
-                                    this.db.run("INSERT INTO articles VALUES (?)", [id], this.errorLogger);
-                                }
-                            });
+                        if (err) {
+                            logger.error(`database '${this.path}': ${err}`);
+                        } else {
+                            stmt.finalize(this.errorLogger);
                         }
                     });
                 }
-            })
+            });
         });
     }
 
