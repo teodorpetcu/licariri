@@ -88,11 +88,16 @@ class QueryDatabase extends Database {
         return new Promise((resolve) => {
             this.db.run("DELETE FROM mappings WHERE rowid IN (SELECT rowid FROM articles WHERE article_id = ?)",
                 [article_id],
-                this.errorLogger
-            );
-            this.db.run("DELETE FROM articles WHERE article_id = ?",
-                [article_id],
-                this.errorLogger
+                (err) => {
+                    if (err) {
+                        this.errorLogger(err);
+                    } else {
+                        this.db.run("DELETE FROM articles WHERE article_id = ?",
+                            [article_id],
+                            this.errorLogger
+                        );
+                    }
+                }
             );
             return resolve();
         })
