@@ -2,22 +2,6 @@ body {
     text-align: center;
 }
 
-#account-pannel {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 30%;
-    height: 100%;
-    border-right: 1px solid var(--font-color);
-}
-
-#article-pannel {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 70%;
-}
-
 #account-pannel a {
     display: block;
     padding: 10px;
@@ -133,5 +117,30 @@ select {
 @media (max-width: 600px) {
     #add-article textarea {
         width: 98%;
+    }
+}
+
+@media (max-width: 1023px) {
+    #account-pannel {
+        border-bottom: 1px solid var(--font-color);
+        padding-bottom: 10px;
+    }
+}
+
+@media (min-width: 1024px) {
+    #account-pannel {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 30%;
+        height: 100%;
+        border-right: 1px solid var(--font-color);
+    }
+
+    #article-pannel {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 70%;
     }
 }
