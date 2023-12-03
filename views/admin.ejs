@@ -11,8 +11,6 @@
     <%- include("theme"); %>
     <div id="account-pannel">
         <h1>Panou de administrare</h1>
-        <a href="/admin/add">Adaugă articol</a>
-        <br>
         <a href="/admin/user/password">Schimbă-ți parola</a>
         <br>
         <% if (canManageUsers) { %>
@@ -20,14 +18,17 @@
         <% } %>
     </div>
     <div id="article-pannel">
-        <h1>Articole</h1>
+        <h1>Articole</h1><!--
+        --><a class="action-button" href="/admin/add" id="add-article-button" ><!--
+            --><input type="submit" value="+"></input><!--
+        --></a>
         <% for (article of articles) { %>
             <div class="article-item">
                 <a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>,
                 publicat <%= article.date %>
                 <div>
-                    <a href="/admin/modify/<%= article.id %>"><!--
-                    --><input type="submit" value="Modifică"></input><!--
+                    <a class="action-button" href="/admin/modify/<%= article.id %>"><!--
+                        --><input type="submit" value="Modifică"></input><!--
                     --></a>
                     <form action="/admin/remove" method="post">
                         <input type="hidden" name="id"

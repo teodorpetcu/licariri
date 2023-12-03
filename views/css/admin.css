@@ -8,12 +8,12 @@ body {
 }
 
 #account-pannel a:hover,
-#article-pannel a:hover {
+#article-pannel a:hover:not(.action-button) {
     color: var(--accent-color);
 }
 
 #account-pannel a,
-#article-pannel a {
+#article-pannel a:not(.action-button) {
     margin: 0px auto;
     width: 120px;
     border: 1px solid var(--snippet-border-color);
@@ -72,7 +72,7 @@ button {
     transition: color 0.2s ease, background-color 0.2s ease;
 }
 
-input[type="file"] {
+form input[type="file"] {
     padding: 4px;
     text-align: center;
 }
@@ -104,14 +104,34 @@ input:focus {
     border: 1px solid var(--accent-color);
 }
 
-form input[type="submit"]:hover,
-form button:hover {
+input[type="submit"]:hover,
+button:hover {
     color: var(--neutral-color);
     background-color: var(--font-color);
 }
 
-select {
+form select {
     cursor: pointer;
+}
+
+#add-article-button {
+    display: inline-block;
+    margin-left: 20px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+#add-article-button input {
+    padding: 10px;
+    aspect-ratio: 1;
+    width: 60px;
+    border-radius: 30%;
+    border: 2px solid var(--font-color);
+    font-size: 1.6rem;
+}
+
+h1 {
+    display: inline-block;
 }
 
 @media (max-width: 600px) {
