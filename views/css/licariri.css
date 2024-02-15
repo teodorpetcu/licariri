@@ -17,13 +17,14 @@ body {
 
 .fullscreen-div {
     width: 100vw;
-    height: 100%;
-    overflow-x: hidden;
-    overflow-y: hidden;
+    height: 100vh;
+    max-width: 100%;
+    max-height: 100%;
+    overflow: hidden;
 }
 
 #main-page-header {
-    min-height: 15vh;
+    min-height: 15%;
     width: 100%;
     margin: 0 auto;
     border-bottom: 4px solid black;
@@ -45,7 +46,7 @@ body {
 #banner-container {
     position: relative;
     background-size: cover;
-    height: 85vh;
+    height: 85%;
     width: 100%;
 }
 
@@ -81,4 +82,17 @@ body {
     transform: rotate(45deg);
     -webkit-transform: rotate(45deg);
     cursor: pointer;
+}
+
+#main-page {
+    padding-top: 30px;
+    background-color: purple;
+    padding-bottom: 30px;
+}
+
+#main-page #section {
+    margin: 0 auto;
+    background-color: #f0f0f0;
+    width: 62%;
+    height: calc(100vh - 30px);
 }
