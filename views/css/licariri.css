@@ -80,4 +80,5 @@ body {
     margin-left: -12px;
     transform: rotate(45deg);
     -webkit-transform: rotate(45deg);
+    cursor: pointer;
 }

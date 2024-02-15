@@ -20,10 +20,16 @@
                 <p>Lorem ipsum dolor sit amet</p>
             </div>
         </div>
-        <a class="arrow"></a>
+        <a id="next-arrow" class="arrow"></a>
     </div>
-    <!--<div class="fullscreen-div">-->
-    <!--</div>-->
+    <div id="main-page" class="fullscreen-div">
+    </div>
 </body>
+
+<script type="text/javascript">
+    document.getElementById("next-arrow").addEventListener("click", () => {
+        window.scrollTo({ top: document.getElementById("main-page").offsetTop, behavior: 'smooth' });
+    });
+</script>
 
 </html>
