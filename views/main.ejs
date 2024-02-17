@@ -28,10 +28,18 @@
             Te așteptăm!
             </p>
         </div>
-    <div id="main-page">
-        <div id="section">
+        <div id="main-page" class="no-select">
+            <div id="article-thumbnail-grid">
+            <% for (article of articles) { %>
+                <a href="/articles/<%= article.id %>">
+                    <div class="article-thumbnail">
+                        <h1><%= article.title %></h1>
+                        <img src="/images/<%= article.id %>">
+                    </div>
+                </a>
+            <% } %>
+            </div>
         </div>
-    </div>
 </body>
 
 <script type="text/javascript">
