@@ -78,6 +78,7 @@ body {
 }
 
 #article-thumbnail-grid {
+    position: relative;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 4fr));
     gap: 2rem;
@@ -89,18 +90,6 @@ body {
     height: 350px;
     transition: transform 0.25s;
 
-    h1 {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        font-family: "Helvetica";
-        color: #f0f0f0;
-        mix-blend-mode: difference;
-        filter: contrast(10) drop-shadow(.1rem .1rem orange) grayscale(1);
-    }
-
     img {
         width: 100%;
         height: 100%;
@@ -110,4 +99,73 @@ body {
 
 .article-thumbnail:hover {
     transform: scale(1.06);
+}
+
+.article-title {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    line-break: strict;
+    font-family: "Helvetica";
+    color: #a0a090;
+    text-rendering: optimizeLegibility;
+    mix-blend-mode: difference;
+    filter: contrast(10) drop-shadow(.1rem .1rem orange) grayscale(1);
+}
+
+#article-headline {
+    position: relative;
+    width: 100%;
+    img {
+        height: 100vh;
+        width: 100%;
+        object-fit: cover;
+    }
+    h1 {
+        font-size: 4.8rem;
+    }
+}
+
+#article-info {
+    width: 32%;
+    margin: 0 auto;
+    font-family: "Times New Roman";
+}
+
+#authors-list {
+    text-align: center;
+    margin: 0 auto;
+
+    h3 {
+        margin-bottom: 0;
+    }
+
+    .author {
+        text-align: center;
+        width: 100%;
+    }
+}
+
+#article-contents {
+    width: 30%;
+    margin: 0 auto;
+    text-indent: 4rem;
+    text-align: justify;
+    font-family: "Arial";
+    :first-child {
+        text-indent: 0;
+    }
+    :first-child::first-letter {
+            color: black;
+            padding: 0.8rem;
+            border: 2px solid;
+            margin: 4px;
+            margin-right: 20px;
+
+            font-size: 5rem;
+            float: left;
+            line-height: 1;
+    }
 }

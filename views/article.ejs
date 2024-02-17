@@ -7,27 +7,30 @@
 </head>
 
 <body>
-    <%- include("header"); %>
-    <%- include("theme"); %>
-    <div id="page-body">
-        <div class="article">
-            <div class="headline">
-                <% if (article.thumbnail) { %>
-                    <div style="text-align: center">
-                        <img src="/images/<%= article.id %>">
-                    </div>
-                <% } %>
-                <h1><%= article.title %></h1>
-                <div>
-                    <%- include("authors") %>
-                    <span style="float: right; opacity: 0.3;"><%= article.date %></span>
-                </div>
-                <%- include("tags") %>
+    <div id="article-headline">
+        <img src="/images/<%= article.id %>" class="no-select">
+        <h1 class="article-title"><%= article.title %></h1>
+    </div>
+    <div id="article-info">
+        <div id="authors-list">
+            <h3>Autori:</h3>
+            <% for (let author of article.authors) { %>
+            <div class="author">
+                <span style="opacity: 0.3">—</span>
+                <a style="display: inline-block;" href="/query?author=<%= author.name %>"><%= author.name %></a>
+                <span style="opacity: 0.3">—</span>
             </div>
-            <div class="contents">
-                <%- article.contents %>
-            </div>
+            <% } %>
+            <span style="float: right; opacity: 0.8;"><%= article.date %></span>
         </div>
+        <div id="tags-list">
+            <% for (let tag of article.tags) { %>
+                <a href="/query?tag=<%= tag %>">#<%= tag %></a>
+            <% } %>
+        </div>
+    </div>
+    <div id="article-contents">
+        <%- article.contents %>
     </div>
 </body>
 
