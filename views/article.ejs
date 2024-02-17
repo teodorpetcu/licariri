@@ -16,12 +16,12 @@
             <h3>Autori:</h3>
             <% for (let author of article.authors) { %>
             <div class="author">
-                <span style="opacity: 0.3">—</span>
-                <a style="display: inline-block;" href="/query?author=<%= author.name %>"><%= author.name %></a>
-                <span style="opacity: 0.3">—</span>
+                <span style="opacity: 0.5">—</span><!--
+                --><a style="display: inline-block;" href="/query?author=<%= author.name %>"><%= author.name %></a><!--
+                --><span style="opacity: 0.5">—</span>
             </div>
             <% } %>
-            <span style="float: right; opacity: 0.8;"><%= article.date %></span>
+            <b style="float: right; opacity: 0.8;"><%= article.date %></b>
         </div>
         <div id="tags-list">
             <% for (let tag of article.tags) { %>
@@ -29,6 +29,7 @@
             <% } %>
         </div>
     </div>
+    <hr style="width: 18%"></hr>
     <div id="article-contents">
         <%- article.contents %>
     </div>
