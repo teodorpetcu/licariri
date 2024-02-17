@@ -6,6 +6,13 @@ body {
     width: 100%;
 }
 
+body {
+    background-size: cover;
+    background-image: url(/images/test.png);
+    background-attachment: fixed;
+    background-position: center top;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -15,84 +22,50 @@ body {
     user-select: none;
 }
 
-.fullscreen-div {
-    width: 100vw;
-    height: 100vh;
-    max-width: 100%;
-    max-height: 100%;
-    overflow: hidden;
-}
-
 #main-page-header {
-    min-height: 15%;
+    height: 180px;
     width: 100%;
-    margin: 0 auto;
     border-bottom: 4px solid black;
+    background-color: #ffffff;
 }
 
-#main-page-header h1 {
-    font-family: "Times New Roman";
-    font-size: 4rem;
-    text-align: center;
-    margin-bottom: 0;
-}
-
-#main-page-header h6 {
-    font-family: "Helvetica";
-    margin-top: 0;
-    text-align: center;
-}
-
-#banner-container {
+#main-page-header #website-title-container {
     position: relative;
-    background-size: cover;
-    height: 85%;
-    width: 100%;
-}
-
-#banner-container img {
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
-}
-
-#banner-container #banner-text {
-    position: absolute;
+    top: 20%;
     left: 50%;
-    top: 50%;
-    transform: translate(-50%, -58%);
-    padding: 10px;
+    text-align: center;
+    transform: translateX(-50%);
+    h1 {
+        font-family: "Times New Roman";
+        font-size: 4.8em;
+        margin: 0;
+    }
+    h6 {
+        font-family: "Helvetica";
+        margin: 0;
+    }
 }
 
-#banner-container #banner-text {
+#introduction-square {
+    margin: 10% auto 10% auto;
+    padding: 10px;
+    width: 450px;
     background-color: #ffffff;
     font-family: "Times New Roman";
-    font-size: 1.6em;
+    font-size: 1.4em;
     text-align: center;
-}
-
-.arrow {
-    position: absolute;
-    left: 50%;
-    bottom: 2%;
-    border: solid orange;
-    border-width: 0 6px 6px 0;
-    padding: 12px;
-    margin-left: -12px;
-    transform: rotate(45deg);
-    -webkit-transform: rotate(45deg);
-    cursor: pointer;
 }
 
 #main-page {
     padding-top: 30px;
-    background-color: purple;
+    background-color: 0;
     padding-bottom: 30px;
 }
 
 #main-page #section {
     margin: 0 auto;
-    background-color: #f0f0f0;
-    width: 62%;
-    height: calc(100vh - 30px);
+    /*background-color: #f0f0f0;*/
+    background-color: #ffffff;
+    width: 82%;
+    height: calc(400vh);
 }
