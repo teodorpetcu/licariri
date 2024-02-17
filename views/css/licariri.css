@@ -87,6 +87,7 @@ body {
     position: relative;
     border: 1px solid #00000066;
     height: 350px;
+    transition: transform 0.25s;
 
     h1 {
         position: absolute;
@@ -105,4 +106,8 @@ body {
         height: 100%;
         object-fit: cover;
     }
+}
+
+.article-thumbnail:hover {
+    transform: scale(1.06);
 }
