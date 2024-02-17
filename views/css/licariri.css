@@ -23,6 +23,7 @@ body {
 }
 
 #main-page-header {
+    position: relative;
     height: 180px;
     width: 100%;
     border-bottom: 4px solid black;
@@ -44,6 +45,13 @@ body {
         font-family: "Helvetica";
         margin: 0;
     }
+}
+
+#main-page-header #links {
+    position: absolute;
+    font-size: 1.4rem;
+    right: 10%;
+    top: 10%;
 }
 
 #introduction-square {
