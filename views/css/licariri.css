@@ -6,7 +6,7 @@ body {
     width: 100%;
 }
 
-body {
+#main-page {
     background-size: cover;
     background-image: url(/images/test.png);
     background-attachment: fixed;
@@ -65,7 +65,7 @@ body {
     text-align: center;
 }
 
-#main-page {
+#articles-section {
     position: relative;
     margin: 0 auto;
     /*background-color: #f0f0f0;*/

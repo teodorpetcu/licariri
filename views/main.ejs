@@ -7,39 +7,39 @@
     <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">-->
 </head>
 
-<body>
-        <div id="main-page-header">
-            <div id="website-title-container">
-                <h1>Licăriri</h1>
-                <h6><i>revista elevilor Colegiului Național Dr. Ioan Meșotă, Brașov</i></h6>
-            </div>
-            <div id="links">
-            </div>
+<body id="main-page">
+    <div id="main-page-header">
+        <div id="website-title-container">
+            <h1>Licăriri</h1>
+            <h6><i>revista elevilor Colegiului Național Dr. Ioan Meșotă, Brașov</i></h6>
         </div>
-        <div id="introduction-square">
-            <h2>Anul XXXX.</h1>
-            <p>Dacă ești actual elev sau absolvent meșotist și vrei să ne
-            împărtășești gândurile tale despre un subiect care te
-            pasionează, despre o problemă care te nemulțumește, sau să-ți
-            fie publicate creațiile literare, atunci te invităm cu cel mai
-            mare drag să ne trimiți ideile tale sub forma unui document Word
-            la adresa
-            <a href="mailto:licariri@mesota.ro">licariri@mesota.ro</a>.
-            Te așteptăm!
-            </p>
+        <div id="links">
         </div>
-        <div id="main-page" class="no-select">
-            <div id="article-thumbnail-grid">
-            <% for (article of articles) { %>
-                <a href="/articles/<%= article.id %>">
-                    <div class="article-thumbnail">
-                        <h1><%= article.title %></h1>
-                        <img src="/images/<%= article.id %>">
-                    </div>
-                </a>
-            <% } %>
-            </div>
+    </div>
+    <div id="introduction-square">
+        <h2>Anul XXXX.</h1>
+        <p>Dacă ești actual elev sau absolvent meșotist și vrei să ne
+        împărtășești gândurile tale despre un subiect care te
+        pasionează, despre o problemă care te nemulțumește, sau să-ți
+        fie publicate creațiile literare, atunci te invităm cu cel mai
+        mare drag să ne trimiți ideile tale sub forma unui document Word
+        la adresa
+        <a href="mailto:licariri@mesota.ro">licariri@mesota.ro</a>.
+        Te așteptăm!
+        </p>
+    </div>
+    <div id="articles-section" class="no-select">
+        <div id="article-thumbnail-grid">
+        <% for (article of articles) { %>
+            <a href="/articles/<%= article.id %>">
+                <div class="article-thumbnail">
+                    <h1><%= article.title %></h1>
+                    <img src="/images/<%= article.id %>">
+                </div>
+            </a>
+        <% } %>
         </div>
+    </div>
 </body>
 
 <script type="text/javascript">
