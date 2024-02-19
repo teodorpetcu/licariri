@@ -13,13 +13,15 @@
     </div>
     <div id="article-info">
         <div id="authors-list">
-            <h3>Autori:</h3>
+            <% if (article.authors.length) { %>
+            <h3>Scris de:</h3>
             <% for (let author of article.authors) { %>
             <div class="author">
                 <span style="opacity: 0.5">—</span><!--
                 --><a style="display: inline-block;" href="/query?author=<%= author.name %>"><%= author.name %></a><!--
                 --><span style="opacity: 0.5">—</span>
             </div>
+            <% } %>
             <% } %>
             <b style="float: right; opacity: 0.8;"><%= article.date %></b>
         </div>

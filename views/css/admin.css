@@ -1,70 +1,20 @@
-body {
+#account-pannel,
+#article-pannel,
+#edit-article {
     text-align: center;
 }
 
-#account-pannel a {
-    display: block;
-    padding: 10px;
-}
-
-#account-pannel a:hover,
-#article-pannel a:hover:not(.action-button) {
-    color: var(--accent-color);
-}
-
-#account-pannel a,
-#article-pannel a:not(.action-button) {
-    margin: 0px auto;
-    width: 120px;
-    border: 1px solid var(--snippet-border-color);
-    background-color: var(--main-color);
-    text-decoration: 1px solid underline;
-    transition: color 0.2s ease;
-}
-
-.article-item {
-    padding-bottom: 15px;
-}
-
-.article-item form {
-    display: inline-block;
-}
-
 form {
-    display: grid;
-}
-
-form label {
-    display: block;
-}
-
-#add-article #authors,
-#add-article #tags {
-    display: grid;
-    justify-content: center;
-}
-
-#add-aricle #authors input,
-#add-article #tags input {
-    display: block;
-}
-
-#add-article textarea {
-    resize: vertical;
-    width: 600px;
-    height: 500px;
-    color: var(--font-color);
-    background-color: var(--neutral-color);
-}
-
-#add-article button {
-    display: inline-block;
-}
-
-textarea,
-select,
-input {
-    font-family: "Helvetica";
+    label {
+        display: block;
+    }
+    select {
+        cursor: pointer;
+    }
+    input[type="file"] {
+        padding: 4px;
+        text-align: center;
+    }
 }
 
 input[type="submit"],
@@ -72,15 +22,11 @@ button {
     transition: color 0.2s ease, background-color 0.2s ease;
 }
 
-form input[type="file"] {
-    padding: 4px;
-    text-align: center;
-}
-
 button,
 textarea,
 select,
 input {
+    font-family: "Helvetica";
     outline: none;
     color: var(--font-color);
     background-color: var(--neutral-color);
@@ -90,52 +36,79 @@ input {
     transition: border 0.2s ease;
 }
 
-button:hover,
-textarea:hover,
-select:hover,
-input:hover {
-    border: 1px dashed var(--accent-color);
-}
-
 button:focus,
 textarea:focus,
 select:focus
 input:focus {
-    border: 1px solid var(--accent-color);
+    border: 1px solid var(--font-color);
 }
 
-input[type="submit"]:hover,
-button:hover {
-    color: var(--neutral-color);
-    background-color: var(--font-color);
-}
-
-form select {
-    cursor: pointer;
-}
-
-#add-article-button {
-    display: inline-block;
-    margin-left: 20px;
-    vertical-align: middle;
-    text-align: center;
-}
-
-#add-article-button input {
+#account-pannel a {
+    display: block;
     padding: 10px;
-    aspect-ratio: 1;
-    width: 60px;
-    border-radius: 30%;
-    border: 2px solid var(--font-color);
-    font-size: 1.6rem;
 }
 
-h1 {
-    display: inline-block;
+#article-pannel {
+    h1 {
+        display: inline-block;
+    }
+
+    #add-article-button {
+        display: inline-block;
+        margin-left: 20px;
+        vertical-align: middle;
+        text-align: center;
+        input {
+            padding: 10px;
+            aspect-ratio: 1;
+            width: 60px;
+            border-radius: 30%;
+            border: 2px solid var(--font-color);
+            font-size: 1.6rem;
+        }
+    }
+
+    .article-actions {
+        padding-bottom: 15px;
+        form {
+            display: inline-block;
+        }
+    }
+}
+
+#account-pannel a,
+#article-pannel a {
+    margin: 0px auto;
+    width: 120px;
+    border: 1px solid var(--snippet-border-color);
+    background-color: var(--main-color);
+    text-decoration: 1px solid underline;
+    transition: color 0.2s ease;
+}
+
+#edit-article {
+    #authors,
+    #tags {
+        display: grid;
+        justify-content: center;
+        input {
+            display: block;
+        }
+    }
+    textarea {
+        resize: vertical;
+        width: 600px;
+        height: 500px;
+        color: var(--font-color);
+        background-color: var(--neutral-color);
+    }
+    button {
+        display: inline-block;
+    }
 }
 
 @media (max-width: 600px) {
-    #add-article textarea {
+    #edit-article textarea {
         width: 98%;
     }
 }

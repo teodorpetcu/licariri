@@ -8,7 +8,6 @@
 </head>
 
 <body>
-    <%- include("theme"); %>
     <div id="account-pannel">
         <h1>Panou de administrare</h1>
         <a href="/admin/user/password">Schimbă-ți parola</a>
@@ -23,21 +22,21 @@
             --><input type="submit" value="+"></input><!--
         --></a>
         <% for (article of articles) { %>
-            <div class="article-item">
-                <a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>,
-                publicat <%= article.date %>
-                <div>
-                    <a class="action-button" href="/admin/modify/<%= article.id %>"><!--
-                        --><input type="submit" value="Modifică"></input><!--
-                    --></a>
-                    <span style="padding: 20px;"></span>
-                    <form action="/admin/remove" method="post">
-                        <input type="hidden" name="id"
-                            value="<%= article.id %>">
-                        <input type="submit" onclick="return confirm(`Sigur vrei să ștergi articolul?`)" value="ȘTERGE" style="background-color: #BB0000"></input>
-                    </form>
-                </div>
+        <div class="article-actions">
+            <a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>,
+            publicat <%= article.date %>
+            <div>
+                <a class="" href="/admin/modify/<%= article.id %>"><!--
+                    --><input type="submit" value="Modifică"></input><!--
+                --></a>
+                <span style="padding: 20px;"></span>
+                <form action="/admin/remove" method="post">
+                    <input type="hidden" name="id"
+                        value="<%= article.id %>">
+                    <input type="submit" onclick="return confirm(`Sigur vrei să ștergi articolul?`)" value="ȘTERGE" style="background-color: #BB0000"></input>
+                </form>
             </div>
+        </div>
         <% } %>
     </div>
 </body>

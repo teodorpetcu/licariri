@@ -1,3 +1,8 @@
+:root {
+    --font-color: black;
+    --neutral-color: white;
+}
+
 html,
 body {
     margin: 0;
@@ -88,7 +93,8 @@ body {
 .article-thumbnail {
     position: relative;
     border: 1px solid #00000066;
-    height: 350px;
+    /* todo: limit the number of characters in the title to avoid overflow */
+    height: 400px;
     transition: transform 0.25s;
 
     img {
