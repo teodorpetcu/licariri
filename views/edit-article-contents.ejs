@@ -47,12 +47,15 @@
                 <textarea required id="input-article-contents"
                     name="content"><%= defaults.content %></textarea>
             </div>
-
-            <div id="edit-article-dtp">
-            </div>
-
-            <!--<input type="submit" value="Trimite">-->
         </div>
+        <div id="edit-article-dtp">
+            <div>
+                <label>Thumbnail:</label>
+                <input required id="input-article-thumbnail"
+                    type="file" accepts="image/*" name="thumbnail">
+            </div>
+        </div>
+        <!--<input type="submit" value="Trimite">-->
     </form>
     <div id="preview-page">
         <div id="article-headline">
@@ -131,12 +134,16 @@
         contentPage.style.display = "none";
         dtpPage.style.display = "none";
         previewPage.style.display = "block";
+        // todo: trim() title & authors & tags etc., preferrably in the input
+        // fields themselves
 
         const articleTitle = document.getElementById("article-title");
         const articleContents = document.getElementById("input-article-contents");
         const authors = document.getElementsByName("authors[]");
         const tags = document.getElementsByName("tags[]");
+        let [thumbnail] = document.getElementById("input-article-thumbnail").files;
 
+        const previewArticleThumbnail = document.getElementById("preview-thumbnail");
         const previewTitle = document.getElementById("preview-thumbnail-title")
         const previewArticleContents = document.getElementById("article-contents")
         const previewArticleAuthors = document.getElementById("authors-list")
@@ -176,6 +183,9 @@
             previewArticleTags.append(tagLink);
         }
 
+        if (thumbnail) {
+            previewArticleThumbnail.src = URL.createObjectURL(thumbnail)
+        }
         previewTitle.textContent = articleTitle.value;
         previewArticleContents.innerHTML = DOMPurify.sanitize(marked.parse(articleContents.value));
         <!--const articleDate = document.getElementById("preview-article-date");-->
