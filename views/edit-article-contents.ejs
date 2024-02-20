@@ -53,6 +53,9 @@
                 <label>Thumbnail:</label>
                 <input required id="input-article-thumbnail"
                     type="file" accepts="image/*" name="thumbnail">
+                <button type="button" id="reset-thumbnail-button"
+                    onclick="document.getElementById('input-article-thumbnail').value
+                    = ''">RESETARE</button>
             </div>
         </div>
         <!--<input type="submit" value="Trimite">-->
@@ -185,6 +188,8 @@
 
         if (thumbnail) {
             previewArticleThumbnail.src = URL.createObjectURL(thumbnail)
+        } else {
+            previewArticleThumbnail.src = "/images/<%= defaults.id %>"
         }
         previewTitle.textContent = articleTitle.value;
         previewArticleContents.innerHTML = DOMPurify.sanitize(marked.parse(articleContents.value));

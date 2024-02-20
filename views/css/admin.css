@@ -175,4 +175,7 @@ input:focus {
     text-align: center;
     padding-top: 200px;
     font-family: "Arial";
+    #reset-thumbnail-button {
+        vertical-align: middle;
+    }
 }
