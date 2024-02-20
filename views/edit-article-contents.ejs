@@ -27,23 +27,13 @@
 
             <div>
                 <label>Autori:</label>
-                <div id="authors">
-                    <% for (author of defaults.authors) { %>
-                        <input type="text"
-                            name="authors[]" value="<%= author.name %>">
-                    <% } %>
-                </div>
+                <div id="authors"></div>
                 <button type="button" id="authors-add">Adaugă</button>
             </div>
 
             <div>
                 <label>Tag-uri:</label>
-                <div id="tags">
-                    <% for (tag of defaults.tags) { %>
-                        <input type="text"
-                            name="tags[]" value="<%= tag %>">
-                    <% } %>
-                </div>
+                <div id="tags"></div>
                 <button type="button" id="tags-add">Adaugă</button>
             </div>
 
@@ -60,60 +50,42 @@
 </body>
 
 <script>
-    const dynamicAuthorsList = () => {
-        const authorsContainer = document.getElementById("authors");
-        const authorsAddButton = document.getElementById("authors-add");
+    const authorsAddButton = document.getElementById("authors-add");
+    const tagsAddButton = document.getElementById("tags-add");
 
-        authorsAddButton.addEventListener("click", () => {
-            let author = document.createElement("div");
-            author.classList.add("author");
+    // `type` may be either "author" or "tag"
+    const addField = (type = "", value = "") => {
+        const fieldsContainer = document.getElementById(type + "s");
+        let field = document.createElement("div");
+        field.classList.add(type);
 
-            let authorNameInput = document.createElement("input");
-            authorNameInput.name = "authors[]";
-            authorNameInput.type = "text";
+        let fieldInput = document.createElement("input");
+        fieldInput.name = type +  "s[]";
+        fieldInput.type = "text";
+        fieldInput.value = value;
 
-            let authorDeleteButton = document.createElement("button");
-            authorDeleteButton.type = "button";
-            authorDeleteButton.classList.add("delete-button");
-            authorDeleteButton.textContent = "-";
-            authorDeleteButton.addEventListener("click", () => {
-                authorsContainer.removeChild(author)
-            })
-
-            author.appendChild(authorNameInput);
-            author.appendChild(authorDeleteButton);
-            authorsContainer.appendChild(author);
+        let fieldDeleteButton = document.createElement("button");
+        fieldDeleteButton.type = "button";
+        fieldDeleteButton.classList.add("delete-button");
+        fieldDeleteButton.textContent = "-";
+        fieldDeleteButton.addEventListener("click", () => {
+            fieldsContainer.removeChild(field)
         })
+
+        field.appendChild(fieldInput);
+        field.appendChild(fieldDeleteButton);
+        fieldsContainer.appendChild(field);
     }
 
-    const dynamicTagsList = () => {
-        const tagsContainer = document.getElementById("tags");
-        const tagsAddButton = document.getElementById("tags-add");
+    <% for (author of defaults.authors) { %>
+        addField("author", "<%= author.name %>");
+    <% } %>
+    <% for (tag of defaults.tags) { %>
+        addField("tag", "<%= tag %>");
+    <% } %>
 
-        tagsAddButton.addEventListener("click", () => {
-            let tag = document.createElement("div");
-            tag.classList.add("tag");
-
-            let tagNameInput = document.createElement("input");
-            tagNameInput.name = "tags[]";
-            tagNameInput.type = "text";
-
-            let tagDeleteButton = document.createElement("button");
-            tagDeleteButton.type = "button";
-            tagDeleteButton.classList.add("delete-button");
-            tagDeleteButton.textContent = "-";
-            tagDeleteButton.addEventListener("click", () => {
-                tagsContainer.removeChild(tag)
-            })
-
-            tag.appendChild(tagNameInput);
-            tag.appendChild(tagDeleteButton);
-            tagsContainer.appendChild(tag);
-        })
-    }
-
-    dynamicAuthorsList();
-    dynamicTagsList();
+    authorsAddButton.addEventListener("click", () => addField("author", ""));
+    tagsAddButton.addEventListener("click", () => addField("tag", ""));
 </script>
 
 </html>
