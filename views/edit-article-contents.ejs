@@ -148,6 +148,7 @@
         previewArticleTags.textContent = "";
 
         for (author of authors) {
+            if (!author.value) continue;
             let authorDiv = document.createElement("div");
             authorDiv.classList.add("author");
             let span1 = document.createElement("span");
@@ -168,6 +169,7 @@
         }
 
         for (tag of tags) {
+            if (!tag.value) continue;
             let tagLink= document.createElement("a");
             tagLink.href = "#";
             tagLink.textContent = "#" + tag.value;
