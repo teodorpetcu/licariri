@@ -3,50 +3,53 @@
 
 <head>
     <% if (action.startsWith("modify")) { %>
-        <title>Modifică articol</title>
+    <title>Modifică articol</title>
     <% } else { %>
-        <title>Adaugă articol</title>
+    <title>Adaugă articol</title>
     <% } %>
     <%- include("meta"); %>
     <link rel="stylesheet" type="text/css" href="/css/admin.css">
 </head>
 
 <body>
-    <div id="edit-article">
-        <% if (action.startsWith("modify")) { %>
+    <div id="editing-stages">
+        <button type="button" id="button-edit-content">Conținut</button>
+        <button id="button-edit-dtp">Tehnoredactare</button>
+        <button id="button-preview">Previzualizare</button>
+    </div>
+    <form action="/admin/<%= action %>" method="post" autocomplete="off" enctype="multipart/form-data">
+        <div id="edit-article-content">
+            <div id="left">
+            <% if (action.startsWith("modify")) { %>
             <h1>Modifică articol</h1>
-        <% } else { %>
+            <% } else { %>
             <h1>Adaugă articol</h1>
-        <% } %>
-        <form action="/admin/<%= action %>" method="post" autocomplete="off" enctype="multipart/form-data">
-            <div>
-                <label>Titlu:</label>
-                <input required type="text"
-                    name="title" placeholder="" value="<%= defaults.title %>">
-            </div>
+            <% } %>
+                <div>
+                    <label>Titlu:</label>
+                    <input required type="text"
+                        name="title" placeholder="" value="<%= defaults.title %>">
+                </div>
 
-            <div>
-                <label>Autori:</label>
-                <div id="authors"></div>
-                <button type="button" id="authors-add">Adaugă</button>
-            </div>
+                <div>
+                    <label>Autori:</label>
+                    <div id="authors"></div>
+                    <button type="button" id="authors-add">Adaugă</button>
+                </div>
 
-            <div>
-                <label>Tag-uri:</label>
-                <div id="tags"></div>
-                <button type="button" id="tags-add">Adaugă</button>
+                <div>
+                    <label>Tag-uri:</label>
+                    <div id="tags"></div>
+                    <button type="button" id="tags-add">Adaugă</button>
+                </div>
             </div>
-
-            <div>
-                <label>Text:</label>
+            <div id="right">
                 <textarea required name="content"><%= defaults.content %></textarea>
             </div>
 
-            <div>
-                <input type="submit" value="Trimite">
-            </div>
-        </form>
-    </div>
+            <!--<input type="submit" value="Trimite">-->
+        </div>
+    </form>
 </body>
 
 <script>

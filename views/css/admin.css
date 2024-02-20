@@ -1,6 +1,5 @@
 #account-pannel,
-#article-pannel,
-#edit-article {
+#article-pannel  {
     text-align: center;
 }
 
@@ -86,15 +85,35 @@ input:focus {
     transition: color 0.2s ease;
 }
 
-#edit-article {
+#editing-stages {
+    z-index: 1;
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 1px solid black;
+    background-color: white;
+    margin-top: -15px;
+    button {
+        margin: 0;
+        cursor: pointer;
+        border: none;
+        font-family: "Helvetica";
+        text-transform: uppercase;
+        padding: 15px;
+        color: blue;
+        text-decoration: none;
+    }
+}
+
+#edit-article-content {
+    padding-top: 30px;
+
     #authors,
     #tags {
         position: relative;
         display: grid;
         justify-content: center;
-        input {
-            display: inline-block;
-        }
     }
     #authors-add,
     #tags-add {
@@ -104,27 +123,51 @@ input:focus {
     #authors .author button,
     #tags .tag button {
         margin-left: 15px;
-        vertical-align: bottom;
-        padding: 10px;
+        vertical-align: center;
+        padding: 0.8rem;
         border-radius: 50%;
         aspect-ratio: 1;
         line-height: 50%;
-        text-align: middle;
+        text-align: center;
+    }
+    #left {
+        width: 500px;
+        font-family: "Arial";
+        font-size: 1.2rem;
+        position: absolute;
+        top: 60px;
+        left: 300px;
+        input {
+            font-size: 1.1rem;
+        }
+        input[name="title"] {
+            width: 100%;
+            font-size: 1.4rem;
+        }
+        label {
+            padding-top: 30px;
+            padding-bottom: 5px;
+            text-align: left;
+        }
+        text-align: center;
+        padding: 50px;
+        float: left;
     }
     textarea {
-        resize: vertical;
-        width: 600px;
-        height: 500px;
-        color: var(--font-color);
-        background-color: var(--neutral-color);
-    }
-    .delete-button {
-        position: relative;
+        font-family: "Arial";
+        position: absolute;
+        border-radius: 10px;
+        padding: 10px;
+        top: 60px;
+        right: 300px;
+        resize: none;
+        width: 700px;
+        height: calc(100vh - 120px);
     }
 }
 
 @media (max-width: 600px) {
-    #edit-article textarea {
+    #edit-button textarea {
         width: 98%;
     }
 }
