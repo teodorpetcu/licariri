@@ -27,7 +27,7 @@
             <% } %>
                 <div>
                     <label>Titlu:</label>
-                    <input required type="text"
+                    <input required id="article-title" type="text"
                         name="title" placeholder="" value="<%= defaults.title %>">
                 </div>
 
@@ -44,7 +44,8 @@
                 </div>
             </div>
             <div id="right">
-                <textarea required name="content"><%= defaults.content %></textarea>
+                <textarea required id="input-article-contents"
+                    name="content"><%= defaults.content %></textarea>
             </div>
 
             <div id="edit-article-dtp">
@@ -53,7 +54,22 @@
             <!--<input type="submit" value="Trimite">-->
         </div>
     </form>
-    <div id="preview-page"></div>
+    <div id="preview-page">
+        <div id="article-headline">
+            <img id="preview-thumbnail" src="/images/" class="no-select">
+            <h1 id="preview-thumbnail-title" class="article-title"></h1>
+        </div>
+        <div id="article-info">
+            <div id="authors-list">
+                <h3>Scris de:</h3>
+            </div>
+            <b id="preview-article-date" style="float: right; opacity: 0.8;"></b>
+            <div id="tags-list">
+            </div>
+        </div>
+        <hr style="width: 18%"></hr>
+        <div id="article-contents"></div>
+    </div>
 </body>
 
 <script>
@@ -115,11 +131,60 @@
         contentPage.style.display = "none";
         dtpPage.style.display = "none";
         previewPage.style.display = "block";
+
+        const articleTitle = document.getElementById("article-title");
+        const articleContents = document.getElementById("input-article-contents");
+        const authors = document.getElementsByName("authors[]");
+        const tags = document.getElementsByName("tags[]");
+
+        const previewTitle = document.getElementById("preview-thumbnail-title")
+        const previewArticleContents = document.getElementById("article-contents")
+        const previewArticleAuthors = document.getElementById("authors-list")
+        const previewArticleTags = document.getElementById("tags-list")
+
+        while (previewArticleAuthors.childElementCount > 1) {
+            previewArticleAuthors.removeChild(previewArticleAuthors.lastChild);
+        }
+        previewArticleTags.textContent = "";
+
+        for (author of authors) {
+            let authorDiv = document.createElement("div");
+            authorDiv.classList.add("author");
+            let span1 = document.createElement("span");
+            span1.style.opacity = "0.5";
+            span1.textContent = "—";
+            let span2 = document.createElement("span");
+            span2.style.opacity = "0.5";
+            span2.textContent = "—";
+            let authorLink = document.createElement("a");
+            authorLink.href = "#";
+            authorLink.style.display = "inline-block";
+            authorLink.textContent = author.value;
+
+            authorDiv.appendChild(span1);
+            authorDiv.appendChild(authorLink);
+            authorDiv.appendChild(span2);
+            previewArticleAuthors.append(authorDiv);
+        }
+
+        for (tag of tags) {
+            let tagLink= document.createElement("a");
+            tagLink.href = "#";
+            tagLink.textContent = "#" + tag.value;
+            previewArticleTags.append(tagLink);
+        }
+
+        previewTitle.textContent = articleTitle.value;
+        previewArticleContents.innerHTML = DOMPurify.sanitize(marked.parse(articleContents.value));
+        <!--const articleDate = document.getElementById("preview-article-date");-->
     }
 
     document.getElementById("button-edit-content").addEventListener("click", showContentPage);
     document.getElementById("button-edit-dtp").addEventListener("click", showDTPPage);
     document.getElementById("button-preview").addEventListener("click", showPreviewPage);
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
 
 </html>

@@ -39,6 +39,7 @@ const get_articlePage = async (req, res) => {
             article.contents = "";
             res.render("article", {article});
         } else {
+            // todo: purify using DOMPurify
             article.contents = marked.parse(data.toString());
             res.render("article", {article});
         }
