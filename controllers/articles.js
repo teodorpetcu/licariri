@@ -92,7 +92,7 @@ const get_adminModifyArticle = async (req, res) => {
     const articleID = req.params.articleID;
     let article = await articleDatabase.getArticle(articleID);
     article.content = fs.readFileSync(`${ARTICLE_CONTENTS_PATH}/${article.id}.md`);
-    res.render("add-or-modify-article", {action: `modify/${articleID}`, defaults: article});
+    res.render("edit-article-contents", {action: `modify/${articleID}`, defaults: article});
 }
 
 const post_adminModifyArticle = async (req, res) => {

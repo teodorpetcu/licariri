@@ -60,7 +60,7 @@ const get_adminAddArticle = async (_, res) => {
         tags: [],
         content: "",
     }
-    res.render("add-or-modify-article", {action: "add", defaults: emptyArticle});
+    res.render("edit-article-contents", {action: "add", defaults: emptyArticle});
 }
 
 const get_adminAddUserPage = async (req, res) => {

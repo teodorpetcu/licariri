@@ -26,33 +26,25 @@
             </div>
 
             <div>
-                <label>Imagine:</label>
-                <input type="file" accept="image/*"
-                    name="thumbnail">
-            </div>
-
-            <div>
                 <label>Autori:</label>
-                <button type="button" id="authors-add">Adaugă</button>
-                <button type="button" id="authors-remove">Șterge</button>
                 <div id="authors">
                     <% for (author of defaults.authors) { %>
                         <input type="text"
                             name="authors[]" value="<%= author.name %>">
                     <% } %>
                 </div>
+                <button type="button" id="authors-add">Adaugă</button>
             </div>
 
             <div>
                 <label>Tag-uri:</label>
-                <button type="button" id="tags-add">Adaugă</button>
-                <button type="button" id="tags-remove">Șterge</button>
                 <div id="tags">
                     <% for (tag of defaults.tags) { %>
                         <input type="text"
                             name="tags[]" value="<%= tag %>">
                     <% } %>
                 </div>
+                <button type="button" id="tags-add">Adaugă</button>
             </div>
 
             <div>
@@ -70,39 +62,53 @@
 <script>
     const dynamicAuthorsList = () => {
         const authorsContainer = document.getElementById("authors");
-        const authorsContainerAdd = document.getElementById("authors-add");
-        const authorsContainerRemove = document.getElementById("authors-remove");
+        const authorsAddButton = document.getElementById("authors-add");
 
-        authorsContainerAdd.addEventListener("click", () => {
-            let authorInput = document.createElement("input");
-            authorInput.name = "authors[]";
-            authorInput.type = "text";
-            authorsContainer.appendChild(authorInput);
-        })
+        authorsAddButton.addEventListener("click", () => {
+            let author = document.createElement("div");
+            author.classList.add("author");
 
-        authorsContainerRemove.addEventListener("click", () => {
-            if (authorsContainer.lastChild) {
-                authorsContainer.removeChild(authorsContainer.lastChild)
-            }
+            let authorNameInput = document.createElement("input");
+            authorNameInput.name = "authors[]";
+            authorNameInput.type = "text";
+
+            let authorDeleteButton = document.createElement("button");
+            authorDeleteButton.type = "button";
+            authorDeleteButton.classList.add("delete-button");
+            authorDeleteButton.textContent = "-";
+            authorDeleteButton.addEventListener("click", () => {
+                authorsContainer.removeChild(author)
+            })
+
+            author.appendChild(authorNameInput);
+            author.appendChild(authorDeleteButton);
+            authorsContainer.appendChild(author);
         })
     }
 
     const dynamicTagsList = () => {
         const tagsContainer = document.getElementById("tags");
-        const tagsContainerAdd = document.getElementById("tags-add");
-        const tagsContainerRemove = document.getElementById("tags-remove");
+        const tagsAddButton = document.getElementById("tags-add");
 
-        tagsContainerAdd.addEventListener("click", () => {
-            let tagInput = document.createElement("input");
-            tagInput.name = "tags[]";
-            tagInput.type = "text";
-            tagsContainer.appendChild(tagInput);
-        })
+        tagsAddButton.addEventListener("click", () => {
+            let tag = document.createElement("div");
+            tag.classList.add("tag");
 
-        tagsContainerRemove.addEventListener("click", () => {
-            if (tagsContainer.lastChild) {
-                tagsContainer.removeChild(tagsContainer.lastChild)
-            }
+            let tagNameInput = document.createElement("input");
+            tagNameInput.name = "tags[]";
+            tagNameInput.type = "text";
+
+            let tagDeleteButton = document.createElement("button");
+            tagDeleteButton.type = "button";
+            tagDeleteButton.classList.add("delete-button");
+            tagDeleteButton.textContent = "-";
+            tagDeleteButton.addEventListener("click", () => {
+                tagsContainer.removeChild(tag)
+            })
+
+            tag.appendChild(tagNameInput);
+            tag.appendChild(tagDeleteButton);
+            tagsContainer.appendChild(tag);
         })
     }
 

@@ -89,11 +89,27 @@ input:focus {
 #edit-article {
     #authors,
     #tags {
+        position: relative;
         display: grid;
         justify-content: center;
         input {
-            display: block;
+            display: inline-block;
         }
+    }
+    #authors-add,
+    #tags-add {
+        width: 100px;
+        border-radius: 10px;
+    }
+    #authors .author button,
+    #tags .tag button {
+        margin-left: 15px;
+        vertical-align: bottom;
+        padding: 10px;
+        border-radius: 50%;
+        aspect-ratio: 1;
+        line-height: 50%;
+        text-align: middle;
     }
     textarea {
         resize: vertical;
@@ -102,8 +118,8 @@ input:focus {
         color: var(--font-color);
         background-color: var(--neutral-color);
     }
-    button {
-        display: inline-block;
+    .delete-button {
+        position: relative;
     }
 }
 
