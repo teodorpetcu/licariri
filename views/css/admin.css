@@ -166,6 +166,11 @@ input:focus {
     }
 }
 
+#edit-article-dtp,
+#preview-page {
+    display: none;
+}
+
 @media (max-width: 600px) {
     #edit-button textarea {
         width: 98%;

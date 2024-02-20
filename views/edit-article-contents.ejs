@@ -47,9 +47,13 @@
                 <textarea required name="content"><%= defaults.content %></textarea>
             </div>
 
+            <div id="edit-article-dtp">
+            </div>
+
             <!--<input type="submit" value="Trimite">-->
         </div>
     </form>
+    <div id="preview-page"></div>
 </body>
 
 <script>
@@ -89,6 +93,33 @@
 
     authorsAddButton.addEventListener("click", () => addField("author", ""));
     tagsAddButton.addEventListener("click", () => addField("tag", ""));
+</script>
+
+<script>
+    contentPage = document.getElementById("edit-article-content");
+    dtpPage = document.getElementById("edit-article-dtp");
+    previewPage = document.getElementById("preview-page");
+    const showContentPage = () => {
+        contentPage.style.display = "block";
+        dtpPage.style.display = "none";
+        previewPage.style.display = "none";
+    }
+
+    const showDTPPage = () => {
+        contentPage.style.display = "none";
+        dtpPage.style.display = "block";
+        previewPage.style.display = "none";
+    }
+
+    const showPreviewPage = () => {
+        contentPage.style.display = "none";
+        dtpPage.style.display = "none";
+        previewPage.style.display = "block";
+    }
+
+    document.getElementById("button-edit-content").addEventListener("click", showContentPage);
+    document.getElementById("button-edit-dtp").addEventListener("click", showDTPPage);
+    document.getElementById("button-preview").addEventListener("click", showPreviewPage);
 </script>
 
 </html>
