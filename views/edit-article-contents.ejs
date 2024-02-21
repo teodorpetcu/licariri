@@ -66,6 +66,20 @@
                     type="checkbox" name="title-hide-on-thumbnail">
             </div>
             <div>
+                <label>Fontul titlului:</label>
+                <select required id="input-title-font"
+                    type="color" name="title-font">
+                    <option value="Helvetica" selected="selected">Helvetica</option>
+                    <option value="Courier New">Courier New</option>
+                    <option value="Verdana">Verdana</option>
+                    <option value="Trebuchet MS">Trebuchet MS</option>
+                    <option value="Comic Sans MS">Comic Sans (te rog, nu)</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Palatino">Palatino</option>
+                </select>
+            </div>
+            <div>
                 <label>Titlul contrastează cu fundalul (ignoră culoarea):</label>
                 <input required id="input-title-contrast-background"
                     type="checkbox" name="title-contrast-background">
@@ -160,6 +174,7 @@
     const inputTitleContrastBackground = document.getElementById("input-title-contrast-background");
     const inputTitleHideOnThumbnail = document.getElementById("input-title-hide-on-thumbnail");
     const inputTitleColor = document.getElementById("input-title-color");
+    const inputTitleFont = document.getElementById("input-title-font");
     const inputfirstLetterStyle = document.getElementById("input-first-letter-style");
     const previewMinifiedThumbnailImage = document.getElementById("preview-minified-thumbnail-image");
     const previewMinifiedThumbnailTitle = document.getElementById("preview-minified-thumbnail-title");
@@ -175,6 +190,17 @@
         inputThumbnail.value = '';
         inputThumbnail.dispatchEvent(new Event("change"));
     });
+
+    const setFont = (elem, font) => {
+        elem.style.fontFamily = font;
+    }
+    setFont(previewArticleTitle, inputTitleFont.value);
+    setFont(previewMinifiedThumbnailTitle, inputTitleFont.value);
+
+    inputTitleFont.addEventListener("change", () => {
+        setFont(previewArticleTitle, inputTitleFont.value);
+        setFont(previewMinifiedThumbnailTitle, inputTitleFont.value);
+    })
 
     const updateTitleColourMode = () => {
         if (inputTitleContrastBackground.checked) {
