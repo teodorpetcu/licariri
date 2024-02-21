@@ -116,7 +116,6 @@ body {
     transform: translate(-50%, -50%);
     text-align: center;
     line-break: strict;
-    font-family: "Helvetica";
     text-rendering: optimizeLegibility;
 }
 
@@ -175,7 +174,6 @@ body {
     margin: 0 auto;
     text-indent: 4rem;
     text-align: justify;
-    font-family: "Arial";
 }
 
 .dropcap {

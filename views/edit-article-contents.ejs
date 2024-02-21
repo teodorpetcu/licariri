@@ -70,13 +70,14 @@
                 <select required id="input-title-font"
                     type="color" name="title-font">
                     <option value="Helvetica" selected="selected">Helvetica</option>
-                    <option value="Courier New">Courier New</option>
                     <option value="Verdana">Verdana</option>
                     <option value="Trebuchet MS">Trebuchet MS</option>
-                    <option value="Comic Sans MS">Comic Sans (te rog, nu)</option>
+                    <option value="Comic Sans MS">Comic Sans</option>
+                    <hr>
                     <option value="Times New Roman">Times New Roman</option>
-                    <option value="Georgia">Georgia</option>
                     <option value="Palatino">Palatino</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Courier New">Courier New</option>
                 </select>
             </div>
             <div>
@@ -95,6 +96,21 @@
                     type="select" name="first-letter-style">
                     <option value="default" selected="selected">Fără stil</option>
                     <option value="dropcap">Dropcap cu border</option>
+                </select>
+            </div>
+            <div>
+                <label>Fontul textului din articolul propriu-zis:</label>
+                <select required id="input-contents-font"
+                    type="color" name="contents-font">
+                    <option value="Helvetica" selected="selected">Helvetica</option>
+                    <option value="Verdana">Verdana</option>
+                    <option value="Trebuchet MS">Trebuchet MS</option>
+                    <option value="Comic Sans MS">Comic Sans</option>
+                    <hr>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Palatino">Palatino</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Courier New">Courier New</option>
                 </select>
             </div>
         </div>
@@ -176,6 +192,7 @@
     const inputTitleColor = document.getElementById("input-title-color");
     const inputTitleFont = document.getElementById("input-title-font");
     const inputfirstLetterStyle = document.getElementById("input-first-letter-style");
+    const inputContentsFont = document.getElementById("input-contents-font");
     const previewMinifiedThumbnailImage = document.getElementById("preview-minified-thumbnail-image");
     const previewMinifiedThumbnailTitle = document.getElementById("preview-minified-thumbnail-title");
 
@@ -261,13 +278,6 @@
         dtpPage.style.display = "none";
         previewPage.style.display = "block";
 
-        previewArticleContents.classList.remove("dropcap");
-        switch(inputfirstLetterStyle.value) {
-            case "dropcap":
-                previewArticleContents.classList.add("dropcap");
-                break;
-        }
-
         // todo: trim() title & authors & tags etc., preferrably in the input
         // fields themselves
 
@@ -312,6 +322,14 @@
         previewArticleTitle.style.color = inputTitleColor.value;
         previewArticleContents.innerHTML = DOMPurify.sanitize(marked.parse(inputContents.value));
         <!--const articleDate = document.getElementById("preview-article-date");-->
+
+        previewArticleContents.classList.remove("dropcap");
+        switch(inputfirstLetterStyle.value) {
+            case "dropcap":
+                previewArticleContents.classList.add("dropcap");
+                break;
+        }
+        setFont(previewArticleContents, inputContentsFont.value);
     }
 
     document.getElementById("button-edit-content").addEventListener("click", showContentPage);
