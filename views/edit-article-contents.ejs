@@ -51,16 +51,14 @@
         <div id="edit-article-dtp">
             <div class="article-thumbnail" style="width: 300px; position: absolute; right:
                 100px; top: 300px; transform: translateY(-50%);">
-                <h1 id="preview-snippet-title" class="article-title"></h1>
-                <img id="preview-snippet-thumbnail" src="">
+                <h1 id="preview-minified-thumbnail-title" class="article-title"></h1>
+                <img id="preview-minified-thumbnail-image" src="">
             </div>
             <div>
                 <label>Thumbnail:</label>
                 <input required id="input-article-thumbnail"
                     type="file" accepts="image/*" name="thumbnail">
-                <button type="button" id="reset-thumbnail-button"
-                    onclick="document.getElementById('input-article-thumbnail').value
-                    = ''">RESETARE</button>
+                <button type="button" id="reset-thumbnail-button">RESETARE</button>
             </div>
             <div>
                 <label>Culoarea titlului:</label>
@@ -72,15 +70,15 @@
     </form>
     <div id="preview-page">
         <div id="article-headline">
-            <img id="preview-thumbnail" src="/images/" class="no-select">
-            <h1 id="preview-thumbnail-title" class="article-title"></h1>
+            <img id="article-thumbnail" src="/images/" class="no-select">
+            <h1 id="article-title" class="article-title"></h1>
         </div>
         <div id="article-info">
-            <div id="authors-list">
+            <div id="article-authors-list">
                 <h3>Scris de:</h3>
             </div>
             <b id="preview-article-date" style="float: right; opacity: 0.8;"></b>
-            <div id="tags-list">
+            <div id="article-tags-list">
             </div>
         </div>
         <hr style="width: 18%"></hr>
@@ -128,9 +126,52 @@
 </script>
 
 <script>
-    contentPage = document.getElementById("edit-article-content");
-    dtpPage = document.getElementById("edit-article-dtp");
-    previewPage = document.getElementById("preview-page");
+    const contentPage = document.getElementById("edit-article-content");
+    const dtpPage = document.getElementById("edit-article-dtp");
+    const previewPage = document.getElementById("preview-page");
+
+    // on Content page
+    const inputTitle = document.getElementById("input-title");
+    const inputAuthors = document.getElementsByName("authors[]");
+    const inputTags = document.getElementsByName("tags[]");
+    const inputContents = document.getElementById("input-article-contents");
+
+    // on DTP page
+    const inputThumbnail = document.getElementById("input-article-thumbnail");
+    const inputThumbnailReset = document.getElementById("reset-thumbnail-button");
+    const inputTitleColor = document.getElementById("input-title-color");
+    const previewMinifiedThumbnailImage = document.getElementById("preview-minified-thumbnail-image");
+    const previewMinifiedThumbnailTitle = document.getElementById("preview-minified-thumbnail-title");
+
+    // on Preview page
+    const previewArticleThumbnail = document.getElementById("article-thumbnail");
+    const previewArticleTitle = document.getElementById("article-title")
+    const previewArticleContents = document.getElementById("article-contents")
+    const previewArticleAuthors = document.getElementById("article-authors-list")
+    const previewArticleTags = document.getElementById("article-tags-list")
+
+    inputThumbnailReset.addEventListener("click", () => {
+        inputThumbnail.value = '';
+        inputThumbnail.dispatchEvent(new Event("change"));
+    });
+
+    updateThumbnail = (imgObj) => {
+        const [thumbnail] = inputThumbnail.files;
+        if (thumbnail) {
+            imgObj.src = URL.createObjectURL(thumbnail)
+        } else {
+            imgObj.src = "/images/<%= defaults.id %>"
+        }
+    }
+    updateThumbnail(previewMinifiedThumbnailImage);
+
+    inputThumbnail.addEventListener("change", () => {
+        updateThumbnail(previewMinifiedThumbnailImage);
+    });
+    inputTitleColor.addEventListener("change", () => {
+        previewMinifiedThumbnailTitle.style.color = inputTitleColor.value;
+    });
+
     const showContentPage = () => {
         contentPage.style.display = "block";
         dtpPage.style.display = "none";
@@ -141,27 +182,8 @@
         contentPage.style.display = "none";
         dtpPage.style.display = "block";
         previewPage.style.display = "none";
-        const articleTitle = document.getElementById("input-title");
-        const previewTitle = document.getElementById("preview-snippet-title")
-        previewTitle.textContent = articleTitle.value;
+        previewMinifiedThumbnailTitle.textContent = inputTitle.value;
     }
-    const inputArticleThumbnail = document.getElementById("input-article-thumbnail");
-    const titleColor = document.getElementById("input-title-color");
-    const previewSnippetTitle = document.getElementById("preview-snippet-title");
-    const previewSnippetThumbnail = document.getElementById("preview-snippet-thumbnail");
-    titleColor.addEventListener("change", () => previewSnippetTitle.style.color = titleColor.value);
-
-    updateSnippetThumbnail = () => {
-        const [thumbnail] = inputArticleThumbnail.files;
-        if (thumbnail) {
-            previewSnippetThumbnail.src = URL.createObjectURL(thumbnail)
-        } else {
-            previewSnippetThumbnail.src = "/images/<%= defaults.id %>"
-        }
-    }
-
-    updateSnippetThumbnail();
-    inputArticleThumbnail.addEventListener("change", () => updateSnippetThumbnail)
 
     const showPreviewPage = () => {
         contentPage.style.display = "none";
@@ -170,26 +192,14 @@
         // todo: trim() title & authors & tags etc., preferrably in the input
         // fields themselves
 
-        const articleTitle = document.getElementById("input-title");
-        const articleContents = document.getElementById("input-article-contents");
-        const authors = document.getElementsByName("authors[]");
-        const tags = document.getElementsByName("tags[]");
-        let [thumbnail] = document.getElementById("input-article-thumbnail").files;
-        const titleColor = document.getElementById("input-title-color");
-
-        const previewArticleThumbnail = document.getElementById("preview-thumbnail");
-        const previewTitle = document.getElementById("preview-thumbnail-title")
-        const previewArticleContents = document.getElementById("article-contents")
-        const previewArticleAuthors = document.getElementById("authors-list")
-        const previewArticleTags = document.getElementById("tags-list")
-
+        // clear authors and tags, since otherwise they would just pile up
         while (previewArticleAuthors.childElementCount > 1) {
             previewArticleAuthors.removeChild(previewArticleAuthors.lastChild);
         }
         previewArticleTags.textContent = "";
 
-        for (author of authors) {
-            if (!author.value) continue;
+        for (inputAuthor of inputAuthors) {
+            if (!inputAuthor.value) continue;
             let authorDiv = document.createElement("div");
             authorDiv.classList.add("author");
             let span1 = document.createElement("span");
@@ -201,7 +211,7 @@
             let authorLink = document.createElement("a");
             authorLink.href = "#";
             authorLink.style.display = "inline-block";
-            authorLink.textContent = author.value;
+            authorLink.textContent = inputAuthor.value;
 
             authorDiv.appendChild(span1);
             authorDiv.appendChild(authorLink);
@@ -209,22 +219,19 @@
             previewArticleAuthors.append(authorDiv);
         }
 
-        for (tag of tags) {
-            if (!tag.value) continue;
+        for (inputTag of inputTags) {
+            if (!inputTag.value) continue;
             let tagLink= document.createElement("a");
             tagLink.href = "#";
-            tagLink.textContent = "#" + tag.value;
+            tagLink.textContent = "#" + inputTag.value;
             previewArticleTags.append(tagLink);
         }
 
-        if (thumbnail) {
-            previewArticleThumbnail.src = URL.createObjectURL(thumbnail)
-        } else {
-            previewArticleThumbnail.src = "/images/<%= defaults.id %>"
-        }
-        previewTitle.textContent = articleTitle.value;
-        previewTitle.style.color = titleColor.value;
-        previewArticleContents.innerHTML = DOMPurify.sanitize(marked.parse(articleContents.value));
+        updateThumbnail(previewArticleThumbnail);
+
+        previewArticleTitle.textContent = inputTitle.value;
+        previewArticleTitle.style.color = inputTitleColor.value;
+        previewArticleContents.innerHTML = DOMPurify.sanitize(marked.parse(inputContents.value));
         <!--const articleDate = document.getElementById("preview-article-date");-->
     }
 

@@ -8,11 +8,11 @@
 
 <body>
     <div id="article-headline">
-        <img src="/images/<%= article.id %>" class="no-select">
-        <h1 class="article-title colour-complement-background"><%= article.title %></h1>
+        <img id="article-thumbnail" src="/images/<%= article.id %>" class="no-select">
+        <h1 id="article-title" class="article-title colour-complement-background"><%= article.title %></h1>
     </div>
     <div id="article-info">
-        <div id="authors-list">
+        <div id="article-authors-list">
             <% if (article.authors.length) { %>
             <h3>Scris de:</h3>
             <% for (let author of article.authors) { %>
@@ -25,7 +25,7 @@
             <% } %>
         </div>
         <b style="float: right; opacity: 0.8;"><%= article.date %></b>
-        <div id="tags-list">
+        <div id="article-tags-list">
             <% for (let tag of article.tags) { %>
                 <a href="/query?tag=<%= tag %>">#<%= tag %></a>
             <% } %>
