@@ -178,4 +178,7 @@ input:focus {
     #reset-thumbnail-button {
         vertical-align: middle;
     }
+    label {
+        padding-top: 20px;
+    }
 }

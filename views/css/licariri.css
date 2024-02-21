@@ -120,7 +120,7 @@ body {
 }
 
 .colour-complement-background {
-    color: #a0a090;
+    color: #a0a090 !important;
     mix-blend-mode: difference;
     filter: contrast(10) drop-shadow(.1rem .1rem orange) grayscale(1);
 }

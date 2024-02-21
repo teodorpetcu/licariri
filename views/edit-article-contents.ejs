@@ -61,16 +61,21 @@
                 <button type="button" id="reset-thumbnail-button">RESETARE</button>
             </div>
             <div>
+                <label>Titlul contrastează cu fundalul (ignoră culoarea):</label>
+                <input required id="input-title-contrast-background"
+                    type="checkbox" name="title-contrast-background">
+            </div>
+            <div>
                 <label>Culoarea titlului:</label>
                 <input required id="input-title-color"
-                    type="color">
+                    type="color" name="title-color">
             </div>
         </div>
         <!--<input type="submit" value="Trimite">-->
     </form>
     <div id="preview-page">
         <div id="article-headline">
-            <img id="article-thumbnail" src="/images/" class="no-select">
+            <img id="article-thumbnail" src="" class="no-select">
             <h1 id="article-title" class="article-title"></h1>
         </div>
         <div id="article-info">
@@ -139,6 +144,7 @@
     // on DTP page
     const inputThumbnail = document.getElementById("input-article-thumbnail");
     const inputThumbnailReset = document.getElementById("reset-thumbnail-button");
+    const inputTitleContrastBackground = document.getElementById("input-title-contrast-background");
     const inputTitleColor = document.getElementById("input-title-color");
     const previewMinifiedThumbnailImage = document.getElementById("preview-minified-thumbnail-image");
     const previewMinifiedThumbnailTitle = document.getElementById("preview-minified-thumbnail-title");
@@ -155,7 +161,20 @@
         inputThumbnail.dispatchEvent(new Event("change"));
     });
 
-    updateThumbnail = (imgObj) => {
+    const updateTitleColourMode = () => {
+        if (inputTitleContrastBackground.checked) {
+            previewArticleTitle.classList.add("colour-complement-background");
+            previewMinifiedThumbnailTitle.classList.add("colour-complement-background");
+        } else {
+            previewArticleTitle.classList.remove("colour-complement-background");
+            previewMinifiedThumbnailTitle.classList.remove("colour-complement-background");
+        }
+    }
+    updateTitleColourMode();
+
+    inputTitleContrastBackground.addEventListener("click", updateTitleColourMode);
+
+    const updateThumbnail = (imgObj) => {
         const [thumbnail] = inputThumbnail.files;
         if (thumbnail) {
             imgObj.src = URL.createObjectURL(thumbnail)
