@@ -114,19 +114,19 @@ input:focus {
 #edit-article-content {
     padding-top: 30px;
 
-    #authors,
-    #tags {
+    #input-authors,
+    #input-tags {
         position: relative;
         display: grid;
         justify-content: center;
     }
-    #authors-add,
-    #tags-add {
+    #authors-add-button,
+    #tags-add-button {
         width: 100px;
         border-radius: 10px;
     }
-    #authors .author button,
-    #tags .tag button {
+    #input-authors .author button,
+    #input-tags .tag button {
         margin-left: 15px;
         vertical-align: center;
         padding: 0.8rem;

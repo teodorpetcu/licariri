@@ -27,20 +27,20 @@
             <% } %>
                 <div>
                     <label>Titlu:</label>
-                    <input required id="article-title" type="text"
+                    <input required id="input-title" type="text"
                         name="title" placeholder="" value="<%= defaults.title %>">
                 </div>
 
                 <div>
                     <label>Autori:</label>
-                    <div id="authors"></div>
-                    <button type="button" id="authors-add">Adaugă</button>
+                    <div id="input-authors"></div>
+                    <button type="button" id="authors-add-button">Adaugă</button>
                 </div>
 
                 <div>
                     <label>Tag-uri:</label>
-                    <div id="tags"></div>
-                    <button type="button" id="tags-add">Adaugă</button>
+                    <div id="input-tags"></div>
+                    <button type="button" id="tags-add-button">Adaugă</button>
                 </div>
             </div>
             <div id="right">
@@ -79,12 +79,12 @@
 </body>
 
 <script>
-    const authorsAddButton = document.getElementById("authors-add");
-    const tagsAddButton = document.getElementById("tags-add");
+    const authorsAddButton = document.getElementById("authors-add-button");
+    const tagsAddButton = document.getElementById("tags-add-button");
 
     // `type` may be either "author" or "tag"
     const addField = (type = "", value = "") => {
-        const fieldsContainer = document.getElementById(type + "s");
+        const fieldsContainer = document.getElementById("input-" + type + "s");
         let field = document.createElement("div");
         field.classList.add(type);
 
@@ -140,7 +140,7 @@
         // todo: trim() title & authors & tags etc., preferrably in the input
         // fields themselves
 
-        const articleTitle = document.getElementById("article-title");
+        const articleTitle = document.getElementById("input-title");
         const articleContents = document.getElementById("input-article-contents");
         const authors = document.getElementsByName("authors[]");
         const tags = document.getElementsByName("tags[]");
