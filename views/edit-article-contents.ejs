@@ -49,6 +49,11 @@
             </div>
         </div>
         <div id="edit-article-dtp">
+            <div class="article-thumbnail" style="width: 300px; position: absolute; right:
+                100px; top: 300px; transform: translateY(-50%);">
+                <h1 id="preview-snippet-title" class="article-title"></h1>
+                <img id="preview-snippet-thumbnail" src="">
+            </div>
             <div>
                 <label>Thumbnail:</label>
                 <input required id="input-article-thumbnail"
@@ -56,6 +61,11 @@
                 <button type="button" id="reset-thumbnail-button"
                     onclick="document.getElementById('input-article-thumbnail').value
                     = ''">RESETARE</button>
+            </div>
+            <div>
+                <label>Culoarea titlului:</label>
+                <input required id="input-title-color"
+                    type="color">
             </div>
         </div>
         <!--<input type="submit" value="Trimite">-->
@@ -131,7 +141,27 @@
         contentPage.style.display = "none";
         dtpPage.style.display = "block";
         previewPage.style.display = "none";
+        const articleTitle = document.getElementById("input-title");
+        const previewTitle = document.getElementById("preview-snippet-title")
+        previewTitle.textContent = articleTitle.value;
     }
+    const inputArticleThumbnail = document.getElementById("input-article-thumbnail");
+    const titleColor = document.getElementById("input-title-color");
+    const previewSnippetTitle = document.getElementById("preview-snippet-title");
+    const previewSnippetThumbnail = document.getElementById("preview-snippet-thumbnail");
+    titleColor.addEventListener("change", () => previewSnippetTitle.style.color = titleColor.value);
+
+    updateSnippetThumbnail = () => {
+        const [thumbnail] = inputArticleThumbnail.files;
+        if (thumbnail) {
+            previewSnippetThumbnail.src = URL.createObjectURL(thumbnail)
+        } else {
+            previewSnippetThumbnail.src = "/images/<%= defaults.id %>"
+        }
+    }
+
+    updateSnippetThumbnail();
+    inputArticleThumbnail.addEventListener("change", () => updateSnippetThumbnail)
 
     const showPreviewPage = () => {
         contentPage.style.display = "none";
@@ -145,6 +175,7 @@
         const authors = document.getElementsByName("authors[]");
         const tags = document.getElementsByName("tags[]");
         let [thumbnail] = document.getElementById("input-article-thumbnail").files;
+        const titleColor = document.getElementById("input-title-color");
 
         const previewArticleThumbnail = document.getElementById("preview-thumbnail");
         const previewTitle = document.getElementById("preview-thumbnail-title")
@@ -192,6 +223,7 @@
             previewArticleThumbnail.src = "/images/<%= defaults.id %>"
         }
         previewTitle.textContent = articleTitle.value;
+        previewTitle.style.color = titleColor.value;
         previewArticleContents.innerHTML = DOMPurify.sanitize(marked.parse(articleContents.value));
         <!--const articleDate = document.getElementById("preview-article-date");-->
     }

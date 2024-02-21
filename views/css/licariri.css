@@ -116,8 +116,11 @@ body {
     text-align: center;
     line-break: strict;
     font-family: "Helvetica";
-    color: #a0a090;
     text-rendering: optimizeLegibility;
+}
+
+.colour-complement-background {
+    color: #a0a090;
     mix-blend-mode: difference;
     filter: contrast(10) drop-shadow(.1rem .1rem orange) grayscale(1);
 }
