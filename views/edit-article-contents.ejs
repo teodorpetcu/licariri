@@ -61,6 +61,11 @@
                 <button type="button" id="reset-thumbnail-button">RESETARE</button>
             </div>
             <div>
+                <label>Ascunde titlul din thumbnail:</label>
+                <input required id="input-title-hide-on-thumbnail"
+                    type="checkbox" name="title-hide-on-thumbnail">
+            </div>
+            <div>
                 <label>Titlul contrastează cu fundalul (ignoră culoarea):</label>
                 <input required id="input-title-contrast-background"
                     type="checkbox" name="title-contrast-background">
@@ -68,7 +73,7 @@
             <div>
                 <label>Culoarea titlului:</label>
                 <input required id="input-title-color"
-                    type="color" name="title-color">
+                    type="color" name="title-color" value="#ffffff">
             </div>
         </div>
         <!--<input type="submit" value="Trimite">-->
@@ -82,7 +87,7 @@
             <div id="article-authors-list">
                 <h3>Scris de:</h3>
             </div>
-            <b id="preview-article-date" style="float: right; opacity: 0.8;"></b>
+            <b id="article-date" style="float: right; opacity: 0.8;"></b>
             <div id="article-tags-list">
             </div>
         </div>
@@ -145,6 +150,7 @@
     const inputThumbnail = document.getElementById("input-article-thumbnail");
     const inputThumbnailReset = document.getElementById("reset-thumbnail-button");
     const inputTitleContrastBackground = document.getElementById("input-title-contrast-background");
+    const inputTitleHideOnThumbnail = document.getElementById("input-title-hide-on-thumbnail");
     const inputTitleColor = document.getElementById("input-title-color");
     const previewMinifiedThumbnailImage = document.getElementById("preview-minified-thumbnail-image");
     const previewMinifiedThumbnailTitle = document.getElementById("preview-minified-thumbnail-title");
@@ -190,6 +196,17 @@
     inputTitleColor.addEventListener("change", () => {
         previewMinifiedThumbnailTitle.style.color = inputTitleColor.value;
     });
+    previewMinifiedThumbnailTitle.style.color = inputTitleColor.value;
+
+    const actionHideThumbnailTitle = () => {
+        if (inputTitleHideOnThumbnail.checked) {
+            previewMinifiedThumbnailTitle.style.display = "none";
+        } else {
+            previewMinifiedThumbnailTitle.style.display = "block";
+        }
+    }
+    actionHideThumbnailTitle();
+    inputTitleHideOnThumbnail.addEventListener("change", actionHideThumbnailTitle);
 
     const showContentPage = () => {
         contentPage.style.display = "block";
