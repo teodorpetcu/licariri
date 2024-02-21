@@ -75,6 +75,14 @@
                 <input required id="input-title-color"
                     type="color" name="title-color" value="#ffffff">
             </div>
+            <div>
+                <label>Stilul primei litere din text:</label>
+                <select required id="input-first-letter-style"
+                    type="select" name="first-letter-style">
+                    <option value="default" selected="selected">Fără stil</option>
+                    <option value="dropcap">Dropcap cu border</option>
+                </select>
+            </div>
         </div>
         <!--<input type="submit" value="Trimite">-->
     </form>
@@ -152,6 +160,7 @@
     const inputTitleContrastBackground = document.getElementById("input-title-contrast-background");
     const inputTitleHideOnThumbnail = document.getElementById("input-title-hide-on-thumbnail");
     const inputTitleColor = document.getElementById("input-title-color");
+    const inputfirstLetterStyle = document.getElementById("input-first-letter-style");
     const previewMinifiedThumbnailImage = document.getElementById("preview-minified-thumbnail-image");
     const previewMinifiedThumbnailTitle = document.getElementById("preview-minified-thumbnail-title");
 
@@ -225,6 +234,14 @@
         contentPage.style.display = "none";
         dtpPage.style.display = "none";
         previewPage.style.display = "block";
+
+        previewArticleContents.classList.remove("dropcap");
+        switch(inputfirstLetterStyle.value) {
+            case "dropcap":
+                previewArticleContents.classList.add("dropcap");
+                break;
+        }
+
         // todo: trim() title & authors & tags etc., preferrably in the input
         // fields themselves
 

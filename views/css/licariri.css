@@ -176,19 +176,22 @@ body {
     text-indent: 4rem;
     text-align: justify;
     font-family: "Arial";
+}
+
+.dropcap {
     :first-child {
         text-indent: 0;
     }
     :first-child::first-letter {
-            color: black;
-            padding: 0.8rem;
-            border: 2px solid;
-            margin: 4px;
-            margin-right: 20px;
+        color: black;
+        padding: 0.8rem;
+        border: 2px solid;
+        margin: 4px;
+        margin-right: 20px;
 
-            font-size: 5rem;
-            float: left;
-            line-height: 1;
+        font-size: 5rem;
+        float: left;
+        line-height: 1;
     }
 }
 
