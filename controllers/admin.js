@@ -1,6 +1,7 @@
 const { USERS_DATABASE_PATH, ARTICLE_DATABASE_PATH, COOKIE_OPTIONS, USER_PRIVILEGES } = require("../config.js");
 const { UsersDatabase, User, Session } = require("../models/admin.js");
 const { ArticleDatabase } = require("../models/articles.js");
+const { Article } = require("../models/types.js");
 
 const usersDatabase = new UsersDatabase(USERS_DATABASE_PATH);
 usersDatabase.init();
@@ -54,12 +55,7 @@ const post_adminLoginCheck = async (req, res) => {
 }
 
 const get_adminAddArticle = async (_, res) => {
-    let emptyArticle = {
-        title: "",
-        authors: [],
-        tags: [],
-        content: "",
-    }
+    let emptyArticle = new Article("", [], [], undefined, thumbnail = false);
     res.render("edit-article-contents", {action: "add", defaults: emptyArticle});
 }
 
