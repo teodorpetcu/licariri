@@ -101,6 +101,14 @@
                 </select>
             </div>
             <div>
+                <label>Mărimea fontului titlului din thumbnail:</label>
+                <input required id="input-title-thumbnail-font-size"
+                    type="range" min="1" max="2.2" value = "1.6" step="0.1" >
+                <label>Mărimea fontului titlului din articol:</label>
+                <input required id="input-title-article-font-size"
+                    type="range" min="2" max="5" value = "3.5" step="0.1" >
+            </div>
+            <div>
                 <label>Titlul contrastează cu fundalul (ignoră culoarea):</label>
                 <input required id="input-title-contrast-background"
                     type="checkbox" name="title-contrast-background">
@@ -259,6 +267,8 @@
     const inputTitleHideOnThumbnail = document.getElementById("input-title-hide-on-thumbnail");
     const inputTitleColor = document.getElementById("input-title-color");
     const inputTitleFont = document.getElementById("input-title-font");
+    const inputTitleThumbnailFontSize = document.getElementById("input-title-thumbnail-font-size");
+    const inputTitleArticleFontSize = document.getElementById("input-title-article-font-size");
     const inputTitlePosition = document.getElementById("input-title-position");
     const inputSubtitleColor = document.getElementById("input-subtitle-color");
     const inputSubtitleFont = document.getElementById("input-subtitle-font");
@@ -288,6 +298,11 @@
     const setFont = (elem, font) => {
         elem.style.fontFamily = font;
     }
+
+    const setFontSizeREM = (elem, fontSize) => {
+        elem.style.fontSize = fontSize + "rem";
+    }
+
     setFont(previewArticleTitle, inputTitleFont.value);
     setFont(previewMinifiedThumbnailTitle, inputTitleFont.value);
 
@@ -295,6 +310,11 @@
         setFont(previewArticleTitle, inputTitleFont.value);
         setFont(previewMinifiedThumbnailTitle, inputTitleFont.value);
     })
+
+    inputTitleThumbnailFontSize.addEventListener("change", () => {
+        setFontSizeREM(previewMinifiedThumbnailTitle, inputTitleThumbnailFontSize.value);
+    })
+    setFontSizeREM(previewMinifiedThumbnailTitle, inputTitleThumbnailFontSize.value);
 
     const updateTitleColourMode = () => {
         if (inputTitleContrastBackground.checked) {
@@ -397,6 +417,8 @@
 
         previewArticleTitle.textContent = inputTitle.value;
         previewArticleTitle.style.color = inputTitleColor.value;
+        setFontSizeREM(previewArticleTitle, inputTitleArticleFontSize.value);
+
         previewArticleSubtitle.textContent = inputSubtitle.value;
         previewArticleSubtitle.style.color = inputSubtitleColor.value;
         previewArticleSubtitle.style.fontFamily = inputSubtitleFont.value;
