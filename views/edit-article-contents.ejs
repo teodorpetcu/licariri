@@ -103,9 +103,11 @@
             <div>
                 <label>Mărimea fontului titlului din thumbnail:</label>
                 <input required id="input-title-thumbnail-font-size"
+                    name="title-thumbnail-font-size"
                     type="range" min="1" max="2.2" value = "1.6" step="0.1" >
                 <label>Mărimea fontului titlului din articol:</label>
                 <input required id="input-title-article-font-size"
+                    name="title-article-font-size"
                     type="range" min="2" max="5" value = "3.5" step="0.1" >
             </div>
             <div>
@@ -140,6 +142,11 @@
                     <option value="Georgia">Georgia</option>
                     <option value="Courier New">Courier New</option>
                 </select>
+            </div>
+            <div>
+                <label>Mărimea fontului subtitlului din articol:</label>
+                <input required id="input-subtitle-font-size" name="subtitle-font-size"
+                    type="range" min="1" max="2" value = "1.5" step="0.1" >
             </div>
             <div>
                 <label>Culoarea subtitlului:</label>
@@ -273,6 +280,7 @@
     const inputSubtitleColor = document.getElementById("input-subtitle-color");
     const inputSubtitleFont = document.getElementById("input-subtitle-font");
     const inputSubtitlePosition = document.getElementById("input-subtitle-position");
+    const inputSubtitleFontSize = document.getElementById("input-subtitle-font-size");
     const inputfirstLetterStyle = document.getElementById("input-first-letter-style");
     const inputContentsFont = document.getElementById("input-contents-font");
     const previewMinifiedThumbnailImage = document.getElementById("preview-minified-thumbnail-image");
@@ -422,6 +430,7 @@
         previewArticleSubtitle.textContent = inputSubtitle.value;
         previewArticleSubtitle.style.color = inputSubtitleColor.value;
         previewArticleSubtitle.style.fontFamily = inputSubtitleFont.value;
+        setFontSizeREM(previewArticleSubtitle, inputSubtitleFontSize.value);
 
         previewArticleContents.innerHTML = DOMPurify.sanitize(marked.parse(inputContents.value));
         <!--const articleDate = document.getElementById("preview-article-date");-->
