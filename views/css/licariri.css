@@ -180,10 +180,15 @@ body {
 }
 
 #article-contents {
-    width: 30%;
+    width: 35%;
+    word-spacing: 1px;
+    line-height: 1.4;
     margin: 0 auto;
     text-indent: 4rem;
     text-align: justify;
+    p {
+        padding: 5px;
+    }
 }
 
 .dropcap {
