@@ -59,6 +59,9 @@
                 <input required id="input-article-thumbnail"
                     type="file" accepts="image/*" name="thumbnail">
                 <button type="button" id="reset-thumbnail-button">RESETARE</button>
+                <label>Persoana care a realizat thumbnail-ului:</label>
+                <input required id="input-article-thumbnail-credit"
+                    type="text" placeholder="Nume Prenume" name="thumbnail-credit">
             </div>
             <div>
                 <label>Ascunde titlul din thumbnail:</label>
@@ -68,7 +71,7 @@
             <div>
                 <label>Fontul titlului:</label>
                 <select required id="input-title-font"
-                    type="color" name="title-font">
+                    name="title-font">
                     <option value="Helvetica" selected="selected">Helvetica</option>
                     <option value="Verdana">Verdana</option>
                     <option value="Trebuchet MS">Trebuchet MS</option>
@@ -93,7 +96,7 @@
             <div>
                 <label>Stilul primei litere din text:</label>
                 <select required id="input-first-letter-style"
-                    type="select" name="first-letter-style">
+                    name="first-letter-style">
                     <option value="default" selected="selected">Fără stil</option>
                     <option value="dropcap">Dropcap cu border</option>
                 </select>
@@ -101,7 +104,7 @@
             <div>
                 <label>Fontul textului din articolul propriu-zis:</label>
                 <select required id="input-contents-font"
-                    type="color" name="contents-font">
+                    name="contents-font">
                     <option value="Helvetica" selected="selected">Helvetica</option>
                     <option value="Verdana">Verdana</option>
                     <option value="Trebuchet MS">Trebuchet MS</option>
@@ -120,6 +123,11 @@
         <div id="article-headline">
             <img id="article-thumbnail" src="" class="no-select">
             <h1 id="article-title" class="article-title"></h1>
+        </div>
+        <div id="article-contributors">
+            <!--<h5>Redactare:</h5>-->
+            <!--<h5>Tehnoredactare:</h5>-->
+            <h5 id="article-thumbnail-credit"></h5>
         </div>
         <div id="article-info">
             <div id="article-authors-list">
@@ -186,6 +194,7 @@
 
     // on DTP page
     const inputThumbnail = document.getElementById("input-article-thumbnail");
+    const inputThumbnailCredits = document.getElementById("input-article-thumbnail-credit");
     const inputThumbnailReset = document.getElementById("reset-thumbnail-button");
     const inputTitleContrastBackground = document.getElementById("input-title-contrast-background");
     const inputTitleHideOnThumbnail = document.getElementById("input-title-hide-on-thumbnail");
@@ -198,6 +207,7 @@
 
     // on Preview page
     const previewArticleThumbnail = document.getElementById("article-thumbnail");
+    const previewArticleThumbnailCredits = document.getElementById("article-thumbnail-credit");
     const previewArticleTitle = document.getElementById("article-title")
     const previewArticleContents = document.getElementById("article-contents")
     const previewArticleAuthors = document.getElementById("article-authors-list")
@@ -322,6 +332,11 @@
         previewArticleTitle.style.color = inputTitleColor.value;
         previewArticleContents.innerHTML = DOMPurify.sanitize(marked.parse(inputContents.value));
         <!--const articleDate = document.getElementById("preview-article-date");-->
+        if (inputThumbnailCredits.value) {
+            previewArticleThumbnailCredits.textContent = "Grafică: " + inputThumbnailCredits.value;
+        } else {
+            previewArticleThumbnailCredits.textContent = "";
+        }
 
         previewArticleContents.classList.remove("dropcap");
         switch(inputfirstLetterStyle.value) {

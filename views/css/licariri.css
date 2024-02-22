@@ -169,6 +169,15 @@ body {
     }
 }
 
+#article-contributors {
+    line-height: 0;
+    position: absolute;
+    top: 102vh;
+    right: 100px;
+    font-family: "Georgia";
+    font-style: italic;
+}
+
 #article-contents {
     width: 30%;
     margin: 0 auto;
