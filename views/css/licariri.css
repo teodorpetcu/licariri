@@ -108,7 +108,7 @@ body {
     transform: scale(1.06);
 }
 
-.article-title {
+.center {
     position: absolute;
     left: 50%;
     top: 50%;

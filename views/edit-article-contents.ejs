@@ -28,7 +28,13 @@
                 <div>
                     <label>Titlu:</label>
                     <input required id="input-title" type="text"
-                        name="title" placeholder="" value="<%= defaults.title %>">
+                        name="title" value="<%= defaults.title %>">
+                </div>
+
+                <div>
+                    <label>Subtitlu:</label>
+                    <input required id="input-subtitle" type="text"
+                        name="subtitle" value="<%= defaults.subtitle %>">
                 </div>
 
                 <div>
@@ -62,7 +68,7 @@
         <div id="edit-article-dtp">
             <div class="article-thumbnail" style="width: 300px; position: absolute; right:
                 100px; top: 300px; transform: translateY(-50%);">
-                <h1 id="preview-minified-thumbnail-title" class="article-title"></h1>
+                <h1 id="preview-minified-thumbnail-title" class="center"></h1>
                 <img id="preview-minified-thumbnail-image" src="">
             </div>
             <div>
@@ -133,7 +139,10 @@
     <div id="preview-page">
         <div id="article-headline">
             <img id="article-thumbnail" src="" class="no-select">
-            <h1 id="article-title" class="article-title"></h1>
+            <div class="center">
+                <h1 id="article-title"></h1>
+                <h2 id="article-subtitle"></h2>
+            </div>
         </div>
         <div id="article-contributors">
             <!--<h5>Redactare:</h5>-->
@@ -142,6 +151,7 @@
         </div>
         <div id="article-info">
             <div id="article-authors-list">
+                <!--todo: dynamically replace with °autor/i°-->
                 <h3>Scris de:</h3>
             </div>
             <b id="article-date" style="float: right; opacity: 0.8;"></b>
@@ -199,6 +209,7 @@
 
     // on Content page
     const inputTitle = document.getElementById("input-title");
+    const inputSubtitle = document.getElementById("input-subtitle");
     const inputAuthors = document.getElementsByName("authors[]");
     const inputTags = document.getElementsByName("tags[]");
     const inputContents = document.getElementById("input-article-contents");
@@ -219,10 +230,11 @@
     // on Preview page
     const previewArticleThumbnail = document.getElementById("article-thumbnail");
     const previewArticleThumbnailCredits = document.getElementById("article-thumbnail-credit");
-    const previewArticleTitle = document.getElementById("article-title")
-    const previewArticleContents = document.getElementById("article-contents")
-    const previewArticleAuthors = document.getElementById("article-authors-list")
-    const previewArticleTags = document.getElementById("article-tags-list")
+    const previewArticleTitle = document.getElementById("article-title");
+    const previewArticleSubtitle = document.getElementById("article-subtitle");
+    const previewArticleContents = document.getElementById("article-contents");
+    const previewArticleAuthors = document.getElementById("article-authors-list");
+    const previewArticleTags = document.getElementById("article-tags-list");
 
     inputThumbnailReset.addEventListener("click", () => {
         inputThumbnail.value = '';
@@ -341,6 +353,9 @@
 
         previewArticleTitle.textContent = inputTitle.value;
         previewArticleTitle.style.color = inputTitleColor.value;
+        previewArticleSubtitle.textContent = inputSubtitle.value;
+        previewArticleSubtitle.style.color = inputTitleColor.value;
+        previewArticleSubtitle.style.fontFamily = inputTitleFont.value;
         previewArticleContents.innerHTML = DOMPurify.sanitize(marked.parse(inputContents.value));
         <!--const articleDate = document.getElementById("preview-article-date");-->
         if (inputThumbnailCredits.value) {
