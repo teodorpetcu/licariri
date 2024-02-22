@@ -208,7 +208,6 @@
             <div id="article-alternate-title-position"></div>
             <div id="article-authors-list">
                 <!--todo: dynamically replace with °autor/i°-->
-                <h3>Scris de:</h3>
             </div>
             <b id="article-date" style="float: right; opacity: 0.8;"><%= defaults.date %></b>
             <div id="article-tags-list">
@@ -393,10 +392,20 @@
         // fields themselves
 
         // clear authors and tags, since otherwise they would just pile up
-        while (previewArticleAuthors.childElementCount > 1) {
+        while (previewArticleAuthors.childElementCount) {
             previewArticleAuthors.removeChild(previewArticleAuthors.lastChild);
         }
         previewArticleTags.textContent = "";
+
+        if (inputAuthors.length) {
+            let authorDivIntroduction = document.createElement("h3");
+            previewArticleAuthors.append(authorDivIntroduction);
+            authorDivIntroduction.textContent = "Autor";
+            if (inputAuthors.length != 1) {
+                authorDivIntroduction.textContent += "i";
+            }
+            authorDivIntroduction.textContent += ":";
+        }
 
         for (inputAuthor of inputAuthors) {
             if (!inputAuthor.value) continue;
