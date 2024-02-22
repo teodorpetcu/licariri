@@ -159,6 +159,11 @@ body {
     }
 }
 
+#article-default-title-position,
+#article-alternate-title-position {
+    text-align: center;
+}
+
 #article-authors-list {
     text-align: center;
     margin: 0 auto;

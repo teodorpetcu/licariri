@@ -111,6 +111,14 @@
                     type="color" name="title-color" value="#ffffff">
             </div>
             <div>
+                <label>Poziția titlului în articol:</label>
+                <select required id="input-title-position"
+                    name="title-position">
+                    <option value="thumbnail">Pe thumbnail</option>
+                    <option value="article">Sub thumbnail</option>
+                </select>
+            </div>
+            <div>
                 <label>Fontul subtitlului:</label>
                 <select required id="input-subtitle-font"
                     name="subtitle-font">
@@ -159,7 +167,7 @@
     <div id="preview-page">
         <div id="article-headline">
             <img id="article-thumbnail" src="" class="no-select">
-            <div class="center">
+            <div id="article-default-title-position" class="center">
                 <h1 id="article-title"></h1>
                 <h2 id="article-subtitle"></h2>
             </div>
@@ -170,6 +178,7 @@
             <h5 id="article-thumbnail-credit"></h5>
         </div>
         <div id="article-info">
+            <div id="article-alternate-title-position"></div>
             <div id="article-authors-list">
                 <!--todo: dynamically replace with °autor/i°-->
                 <h3>Scris de:</h3>
@@ -242,6 +251,7 @@
     const inputTitleHideOnThumbnail = document.getElementById("input-title-hide-on-thumbnail");
     const inputTitleColor = document.getElementById("input-title-color");
     const inputTitleFont = document.getElementById("input-title-font");
+    const inputTitlePosition = document.getElementById("input-title-position");
     const inputSubtitleColor = document.getElementById("input-subtitle-color");
     const inputSubtitleFont = document.getElementById("input-subtitle-font");
     const inputfirstLetterStyle = document.getElementById("input-first-letter-style");
@@ -257,6 +267,9 @@
     const previewArticleContents = document.getElementById("article-contents");
     const previewArticleAuthors = document.getElementById("article-authors-list");
     const previewArticleTags = document.getElementById("article-tags-list");
+
+    const previewArticleDefaultTitlePosition = document.getElementById("article-default-title-position");
+    const previewArticleAlternateTitlePosition = document.getElementById("article-alternate-title-position");
 
     inputThumbnailReset.addEventListener("click", () => {
         inputThumbnail.value = '';
@@ -385,6 +398,12 @@
             previewArticleThumbnailCredits.textContent = "Grafică: " + inputThumbnailCredits.value;
         } else {
             previewArticleThumbnailCredits.textContent = "";
+        }
+
+        if (inputTitlePosition.value == "article") {
+            previewArticleAlternateTitlePosition.prepend(previewArticleTitle);
+        } else {
+            previewArticleDefaultTitlePosition.prepend(previewArticleTitle);
         }
 
         previewArticleContents.classList.remove("dropcap");
