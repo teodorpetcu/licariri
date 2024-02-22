@@ -111,6 +111,26 @@
                     type="color" name="title-color" value="#ffffff">
             </div>
             <div>
+                <label>Fontul subtitlului:</label>
+                <select required id="input-subtitle-font"
+                    name="subtitle-font">
+                    <option value="Helvetica" selected="selected">Helvetica</option>
+                    <option value="Verdana">Verdana</option>
+                    <option value="Trebuchet MS">Trebuchet MS</option>
+                    <option value="Comic Sans MS">Comic Sans</option>
+                    <hr>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Palatino">Palatino</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Courier New">Courier New</option>
+                </select>
+            </div>
+            <div>
+                <label>Culoarea subtitlului:</label>
+                <input required id="input-subtitle-color"
+                    type="color" name="subtitle-color" value="#ffffff">
+            </div>
+            <div>
                 <label>Stilul primei litere din text:</label>
                 <select required id="input-first-letter-style"
                     name="first-letter-style">
@@ -222,6 +242,8 @@
     const inputTitleHideOnThumbnail = document.getElementById("input-title-hide-on-thumbnail");
     const inputTitleColor = document.getElementById("input-title-color");
     const inputTitleFont = document.getElementById("input-title-font");
+    const inputSubtitleColor = document.getElementById("input-subtitle-color");
+    const inputSubtitleFont = document.getElementById("input-subtitle-font");
     const inputfirstLetterStyle = document.getElementById("input-first-letter-style");
     const inputContentsFont = document.getElementById("input-contents-font");
     const previewMinifiedThumbnailImage = document.getElementById("preview-minified-thumbnail-image");
@@ -354,8 +376,9 @@
         previewArticleTitle.textContent = inputTitle.value;
         previewArticleTitle.style.color = inputTitleColor.value;
         previewArticleSubtitle.textContent = inputSubtitle.value;
-        previewArticleSubtitle.style.color = inputTitleColor.value;
-        previewArticleSubtitle.style.fontFamily = inputTitleFont.value;
+        previewArticleSubtitle.style.color = inputSubtitleColor.value;
+        previewArticleSubtitle.style.fontFamily = inputSubtitleFont.value;
+
         previewArticleContents.innerHTML = DOMPurify.sanitize(marked.parse(inputContents.value));
         <!--const articleDate = document.getElementById("preview-article-date");-->
         if (inputThumbnailCredits.value) {
