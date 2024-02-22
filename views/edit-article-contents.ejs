@@ -139,6 +139,14 @@
                     type="color" name="subtitle-color" value="#ffffff">
             </div>
             <div>
+                <label>Poziția subtitlului în articol:</label>
+                <select required id="input-subtitle-position"
+                    name="subtitle-position">
+                    <option value="thumbnail">Pe thumbnail</option>
+                    <option value="article">Sub thumbnail</option>
+                </select>
+            </div>
+            <div>
                 <label>Stilul primei litere din text:</label>
                 <select required id="input-first-letter-style"
                     name="first-letter-style">
@@ -254,6 +262,7 @@
     const inputTitlePosition = document.getElementById("input-title-position");
     const inputSubtitleColor = document.getElementById("input-subtitle-color");
     const inputSubtitleFont = document.getElementById("input-subtitle-font");
+    const inputSubtitlePosition = document.getElementById("input-subtitle-position");
     const inputfirstLetterStyle = document.getElementById("input-first-letter-style");
     const inputContentsFont = document.getElementById("input-contents-font");
     const previewMinifiedThumbnailImage = document.getElementById("preview-minified-thumbnail-image");
@@ -404,6 +413,11 @@
             previewArticleAlternateTitlePosition.prepend(previewArticleTitle);
         } else {
             previewArticleDefaultTitlePosition.prepend(previewArticleTitle);
+        }
+        if (inputSubtitlePosition.value == "article") {
+            previewArticleAlternateTitlePosition.append(previewArticleSubtitle);
+        } else {
+            previewArticleDefaultTitlePosition.append(previewArticleSubtitle);
         }
 
         previewArticleContents.classList.remove("dropcap");
