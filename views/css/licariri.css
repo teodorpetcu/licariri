@@ -155,7 +155,6 @@ body {
     }
 }
 
-#article-default-title-position,
 #article-alternate-title-position {
     text-align: center;
 }
@@ -163,6 +162,7 @@ body {
 #article-authors-list {
     text-align: center;
     margin: 0 auto;
+    padding-bottom: 25px;
 
     h3 {
         font-size: 0.9rem;

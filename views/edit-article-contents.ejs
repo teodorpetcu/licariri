@@ -194,10 +194,8 @@
     <div id="preview-page">
         <div id="article-headline">
             <img id="article-thumbnail" src="" class="no-select">
-            <div id="article-default-title-position" class="center">
-                <h1 id="article-title"></h1>
-                <h2 id="article-subtitle"></h2>
-            </div>
+            <h1 id="article-title"></h1>
+            <h2 id="article-subtitle"></h2>
         </div>
         <div id="article-contributors">
             <!--<h5>Redactare:</h5>-->
@@ -300,7 +298,7 @@
     const previewArticleAuthors = document.getElementById("article-authors-list");
     const previewArticleTags = document.getElementById("article-tags-list");
 
-    const previewArticleDefaultTitlePosition = document.getElementById("article-default-title-position");
+    const previewArticleDefaultTitlePosition = document.getElementById("article-headline");
     const previewArticleAlternateTitlePosition = document.getElementById("article-alternate-title-position");
 
     inputThumbnailReset.addEventListener("click", () => {
@@ -456,14 +454,22 @@
         }
 
         if (inputTitlePosition.value == "article") {
-            previewArticleAlternateTitlePosition.prepend(previewArticleTitle);
+            previewArticleTitle.classList.remove("center");
+            previewArticleAlternateTitlePosition.append(previewArticleTitle);
         } else {
-            previewArticleDefaultTitlePosition.prepend(previewArticleTitle);
+            previewArticleTitle.classList.add("center");
+            previewArticleDefaultTitlePosition.append(previewArticleTitle);
         }
         if (inputSubtitlePosition.value == "article") {
+            previewArticleSubtitle.classList.remove("center");
             previewArticleAlternateTitlePosition.append(previewArticleSubtitle);
+            previeArticleSubtitle.style.marginTop = 0;
         } else {
+            previewArticleSubtitle.classList.add("center");
             previewArticleDefaultTitlePosition.append(previewArticleSubtitle);
+            previewArticleSubtitle.style.marginTop =
+                (previewArticleTitle.offsetHeight +
+                previewArticleSubtitle.offsetHeight) + "px";
         }
 
         previewArticleContents.classList.remove("dropcap");
