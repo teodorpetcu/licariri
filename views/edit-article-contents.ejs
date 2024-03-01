@@ -467,15 +467,16 @@
         } else {
             previewArticleSubtitle.classList.add("center");
             previewArticleDefaultTitlePosition.append(previewArticleSubtitle);
+            // todo: maybe make this variable somehow
             previewArticleSubtitle.style.marginTop =
                 (previewArticleTitle.offsetHeight +
                 previewArticleSubtitle.offsetHeight) + "px";
         }
 
-        previewArticleContents.classList.remove("dropcap");
+        previewArticleContents.firstChild.classList.remove("dropcap");
         switch(inputfirstLetterStyle.value) {
             case "dropcap":
-                previewArticleContents.classList.add("dropcap");
+                previewArticleContents.firstChild.classList.add("dropcap");
                 break;
         }
         setFont(previewArticleContents, inputContentsFont.value);

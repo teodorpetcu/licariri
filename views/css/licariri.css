@@ -12,6 +12,7 @@ body {
 }
 
 #main-page {
+    color: var(--font-color);
     background-size: cover;
     background-image: url(/images/test.png);
     background-attachment: fixed;
@@ -33,7 +34,7 @@ body {
     height: 180px;
     width: 100%;
     border-bottom: 4px solid black;
-    background-color: #ffffff;
+    background-color: var(--neutral-color);
 }
 
 #main-page-header #website-title-container {
@@ -64,7 +65,7 @@ body {
     margin: 200px auto 100px auto;
     padding: 10px;
     width: 450px;
-    background-color: #ffffff;
+    background-color: var(--neutral-color);
     font-family: "Times New Roman";
     font-size: 1.4em;
     border-radius: 50px;
@@ -74,8 +75,7 @@ body {
 #articles-section {
     position: relative;
     margin: 0 auto;
-    /*background-color: #f0f0f0;*/
-    background-color: #ffffff;
+    background-color: var(--neutral-color);
     width: 72%;
     height: calc(400vh);
     border-radius: 25px;
@@ -181,31 +181,34 @@ body {
 
 #article-contents {
     width: 35%;
-    word-spacing: 1px;
+    word-spacing: 2px;
     line-height: 1.4;
     margin: 0 auto;
-    text-indent: 4rem;
+    text-indent: 12.5mm;
     text-align: justify;
     p {
         padding: 5px;
     }
+    blockquote {
+        border-left: 3.5px solid black;
+        padding-left: 10px;
+    }
 }
 
 .dropcap {
-    :first-child {
-        text-indent: 0;
-    }
-    :first-child::first-letter {
-        color: black;
-        padding: 0.8rem;
-        border: 2px solid;
-        margin: 4px;
-        margin-right: 20px;
+    text-indent: 0;
+}
 
-        font-size: 5rem;
-        float: left;
-        line-height: 1;
-    }
+.dropcap::first-letter {
+    color: black;
+    padding: 0.8rem;
+    border: 2px solid;
+    margin: 4px;
+    margin-right: 20px;
+
+    font-size: 5rem;
+    float: left;
+    line-height: 1;
 }
 
 hr {
