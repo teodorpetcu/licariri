@@ -25,39 +25,33 @@
             <% } else { %>
             <h1>Adaugă articol</h1>
             <% } %>
-                <div>
-                    <label>Titlu:</label>
-                    <input required id="input-title" type="text"
-                        name="title" value="<%= defaults.title %>">
-                </div>
+                <label>Titlu:</label>
+                <input required id="input-title" type="text"
+                    name="title" value="<%= defaults.title %>">
 
-                <div>
-                    <label>Subtitlu:</label>
-                    <input required id="input-subtitle" type="text"
-                        name="subtitle" value="<%= defaults.subtitle %>">
-                </div>
+                <label>Subtitlu:</label>
+                <input required id="input-subtitle" type="text"
+                    name="subtitle" value="<%= defaults.subtitle %>">
 
-                <div>
-                    <label>Limba articolului:</label>
-                    <select required id="input-article-language"
-                        name="article-language">
-                        <option value="romanian">Română</option>
-                        <option value="english">Engleză</option>
-                        <option value="german">Germană</option>
-                        <option value="french">Franceză</option>
-                    </select>
-                </div>
+                <label>Limba articolului:</label>
+                <select required id="input-article-language"
+                    name="article-language">
+                    <option value="romanian">Română</option>
+                    <option value="english">Engleză</option>
+                    <option value="german">Germană</option>
+                    <option value="french">Franceză</option>
+                </select>
 
-                <div>
+                <div class="input-multiple">
                     <label>Autori:</label>
                     <div id="input-authors"></div>
-                    <button type="button" id="authors-add-button">Adaugă</button>
+                    <button class="add-button" type="button" id="authors-add-button">Adaugă</button>
                 </div>
 
-                <div>
+                <div class="input-multiple">
                     <label>Tag-uri:</label>
                     <div id="input-tags"></div>
-                    <button type="button" id="tags-add-button">Adaugă</button>
+                    <button class="add-button" type="button" id="tags-add-button">Adaugă</button>
                 </div>
             </div>
             <div id="right">
@@ -71,123 +65,79 @@
                 <h1 id="preview-minified-thumbnail-title" class="center"></h1>
                 <img id="preview-minified-thumbnail-image" src="">
             </div>
-            <div>
-                <label>Thumbnail:</label>
-                <input required id="input-article-thumbnail"
-                    type="file" accepts="image/*" name="thumbnail">
-                <button type="button" id="reset-thumbnail-button">RESETARE</button>
-                <label>Persoana care a realizat thumbnail-ului:</label>
-                <input required id="input-article-thumbnail-credit"
-                    type="text" placeholder="Nume Prenume" name="thumbnail-credit">
-            </div>
-            <div>
-                <label>Ascunde titlul din thumbnail:</label>
-                <input required id="input-title-hide-on-thumbnail"
-                    type="checkbox" name="title-hide-on-thumbnail">
-            </div>
-            <div>
-                <label>Fontul titlului:</label>
-                <select required id="input-title-font"
-                    name="title-font">
-                    <option value="Helvetica" selected="selected">Helvetica</option>
-                    <option value="Verdana">Verdana</option>
-                    <option value="Trebuchet MS">Trebuchet MS</option>
-                    <option value="Comic Sans MS">Comic Sans</option>
-                    <hr>
-                    <option value="Times New Roman">Times New Roman</option>
-                    <option value="Palatino">Palatino</option>
-                    <option value="Georgia">Georgia</option>
-                    <option value="Courier New">Courier New</option>
-                </select>
-            </div>
-            <div>
-                <label>Mărimea fontului titlului din thumbnail:</label>
-                <input required id="input-title-thumbnail-font-size"
-                    name="title-thumbnail-font-size"
-                    type="range" min="1" max="2.2" value = "1.6" step="0.1" >
-                <label>Mărimea fontului titlului din articol:</label>
-                <input required id="input-title-article-font-size"
-                    name="title-article-font-size"
-                    type="range" min="2" max="5" value = "3.5" step="0.1" >
-            </div>
-            <div>
-                <label>Titlul contrastează cu fundalul (ignoră culoarea):</label>
-                <input required id="input-title-contrast-background"
-                    type="checkbox" name="title-contrast-background">
-            </div>
-            <div>
-                <label>Culoarea titlului:</label>
-                <input required id="input-title-color"
-                    type="color" name="title-color" value="#ffffff">
-            </div>
-            <div>
-                <label>Poziția titlului în articol:</label>
-                <select required id="input-title-position"
-                    name="title-position">
-                    <option value="thumbnail">Pe thumbnail</option>
-                    <option value="article">Sub thumbnail</option>
-                </select>
-            </div>
-            <div>
-                <label>Fontul subtitlului:</label>
-                <select required id="input-subtitle-font"
-                    name="subtitle-font">
-                    <option value="Helvetica" selected="selected">Helvetica</option>
-                    <option value="Verdana">Verdana</option>
-                    <option value="Trebuchet MS">Trebuchet MS</option>
-                    <option value="Comic Sans MS">Comic Sans</option>
-                    <hr>
-                    <option value="Times New Roman">Times New Roman</option>
-                    <option value="Palatino">Palatino</option>
-                    <option value="Georgia">Georgia</option>
-                    <option value="Courier New">Courier New</option>
-                </select>
-            </div>
-            <div>
-                <label>Mărimea fontului subtitlului din articol:</label>
-                <input required id="input-subtitle-font-size" name="subtitle-font-size"
-                    type="range" min="1" max="2" value = "1.5" step="0.1" >
-            </div>
-            <div>
-                <label>Culoarea subtitlului:</label>
-                <input required id="input-subtitle-color"
-                    type="color" name="subtitle-color" value="#ffffff">
-            </div>
-            <div>
-                <label>Poziția subtitlului în articol:</label>
-                <select required id="input-subtitle-position"
-                    name="subtitle-position">
-                    <option value="thumbnail">Pe thumbnail</option>
-                    <option value="article">Sub thumbnail</option>
-                </select>
-            </div>
-            <div>
-                <label>Stilul primei litere din text:</label>
-                <select required id="input-first-letter-style"
-                    name="first-letter-style">
-                    <option value="default" selected="selected">Fără stil</option>
-                    <option value="dropcap">Dropcap cu border</option>
-                </select>
-            </div>
-            <div>
-                <label>Fontul textului din articolul propriu-zis:</label>
-                <select required id="input-contents-font"
-                    name="contents-font">
-                    <option value="Helvetica" selected="selected">Helvetica</option>
-                    <option value="Verdana">Verdana</option>
-                    <option value="Trebuchet MS">Trebuchet MS</option>
-                    <option value="Comic Sans MS">Comic Sans</option>
-                    <hr>
-                    <option value="Times New Roman">Times New Roman</option>
-                    <option value="Palatino">Palatino</option>
-                    <option value="Georgia">Georgia</option>
-                    <option value="Courier New">Courier New</option>
-                </select>
-                <label>Mărimea fontului textului din articolul propriu-zis:</label>
-                <input required id="input-contents-font-size"
-                    name="contents-font-size"
-                    type="range" min="0.9" max="1.2" value = "1" step="0.1" >
-            </div>
+
+            <label>Thumbnail:</label>
+            <input required id="input-article-thumbnail"
+                type="file" accepts="image/*" name="thumbnail">
+            <button type="button" id="reset-thumbnail-button">RESETARE</button>
+            <label>Persoana care a realizat thumbnail-ului:</label>
+            <input required id="input-article-thumbnail-credit"
+                type="text" placeholder="Nume Prenume" name="thumbnail-credit">
+
+            <label>Ascunde titlul din thumbnail:</label>
+            <input required id="input-title-hide-on-thumbnail"
+                type="checkbox" name="title-hide-on-thumbnail">
+
+            <label>Fontul titlului:</label>
+            <select required id="input-title-font"
+                name="title-font">
+                <option value="Baskervville">Baskervville</option>
+                <option value="Kameron">Kameron</option>
+            </select>
+
+            <label>Mărimea fontului titlului din thumbnail:</label>
+            <input required id="input-title-thumbnail-font-size"
+                name="title-thumbnail-font-size"
+                type="range" min="1.5" max="2.5" value = "2" step="0.1" >
+
+            <label>Mărimea fontului titlului din articol:</label>
+            <input required id="input-title-article-font-size"
+                name="title-article-font-size"
+                type="range" min="2" max="5" value = "3.5" step="0.1" >
+
+            <label>Titlul contrastează cu fundalul (ignoră culoarea):</label>
+            <input required id="input-title-contrast-background"
+                type="checkbox" name="title-contrast-background">
+
+            <label>Culoarea titlului:</label>
+            <input required id="input-title-color"
+                type="color" name="title-color" value="#ffffff">
+
+            <label>Poziția titlului în articol:</label>
+            <select required id="input-title-position"
+                name="title-position">
+                <option value="thumbnail">Pe thumbnail</option>
+                <option value="article">Sub thumbnail</option>
+            </select>
+
+            <label>Fontul subtitlului:</label>
+            <select required id="input-subtitle-font"
+                name="subtitle-font">
+                <option value="Baskervville">Baskervville</option>
+                <option value="Kameron">Kameron</option>
+            </select>
+
+            <label>Mărimea fontului subtitlului din articol:</label>
+            <input required id="input-subtitle-font-size" name="subtitle-font-size"
+                type="range" min="1" max="2" value = "1.5" step="0.1" >
+
+            <label>Culoarea subtitlului:</label>
+            <input required id="input-subtitle-color"
+                type="color" name="subtitle-color" value="#ffffff">
+
+            <label>Poziția subtitlului în articol:</label>
+            <select required id="input-subtitle-position"
+                name="subtitle-position">
+                <option value="thumbnail">Pe thumbnail</option>
+                <option value="article">Sub thumbnail</option>
+            </select>
+
+            <label>Stilul primei litere din text:</label>
+            <select required id="input-first-letter-style"
+                name="first-letter-style">
+                <option value="default" selected="selected">Fără stil</option>
+                <option value="dropcap">Dropcap cu border</option>
+            </select>
         </div>
         <!--<input type="submit" value="Trimite">-->
     </form>
@@ -228,7 +178,12 @@
 
         let fieldInput = document.createElement("input");
         fieldInput.name = type +  "s[]";
-        fieldInput.type = "text";
+        if (type == "image") {
+            fieldInput.type = "file";
+            fieldInput.accept = "image/*";
+        } else {
+            fieldInput.type = "text";
+        }
         fieldInput.value = value;
 
         let fieldDeleteButton = document.createElement("button");
@@ -376,7 +331,7 @@
 
     const showDTPPage = () => {
         contentPage.style.display = "none";
-        dtpPage.style.display = "block";
+        dtpPage.style.display = "grid";
         previewPage.style.display = "none";
         previewMinifiedThumbnailTitle.textContent = inputTitle.value;
     }

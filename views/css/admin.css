@@ -117,26 +117,21 @@ input:focus {
     grid-template-columns: repeat(2, 1fr);
     text-align: center;
 
-    #input-authors,
-    #input-tags {
+    .input-multiple {
         position: relative;
-        display: grid;
-        justify-content: center;
-    }
-    #authors-add-button,
-    #tags-add-button {
-        width: 100px;
-        border-radius: 10px;
-    }
-    #input-authors .author button,
-    #input-tags .tag button {
-        margin-left: 15px;
-        vertical-align: center;
-        padding: 0.8rem;
-        border-radius: 50%;
-        aspect-ratio: 1;
-        line-height: 50%;
-        text-align: center;
+        .add-button {
+            width: 100px;
+            border-radius: 10px;
+        }
+        .delete-button {
+            margin-left: 15px;
+            vertical-align: center;
+            padding: 0.8rem;
+            border-radius: 50%;
+            aspect-ratio: 1;
+            line-height: 50%;
+            text-align: center;
+        }
     }
     #left {
         margin: 0 auto;
@@ -146,7 +141,7 @@ input:focus {
         h1 {
             margin: 0;
         }
-        input {
+        input[type="text"] {
             font-size: 1.1rem;
         }
         input[name="title"] {
@@ -171,13 +166,15 @@ input:focus {
 }
 
 #edit-article-dtp {
-    text-align: center;
+    margin: 0 auto;
+    width: 20%;
+    justify-items: center;
     padding-top: 50px;
     font-family: "Arial";
     #reset-thumbnail-button {
         vertical-align: middle;
     }
     label {
-        padding-top: 20px;
+        padding-top: 15px;
     }
 }

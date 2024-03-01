@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Hind:wght@300;400;500;600;700&family=Kameron:wght@400..700&display=swap');
+
 :root {
     --font-color: black;
     --neutral-color: white;
@@ -44,12 +46,13 @@ body {
     text-align: center;
     transform: translateX(-50%);
     h1 {
-        font-family: "Times New Roman";
+        font-family: "Baskervville";
+        line-height: 1;
         font-size: 4.8em;
         margin: 0;
     }
     h6 {
-        font-family: "Helvetica";
+        font-family: "Kameron";
         margin: 0;
     }
 }
@@ -66,7 +69,8 @@ body {
     padding: 10px;
     width: 450px;
     background-color: var(--neutral-color);
-    font-family: "Times New Roman";
+    font-family: "Hind";
+    line-height: 1.2;
     font-size: 1.4em;
     border-radius: 50px;
     text-align: center;
@@ -104,6 +108,12 @@ body {
     }
 }
 
+#article-title,
+.article-thumbnail h1 {
+    font-family: "Baskervville";
+    color: white;
+}
+
 .article-thumbnail:hover {
     transform: scale(1.06);
 }
@@ -137,8 +147,8 @@ body {
 #article-info {
     width: 32%;
     margin: 0 auto;
-    font-family: "Times New Roman";
-    font-size: 1.3rem;
+    font-family: "Kameron";
+    font-size: 1.2rem;
     a {
         color: #000080;
         text-decoration: underline;
@@ -175,7 +185,7 @@ body {
     position: absolute;
     top: 102vh;
     right: 100px;
-    font-family: "Georgia";
+    font-family: "Kameron";
     font-style: italic;
 }
 
@@ -186,6 +196,8 @@ body {
     margin: 0 auto;
     text-indent: 12.5mm;
     text-align: justify;
+    font-family: "Hind";
+    font-size: 1.15rem;
     p {
         padding: 5px;
     }
