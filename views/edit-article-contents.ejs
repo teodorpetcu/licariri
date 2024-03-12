@@ -458,6 +458,11 @@
     document.getElementById("button-edit-content").addEventListener("click", showContentPage);
     document.getElementById("button-edit-dtp").addEventListener("click", showDTPPage);
     document.getElementById("button-preview").addEventListener("click", showPreviewPage);
+
+    window.addEventListener("beforeunload", (event) => {
+        event.preventDefault();
+        event.returnValue = true;
+    });
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
