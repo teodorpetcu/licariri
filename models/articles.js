@@ -19,12 +19,36 @@ class ArticleDatabase extends Database {
         this.db.exec(`
             CREATE TABLE IF NOT EXISTS articles
             (
-                id          TEXT NOT NULL,
-                user        TEXT NOT NULL,
-                title       TEXT NOT NULL,
-                timestamp   INT,
-                thumbnail   TEXT NOT NULL,
+                id                  TEXT NOT NULL,
+                stage               TEXT NOT NULL,
+                timestamp           INT,
+                title               TEXT NOT NULL,
+                subtitle            TEXT,
+                language            TEXT NOT NULL,
+                category            TEXT NOT NULL,
                 UNIQUE (id)
+            );
+            CREATE TABLE IF NOT EXISTS article_styles
+            (
+                id                          TEXT NOT NULL,
+
+                hide_title_in_thumbnail     INT,
+                title_font                  TEXT,
+                title_fill_style            TEXT,
+                title_color                 TEXT,
+                title_fontsize_thumbnail    INT,
+                title_fontsize_article      INT,
+                title_fontweight            INT,
+                title_position              TEXT,
+
+                subtitle_font               TEXT,
+                subtitle_fontsize           INT,
+                subtitle_fontweight         INT,
+                subtitle_color              TEXT,
+                subtitle_position           TEXT,
+
+                dropcap                     INT,
+                FOREIGN KEY (id) REFERENCES articles (id)
             );
             CREATE TABLE IF NOT EXISTS article_tags
             (
@@ -34,10 +58,18 @@ class ArticleDatabase extends Database {
             );
             CREATE TABLE IF NOT EXISTS article_authors
             (
-                id                  TEXT NOT NULL,
-                author              TEXT NOT NULL,
+                id      TEXT NOT NULL,
+                author  TEXT NOT NULL,
                 FOREIGN KEY (id) REFERENCES articles (id)
-            );`, (err) => {
+            );
+            CREATE TABLE IF NOT EXISTS article_credits
+            (
+                id      TEXT NOT NULL,
+                person  TEXT NOT NULL,
+                reason  TEXT NOT NULL,
+                FOREIGN KEY (id) REFERENCES articles (id)
+            );
+            `, (err) => {
                 if (err) {
                     logger.error(`database '${this.path}' tables: ${err}`);
                 } else {
