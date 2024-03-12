@@ -95,6 +95,12 @@
                 name="title-article-font-size"
                 type="range" min="2" max="5" value = "3.5" step="0.1" >
 
+            <label>Grosimea fontului titlului:</label>
+            <input required id="input-title-fontweight"
+                name="title-fontweight"
+                type="range" min="400" max="800" value = "600" step="50">
+            </select>
+
             <label>Titlul contrastează cu fundalul (ignoră culoarea):</label>
             <input required id="input-title-contrast-background"
                 type="checkbox" name="title-contrast-background">
@@ -120,6 +126,13 @@
             <label>Mărimea fontului subtitlului din articol:</label>
             <input required id="input-subtitle-font-size" name="subtitle-font-size"
                 type="range" min="1" max="2" value = "1.5" step="0.1" >
+
+            <label>Grosimea fontului subtitlului:</label>
+            <input required id="input-subtitle-fontweight"
+                name="subtitle-fontweight"
+                type="range" min="400" max="800" value = "600" step="50">
+            </select>
+
 
             <label>Culoarea subtitlului:</label>
             <input required id="input-subtitle-color"
@@ -157,7 +170,7 @@
             <div id="article-authors-list">
                 <!--todo: dynamically replace with °autor/i°-->
             </div>
-            <b id="article-date" style="float: right; opacity: 0.8;"><%= defaults.date %></b>
+            <b id="article-date"><%= defaults.date %></b>
             <div id="article-tags-list">
             </div>
         </div>
@@ -232,14 +245,14 @@
     const inputTitleFont = document.getElementById("input-title-font");
     const inputTitleThumbnailFontSize = document.getElementById("input-title-thumbnail-font-size");
     const inputTitleArticleFontSize = document.getElementById("input-title-article-font-size");
+    const inputTitleFontWeight = document.getElementById("input-title-fontweight");
     const inputTitlePosition = document.getElementById("input-title-position");
     const inputSubtitleColor = document.getElementById("input-subtitle-color");
     const inputSubtitleFont = document.getElementById("input-subtitle-font");
     const inputSubtitlePosition = document.getElementById("input-subtitle-position");
     const inputSubtitleFontSize = document.getElementById("input-subtitle-font-size");
+    const inputSubtitleFontWeight = document.getElementById("input-subtitle-fontweight");
     const inputfirstLetterStyle = document.getElementById("input-first-letter-style");
-    const inputContentsFont = document.getElementById("input-contents-font");
-    const inputContentsFontSize = document.getElementById("input-contents-font-size");
 
     const previewMinifiedThumbnailImage = document.getElementById("preview-minified-thumbnail-image");
     const previewMinifiedThumbnailTitle = document.getElementById("preview-minified-thumbnail-title");
@@ -281,6 +294,11 @@
         setFontSizeREM(previewMinifiedThumbnailTitle, inputTitleThumbnailFontSize.value);
     })
     setFontSizeREM(previewMinifiedThumbnailTitle, inputTitleThumbnailFontSize.value);
+
+    inputTitleFontWeight.addEventListener("change", () => {
+        previewMinifiedThumbnailTitle.style.fontWeight = inputTitleFontWeight.value;
+        previewArticleTitle.style.fontWeight = inputTitleFontWeight.value;
+    })
 
     const updateTitleColourMode = () => {
         if (inputTitleContrastBackground.checked) {
@@ -398,6 +416,7 @@
         previewArticleSubtitle.textContent = inputSubtitle.value;
         previewArticleSubtitle.style.color = inputSubtitleColor.value;
         previewArticleSubtitle.style.fontFamily = inputSubtitleFont.value;
+        previewArticleSubtitle.style.fontWeight = inputSubtitleFontWeight.value;
         setFontSizeREM(previewArticleSubtitle, inputSubtitleFontSize.value);
 
         previewArticleContents.innerHTML = DOMPurify.sanitize(marked.parse(inputContents.value));
@@ -434,8 +453,6 @@
                 previewArticleContents.firstChild.classList.add("dropcap");
                 break;
         }
-        setFont(previewArticleContents, inputContentsFont.value);
-        setFontSizeREM(previewArticleContents, inputContentsFontSize.value);
     }
 
     document.getElementById("button-edit-content").addEventListener("click", showContentPage);

@@ -24,7 +24,7 @@
             <% } %>
             <% } %>
         </div>
-        <b style="float: right; opacity: 0.8;"><%= article.date %></b>
+        <b id="article-date"><%= article.date %></b>
         <div id="article-tags-list">
             <% for (let tag of article.tags) { %>
                 <a href="/query?tag=<%= tag %>">#<%= tag %></a>

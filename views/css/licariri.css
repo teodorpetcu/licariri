@@ -163,6 +163,10 @@ body {
     span {
         padding: 5px;
     }
+    #article-date {
+        float: right;
+        opacity: 0.6;
+    }
 }
 
 #article-alternate-title-position {
