@@ -9,11 +9,9 @@ const serverPrivateIP = ip.address();
 const {
     get_mainPage,
     get_articlePage,
-    get_adminModifyArticle,
 
     post_adminAddArticle,
     post_adminRemoveArticle,
-    post_adminModifyArticle,
 } = require("./controllers/articles.js")
 
 const {

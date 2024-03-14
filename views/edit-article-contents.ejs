@@ -64,82 +64,83 @@
             <button type="button" id="reset-thumbnail-button">RESETARE</button>
             <label>Persoana care a realizat thumbnail-ul:</label>
             <input id="input-article-thumbnail-credit"
-                type="text" placeholder="Nume Prenume" name="thumbnail-credit">
+                type="text" placeholder="Nume Prenume" name="thumbnail_credit">
 
             <label>Ascunde titlul din thumbnail:</label>
             <input id="input-title-hide-on-thumbnail"
-                type="checkbox" name="title-hide-on-thumbnail">
+                type="checkbox" name="title_hide_in_thumbnail">
 
             <label>Fontul titlului:</label>
             <select id="input-title-font"
-                name="title-font">
+                name="title_font">
                 <option value="Baskervville">Baskervville</option>
                 <option value="Kameron">Kameron</option>
             </select>
 
             <label>Mărimea fontului titlului din thumbnail:</label>
             <input id="input-title-thumbnail-font-size"
-                name="title-thumbnail-font-size"
+                name="title_thumbnail_font_size"
                 type="range" min="1.5" max="2.5" value = "2" step="0.1" >
 
             <label>Mărimea fontului titlului din articol:</label>
             <input id="input-title-article-font-size"
-                name="title-article-font-size"
+                name="title_article_font_size"
                 type="range" min="2" max="5" value = "3.5" step="0.1" >
 
             <label>Grosimea fontului titlului:</label>
             <input id="input-title-fontweight"
-                name="title-fontweight"
+                name="title_fontweight"
                 type="range" min="400" max="800" value = "600" step="50">
             </select>
 
             <label>Titlul contrastează cu fundalul (ignoră culoarea):</label>
             <!--TITLE FILL STYLE == <select>-->
             <input id="input-title-contrast-background"
-                type="checkbox" name="title-contrast-background">
+                type="checkbox" name="title_fill_style">
 
             <label>Culoarea titlului:</label>
-            <input id="input-title-color"
-                type="color" name="title-color" value="#ffffff">
+            <input id="input-title-color" name="title_color"
+                type="color" value="#ffffff">
 
             <label>Poziția titlului în articol:</label>
             <select id="input-title-position"
-                name="title-position">
+                name="title_position">
                 <option value="thumbnail">Pe thumbnail</option>
                 <option value="article">Sub thumbnail</option>
             </select>
 
             <label>Fontul subtitlului:</label>
             <select id="input-subtitle-font"
-                name="subtitle-font">
+                name="subtitle_font">
                 <option value="Baskervville">Baskervville</option>
                 <option value="Kameron">Kameron</option>
             </select>
 
             <label>Mărimea fontului subtitlului din articol:</label>
-            <input id="input-subtitle-font-size" name="subtitle-font-size"
+            <input id="input-subtitle-font-size"
+                name="subtitle_font_size"
                 type="range" min="1" max="2" value = "1.5" step="0.1" >
 
             <label>Grosimea fontului subtitlului:</label>
             <input id="input-subtitle-fontweight"
-                name="subtitle-fontweight"
+                name="subtitle_fontweight"
                 type="range" min="400" max="800" value = "600" step="50">
             </select>
 
             <label>Culoarea subtitlului:</label>
             <input id="input-subtitle-color"
-                type="color" name="subtitle-color" value="#ffffff">
+                type="color" name="subtitle_color" value="#ffffff">
 
             <label>Poziția subtitlului în articol:</label>
             <select id="input-subtitle-position"
-                name="subtitle-position">
+                name="subtitle_position">
                 <option value="thumbnail">Pe thumbnail</option>
                 <option value="article">Sub thumbnail</option>
             </select>
 
             <label>Stilul primei litere din text:</label>
             <select id="input-first-letter-style"
-                name="first-letter-style">
+                name="dropcap">
                 <option value="default" selected="selected">Fără stil</option>
                 <option value="dropcap">Dropcap cu border</option>
             </select>

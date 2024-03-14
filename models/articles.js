@@ -47,7 +47,7 @@ class ArticleDatabase extends Database {
                 subtitle_color              TEXT,
                 subtitle_position           TEXT,
 
-                dropcap                     INT,
+                dropcap                     TEXT,
 
                 FOREIGN KEY (id) REFERENCES articles (id)
             );
@@ -92,8 +92,8 @@ class ArticleDatabase extends Database {
     }
 
     /**
-     * Update most of the given article's metadata (everything except ID,
-     * publishing stage and timestamp)
+     * Update most of the given article's metadata (everything except ID, stage
+     * and timestamp)
      * @param {Article} article
      */
     updateMetadata = (article) => {
@@ -119,15 +119,32 @@ class ArticleDatabase extends Database {
         }
     }
 
+
+    /**
+     * Remove previous article style and insert the new one in its place
+     * @param {Article}
+     * @param {ArticleStyle}
+     */
+    updateArticleStyles = (article, articleStyle) => {
+        this.db.run('DELETE FROM article_styles WHERE id = ?', [article.id], this.errorLogger);
+        this.db.run('INSERT INTO article_styles VALUES (?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [article.id, articleStyle.hide_title_in_thumbnail, articleStyle.title_font, articleStyle.title_fill_style,
+                articleStyle.title_color, articleStyle.title_fontsize_thumbnail, articleStyle.title_fontsize_article,
+                articleStyle.title_fontweight, articleStyle.title_position, articleStyle.subtitle_font,
+                articleStyle.subtitle_fontsize, articleStyle.subtitle_fontweight, articleStyle.subtitle_color,
+                articleStyle.subtitle_position, articleStyle.dropcap],
+            this.errorLogger);
+    }
+
     /**
      * Remove all entries in the database associated with the given ID
-     * @param {id} - Article ID
+     * @param {string} id - Article ID
      */
     removeArticle = async (id) => {
         return new Promise((resolve) => {
-            this.db.run('DELETE from articles WHERE id = ?', [id], this.errorLogger);
-            this.db.run('DELETE from article_authors WHERE id = ?', [id], this.errorLogger);
-            this.db.run('DELETE from article_tags WHERE id = ?', [id], this.errorLogger);
+            this.db.run('DELETE FROM articles WHERE id = ?', [id], this.errorLogger);
+            this.db.run('DELETE FROM article_authors WHERE id = ?', [id], this.errorLogger);
+            this.db.run('DELETE FROM article_tags WHERE id = ?', [id], this.errorLogger);
             return resolve();
         });
     }

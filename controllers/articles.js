@@ -1,7 +1,7 @@
 const marked = require("marked");
 const fs = require("fs");
 
-const { Author, Article } = require("../models/types.js");
+const { Author, Article, ArticleStyle } = require("../models/types.js");
 const { ArticleDatabase } = require("../models/articles.js");
 const { QueryDatabase } = require("../models/query.js");
 
@@ -9,7 +9,6 @@ const {
     ARTICLE_DATABASE_PATH,
     ARTICLE_CONTENTS_PATH,
     ARTICLE_IMAGES_PATH,
-    MAIN_PAGE_ARTICLE_COUNT,
     QUERY_DATABASE_PATH,
 } = require("../config.js");
 
@@ -75,6 +74,7 @@ const post_adminAddArticle = async (req, res) => {
 
     const article = new Article(articleID, stage, timestamp,
                                     title, subtitle, language, category, authors, tags);
+    const articleStyle = new ArticleStyle(req.body.hide_title_in_thumbnail, req.body.title_font, req.body.title_fill_style, req.body.title_color, req.body.title_fontsize_thumbnail, req.body.title_fontsize_article, req.body.title_fontweight, req.body.title_position, req.body.subtitle_font, req.body.subtitle_fontsize, req.body.subtitle_fontweight, req.body.subtitle_color, req.body.subtitle_position, req.body.dropcap)
 
     if (thumbnail && /^image/.test(thumbnail.mimetype)) {
         fs.writeFileSync(`${ARTICLE_IMAGES_PATH}/${article.id}`, thumbnail.data);
@@ -84,6 +84,7 @@ const post_adminAddArticle = async (req, res) => {
     await queryDatabase.unindexArticle(article.id);
     await queryDatabase.indexArticle(article.id, content);
     articleDatabase.updateMetadata(article);
+    articleDatabase.updateArticleStyles(article, articleStyle);
 
     res.redirect(`/articles/${article.id}`);
 }
