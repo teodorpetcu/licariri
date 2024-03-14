@@ -22,7 +22,7 @@
                     name="title" value="<%= defaults.title %>">
 
                 <label>Subtitlu:</label>
-                <input required id="input-subtitle" type="text"
+                <input id="input-subtitle" type="text"
                     name="subtitle" value="<%= defaults.subtitle %>">
 
                 <label>Limba articolului:</label>
@@ -59,93 +59,92 @@
             </div>
 
             <label>Thumbnail:</label>
-            <input required id="input-article-thumbnail"
+            <input id="input-article-thumbnail"
                 type="file" accepts="image/*" name="thumbnail">
             <button type="button" id="reset-thumbnail-button">RESETARE</button>
-            <label>Persoana care a realizat thumbnail-ului:</label>
-            <input required id="input-article-thumbnail-credit"
+            <label>Persoana care a realizat thumbnail-ul:</label>
+            <input id="input-article-thumbnail-credit"
                 type="text" placeholder="Nume Prenume" name="thumbnail-credit">
 
             <label>Ascunde titlul din thumbnail:</label>
-            <input required id="input-title-hide-on-thumbnail"
+            <input id="input-title-hide-on-thumbnail"
                 type="checkbox" name="title-hide-on-thumbnail">
 
             <label>Fontul titlului:</label>
-            <select required id="input-title-font"
+            <select id="input-title-font"
                 name="title-font">
                 <option value="Baskervville">Baskervville</option>
                 <option value="Kameron">Kameron</option>
             </select>
 
             <label>Mărimea fontului titlului din thumbnail:</label>
-            <input required id="input-title-thumbnail-font-size"
+            <input id="input-title-thumbnail-font-size"
                 name="title-thumbnail-font-size"
                 type="range" min="1.5" max="2.5" value = "2" step="0.1" >
 
             <label>Mărimea fontului titlului din articol:</label>
-            <input required id="input-title-article-font-size"
+            <input id="input-title-article-font-size"
                 name="title-article-font-size"
                 type="range" min="2" max="5" value = "3.5" step="0.1" >
 
             <label>Grosimea fontului titlului:</label>
-            <input required id="input-title-fontweight"
+            <input id="input-title-fontweight"
                 name="title-fontweight"
                 type="range" min="400" max="800" value = "600" step="50">
             </select>
 
             <label>Titlul contrastează cu fundalul (ignoră culoarea):</label>
             <!--TITLE FILL STYLE == <select>-->
-            <input required id="input-title-contrast-background"
+            <input id="input-title-contrast-background"
                 type="checkbox" name="title-contrast-background">
 
             <label>Culoarea titlului:</label>
-            <input required id="input-title-color"
+            <input id="input-title-color"
                 type="color" name="title-color" value="#ffffff">
 
             <label>Poziția titlului în articol:</label>
-            <select required id="input-title-position"
+            <select id="input-title-position"
                 name="title-position">
                 <option value="thumbnail">Pe thumbnail</option>
                 <option value="article">Sub thumbnail</option>
             </select>
 
             <label>Fontul subtitlului:</label>
-            <select required id="input-subtitle-font"
+            <select id="input-subtitle-font"
                 name="subtitle-font">
                 <option value="Baskervville">Baskervville</option>
                 <option value="Kameron">Kameron</option>
             </select>
 
             <label>Mărimea fontului subtitlului din articol:</label>
-            <input required id="input-subtitle-font-size" name="subtitle-font-size"
+            <input id="input-subtitle-font-size" name="subtitle-font-size"
                 type="range" min="1" max="2" value = "1.5" step="0.1" >
 
             <label>Grosimea fontului subtitlului:</label>
-            <input required id="input-subtitle-fontweight"
+            <input id="input-subtitle-fontweight"
                 name="subtitle-fontweight"
                 type="range" min="400" max="800" value = "600" step="50">
             </select>
 
-
             <label>Culoarea subtitlului:</label>
-            <input required id="input-subtitle-color"
+            <input id="input-subtitle-color"
                 type="color" name="subtitle-color" value="#ffffff">
 
             <label>Poziția subtitlului în articol:</label>
-            <select required id="input-subtitle-position"
+            <select id="input-subtitle-position"
                 name="subtitle-position">
                 <option value="thumbnail">Pe thumbnail</option>
                 <option value="article">Sub thumbnail</option>
             </select>
 
             <label>Stilul primei litere din text:</label>
-            <select required id="input-first-letter-style"
+            <select id="input-first-letter-style"
                 name="first-letter-style">
                 <option value="default" selected="selected">Fără stil</option>
                 <option value="dropcap">Dropcap cu border</option>
             </select>
         </div>
-        <!--<input type="submit" value="Trimite">-->
+        <input type="submit" value="Trimite">
     </form>
     <div id="preview-page">
         <div id="article-headline">

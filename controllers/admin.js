@@ -56,6 +56,7 @@ const post_adminLoginCheck = async (req, res) => {
 
 const get_adminAddArticle = async (_, res) => {
     let emptyArticle = new Article(id=undefined, stage="draft", timestamp=undefined);
+    articleDatabase.saveEmptyArticle(emptyArticle);
     res.render("edit-article-contents", {defaults: emptyArticle});
 }
 

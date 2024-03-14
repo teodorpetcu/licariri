@@ -22,9 +22,9 @@ class ArticleDatabase extends Database {
                 id                  TEXT NOT NULL,
                 stage               TEXT NOT NULL,
                 timestamp           INT,
-                title               TEXT NOT NULL,
+                title               TEXT,
                 subtitle            TEXT,
-                language            TEXT NOT NULL,
+                language            TEXT,
                 category            TEXT,
                 UNIQUE (id)
             );
@@ -81,16 +81,29 @@ class ArticleDatabase extends Database {
     }
 
     /**
-     * Save an article's metadata to a database
+     * Add only the gievn article's ID, stage and timestamp to the database
      * @param {Article} article
-     * @param {string} user_id
      */
-    saveArticle = (article) => {
+    saveEmptyArticle = (article) => {
         this.db.run('INSERT INTO articles VALUES(?, ?, ?, ?, ?, ?, ?)',
-            [article.id, article.stage, article.timestamp, article.title,
-                article.subtitle, article.language, article.category],
+            [article.id, article.stage, article.timestamp, "", "", "", ""],
             this.errorLogger
         );
+    }
+
+    /**
+     * Update most of the given article's metadata (everything except ID,
+     * publishing stage and timestamp)
+     * @param {Article} article
+     */
+    updateMetadata = (article) => {
+        this.db.run('UPDATE articles SET title = ?, subtitle = ?, language = ?, category = ? WHERE id = ?',
+            [article.title, article.subtitle, article.language, article.category, article.id],
+            this.errorLogger
+        );
+
+        this.db.run('DELETE from article_authors WHERE id = ?', [article.id], this.errorLogger);
+        this.db.run('DELETE from article_tags WHERE id = ?', [article.id], this.errorLogger);
 
         for (let tag of article.tags) {
             this.db.run('INSERT INTO article_tags VALUES(?, ?)',
@@ -190,7 +203,7 @@ class ArticleDatabase extends Database {
      * @returns {Promise<Article|undefined>}
      */
     getArticle = async (id) => {
-        let [article, _] = await this.getArticleMeta(id);
+        let article = await this.getArticleMeta(id);
         if (! article) return undefined;
         article.authors = await this.getArticleAuthors(id);
         article.tags = await this.getArticleTags(id);
@@ -199,15 +212,15 @@ class ArticleDatabase extends Database {
 
     /**
      * @param {string} id
-     * @returns {Promise<[Article|undefined, User]>}
+     * @returns {Promise<Article|undefined>}
      */
     getArticleMeta = async (id) => {
         return new Promise((resolve) => {
             return this.db.get('SELECT * FROM articles WHERE id = ?', [id], (err, row) => {
                 if (err || row === undefined) {
-                    return resolve((undefined, undefined));
+                    return resolve(undefined);
                 }
-                return resolve([new Article(row.title, [], [], new Date(row.timestamp), row.thumbnail), row.user]);
+                return resolve(new Article(row.id, row.stage, new Date(row.timestamp), row.title, row.subtitle, row.language, row.category));
             });
         });
     }

@@ -32,8 +32,8 @@ class Article {
      * @param {Author[]} authors
      * @param {string[]} tags
      */
-    constructor(id = undefined, stage, timestamp = new Date(),
-                title, subtitle, language, category,
+    constructor(id = undefined, stage = "", timestamp = new Date(),
+                title, subtitle, language = "", category,
                 authors = [], tags = []) {
         if (! ["draft"].includes(stage)) stage = "draft";
         if (! ["ro"].includes(language.toLowerCase())) language = "ro";

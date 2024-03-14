@@ -57,14 +57,12 @@ app.get("/articles/:articleID", get_articlePage);
 app.get("/admin", identifyAuthorisedUser, get_adminPannelPage);
 
 app.get("/admin/add", identifyAuthorisedUser, forbidUnauthorised, get_adminAddArticle);
-app.get("/admin/modify/:articleID", identifyAuthorisedUser, forbidUnauthorised, get_adminModifyArticle);
 app.get("/admin/user/add", identifyAuthorisedUser, forbidUnauthorised, get_adminAddUserPage);
 app.get("/admin/user/password", identifyAuthorisedUser, forbidUnauthorised, get_adminChangeUserPassword);
 
 app.post("/admin", post_adminLoginCheck);
-app.post("/admin/add", identifyAuthorisedUser, forbidUnauthorised, post_adminAddArticle);
+app.post("/admin/articles/:articleID", identifyAuthorisedUser, forbidUnauthorised, post_adminAddArticle);
 app.post("/admin/remove", identifyAuthorisedUser, forbidUnauthorised, post_adminRemoveArticle);
-app.post("/admin/modify/:articleID", identifyAuthorisedUser, forbidUnauthorised, post_adminModifyArticle);
 app.post("/admin/user/add", identifyAuthorisedUser, forbidUnauthorised, post_adminAddUser);
 app.post("/admin/user/password", identifyAuthorisedUser, forbidUnauthorised, post_adminChangeUserPassword);
 

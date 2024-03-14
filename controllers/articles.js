@@ -44,7 +44,15 @@ const get_articlePage = async (req, res) => {
 }
 
 const post_adminAddArticle = async (req, res) => {
+    const articleID = req.params.articleID;
+    const originalArticle = await articleDatabase.getArticleMeta(articleID);
+
+    const stage = originalArticle.stage;
+    const timestamp = new Date(originalArticle.timestamp);
     const title = req.body.title;
+    const subtitle = req.body.subtitle;
+    const language = req.body.language;
+    const category = req.body.category;
     const authors = Array.isArray(req.body["authors[]"])
                     ? req.body["authors[]"].map((a) => new Author(a))
                     : (typeof req.body["authors[]"] === "string"
@@ -55,7 +63,6 @@ const post_adminAddArticle = async (req, res) => {
                     : (typeof req.body["tags[]"] === "string"
                         ? [req.body["tags[]"]]
                         : []);
-    const user_id = req.user.id;
     // Escape HTML tags and backslashes
     // NOTE: only article contents are interpreted as HTML by EJS, so only they
     // need to be sanitised
@@ -66,50 +73,19 @@ const post_adminAddArticle = async (req, res) => {
 
     let thumbnail = req.files ? req.files.thumbnail : undefined;
 
-    const article = new Article(title, authors, tags, undefined, thumbnail ? true : false);
-
-    // An article with this ID already exists; abort
-    if (await articleDatabase.getArticleMeta(article.id)) {
-        // TODO: maybe implement error checking client-side as well
-        res.status(403).send(`<p>Un articol cu același titlu, publicat tot azi, există deja.</p><a href=\"/admin/modify/${article.id}\">Poate vrei să-l modifici?</a>`);
-        return;
-    }
+    const article = new Article(articleID, stage, timestamp,
+                                    title, subtitle, language, category, authors, tags);
 
     if (thumbnail && /^image/.test(thumbnail.mimetype)) {
         fs.writeFileSync(`${ARTICLE_IMAGES_PATH}/${article.id}`, thumbnail.data);
     }
 
     fs.writeFileSync(`${ARTICLE_CONTENTS_PATH}/${article.id}.md`, content);
-    queryDatabase.indexArticle(article.id, content);
-    articleDatabase.saveArticle(article, user_id);
+    await queryDatabase.unindexArticle(article.id);
+    await queryDatabase.indexArticle(article.id, content);
+    articleDatabase.updateMetadata(article);
 
     res.redirect(`/articles/${article.id}`);
-}
-
-const get_adminModifyArticle = async (req, res) => {
-    const articleID = req.params.articleID;
-    let article = await articleDatabase.getArticle(articleID);
-    article.content = fs.readFileSync(`${ARTICLE_CONTENTS_PATH}/${article.id}.md`);
-    res.render("edit-article-contents", {defaults: article});
-}
-
-const post_adminModifyArticle = async (req, res) => {
-    const originalArticleID = req.params.articleID;
-    let [originalArticle, articlePublisher] = await articleDatabase.getArticleMeta(originalArticleID);
-    if (articlePublisher == req.user.id) {
-        await articleDatabase.removeArticle(originalArticleID)
-        await queryDatabase.unindexArticle(originalArticleID);
-        if (!req.files && originalArticle.thumbnail) {
-            req.files = {thumbnail: {
-                mimetype: "image",
-                // TODO: find a more efficient way to do this
-                data: fs.readFileSync(`${ARTICLE_IMAGES_PATH}/${originalArticleID}`)
-            }}
-        }
-        post_adminAddArticle(req, res);
-    } else {
-        res.redirect("/admin");
-    }
 }
 
 const post_adminRemoveArticle = async (req, res) => {
@@ -127,6 +103,4 @@ module.exports = {
     get_articlePage,
     post_adminAddArticle,
     post_adminRemoveArticle,
-    get_adminModifyArticle,
-    post_adminModifyArticle,
 };
