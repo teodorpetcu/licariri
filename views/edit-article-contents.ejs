@@ -2,11 +2,7 @@
 <html lang="ro">
 
 <head>
-    <% if (action.startsWith("modify")) { %>
-    <title>Modifică articol</title>
-    <% } else { %>
-    <title>Adaugă articol</title>
-    <% } %>
+    <title>Editează articol</title>
     <%- include("meta"); %>
     <link rel="stylesheet" type="text/css" href="/css/admin.css">
 </head>
@@ -17,14 +13,10 @@
         <button id="button-edit-dtp">Tehnoredactare</button>
         <button id="button-preview">Previzualizare</button>
     </div>
-    <form action="/admin/<%= action %>" method="post" autocomplete="off" enctype="multipart/form-data">
+    <form action="/admin/articles/<%= defaults.id %>" method="post" autocomplete="off" enctype="multipart/form-data">
         <div id="edit-article-content">
             <div id="left">
-            <% if (action.startsWith("modify")) { %>
-            <h1>Modifică articol</h1>
-            <% } else { %>
-            <h1>Adaugă articol</h1>
-            <% } %>
+                <h1>Editează articol</h1>
                 <label>Titlu:</label>
                 <input required id="input-title" type="text"
                     name="title" value="<%= defaults.title %>">
@@ -36,10 +28,10 @@
                 <label>Limba articolului:</label>
                 <select required id="input-article-language"
                     name="article-language">
-                    <option value="romanian">Română</option>
-                    <option value="english">Engleză</option>
-                    <option value="german">Germană</option>
-                    <option value="french">Franceză</option>
+                    <option value="ro">Română</option>
+                    <option value="en">Engleză</option>
+                    <option value="de">Germană</option>
+                    <option value="fr">Franceză</option>
                 </select>
 
                 <div class="input-multiple">
@@ -102,6 +94,7 @@
             </select>
 
             <label>Titlul contrastează cu fundalul (ignoră culoarea):</label>
+            <!--TITLE FILL STYLE == <select>-->
             <input required id="input-title-contrast-background"
                 type="checkbox" name="title-contrast-background">
 

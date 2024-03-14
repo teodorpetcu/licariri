@@ -1,3 +1,5 @@
+const crypto = require("crypto");
+
 /**
  * @param {Date} date - Date to format
  * @returns {string} - Date formatted YYYY-MM-DD
@@ -20,28 +22,36 @@ class Author {
 
 class Article {
     /**
+     * @param {string} id
+     * @param {string} stage
+     * @param {Date} timestamp
      * @param {string} title
+     * @param {string} subtitle
+     * @param {string} language
+     * @param {string} category
      * @param {Author[]} authors
      * @param {string[]} tags
-     * @param {Date} date
-     * @param {boolean} thumbnail
      */
-    constructor(title, authors, tags, timestamp = new Date(), thumbnail = false) {
+    constructor(id = undefined, stage, timestamp = new Date(),
+                title, subtitle, language, category,
+                authors = [], tags = []) {
+        if (! ["draft"].includes(stage)) stage = "draft";
+        if (! ["ro"].includes(language.toLowerCase())) language = "ro";
+
+        if (id) {
+            this.id = id;
+        } else {
+            this.id = crypto.randomUUID();
+        }
+        this.stage = stage;
+        this.timestamp = timestamp.valueOf();
+        this.date = formatDate(timestamp);
         this.title = title;
+        this.subtitle = subtitle;
+        this.language = language;
+        this.category = category;
         this.authors = authors;
         this.tags = tags;
-        this.timestamp = timestamp.valueOf();
-        this.thumbnail = thumbnail;
-        this.date = formatDate(timestamp);
-        this.id = this.articleID();
-    }
-
-    /**
-     * @returns {string} ID of the article
-     */
-    articleID() {
-        return (this.date + "-" + this.title.toLowerCase().replace(/[ \t\n]/g, "-"))
-            .replace(/[\?&\/\\]/g, "");
     }
 }
 

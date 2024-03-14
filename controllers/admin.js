@@ -36,7 +36,7 @@ const forbidUnauthorised = async (req, res, next) => {
 
 const get_adminPannelPage = async (req, res) => {
     if (req.user) {
-        let articles = await articleDatabase.searchArticles("user", req.user.id);
+        let articles = await articleDatabase.searchArticles();
         res.render("admin", {articles, canManageUsers: req.user.privilege == USER_PRIVILEGES["SUPERUSER"]});
     } else {
         res.render("login", {});
@@ -55,8 +55,8 @@ const post_adminLoginCheck = async (req, res) => {
 }
 
 const get_adminAddArticle = async (_, res) => {
-    let emptyArticle = new Article("", [], [], undefined, thumbnail = false);
-    res.render("edit-article-contents", {action: "add", defaults: emptyArticle});
+    let emptyArticle = new Article(id=undefined, stage="draft", timestamp=undefined);
+    res.render("edit-article-contents", {defaults: emptyArticle});
 }
 
 const get_adminAddUserPage = async (req, res) => {

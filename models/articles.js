@@ -25,7 +25,7 @@ class ArticleDatabase extends Database {
                 title               TEXT NOT NULL,
                 subtitle            TEXT,
                 language            TEXT NOT NULL,
-                category            TEXT NOT NULL,
+                category            TEXT,
                 UNIQUE (id)
             );
             CREATE TABLE IF NOT EXISTS article_styles
@@ -48,6 +48,7 @@ class ArticleDatabase extends Database {
                 subtitle_position           TEXT,
 
                 dropcap                     INT,
+
                 FOREIGN KEY (id) REFERENCES articles (id)
             );
             CREATE TABLE IF NOT EXISTS article_tags
@@ -84,9 +85,10 @@ class ArticleDatabase extends Database {
      * @param {Article} article
      * @param {string} user_id
      */
-    saveArticle = (article, user_id) => {
-        this.db.run('INSERT INTO articles VALUES(?, ?, ?, ?, ?)',
-            [article.id, user_id, article.title, article.timestamp, article.thumbnail ? article.thumbnail : ""],
+    saveArticle = (article) => {
+        this.db.run('INSERT INTO articles VALUES(?, ?, ?, ?, ?, ?, ?)',
+            [article.id, article.stage, article.timestamp, article.title,
+                article.subtitle, article.language, article.category],
             this.errorLogger
         );
 
@@ -119,7 +121,7 @@ class ArticleDatabase extends Database {
 
     /**
      * Return the list of article IDs that match the search parameters, or
-     * `undefined` if the `key` property is not one of `["title", "user", "author",
+     * `undefined` if the `key` property is not one of `["title", "author",
      * "tag", undefined]`
      *
      * If `key` is `undefined`, then all articles are returned
@@ -130,7 +132,7 @@ class ArticleDatabase extends Database {
      */
     searchArticleIDs = async (key, value, exact = true) => {
         return new Promise((resolve) => {
-            let validKeyValues = ["title", "user", "tag", "author", undefined]
+            let validKeyValues = ["title", "tag", "author", undefined]
             if (! validKeyValues.includes(key)) {
                 return resolve(undefined);
             }
@@ -167,8 +169,8 @@ class ArticleDatabase extends Database {
 
     /**
      * Return the list of articles that match the search parameters, or
-     * `undefined` if the `key` property is not one of `["title", "user",
-     * "author", "tag", undefined]`
+     * `undefined` if the `key` property is not one of `["title", "author",
+     * "tag", undefined]`
      *
      * If `key` is `undefined`, then all articles are returned
      *
@@ -176,8 +178,8 @@ class ArticleDatabase extends Database {
      * @param {string} value
      * @returns {Promise<Article[]|undefined>}
      */
-    searchArticles = async (key, value) => {
-        let articleIDs = await this.searchArticleIDs(key, value);
+    searchArticles = async (key, value, exact = true) => {
+        let articleIDs = await this.searchArticleIDs(key, value, exact);
         if (!articleIDs) return undefined;
         return Promise.all(articleIDs.map((id) => this.getArticle(id)));
     }

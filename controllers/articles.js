@@ -19,14 +19,11 @@ articleDatabase.init();
 const queryDatabase = new QueryDatabase(QUERY_DATABASE_PATH);
 queryDatabase.init();
 
-const get_mainPage = async (req, res) => {
-    let page = req.query.page ? req.query.page : 1;
+const get_mainPage = async (_, res) => {
+    // TODO: replace with prerendered page that updates every time a published
+    // article is added, removed, or otherwise simply changes
     let articles = await articleDatabase.searchArticles();
-    let articlePage = articles.slice(
-            MAIN_PAGE_ARTICLE_COUNT * (page - 1),
-            MAIN_PAGE_ARTICLE_COUNT * (page)
-        );
-    res.render("main", {articles: articlePage});
+    res.render("main", {articles});
 }
 
 const get_articlePage = async (req, res) => {
@@ -93,7 +90,7 @@ const get_adminModifyArticle = async (req, res) => {
     const articleID = req.params.articleID;
     let article = await articleDatabase.getArticle(articleID);
     article.content = fs.readFileSync(`${ARTICLE_CONTENTS_PATH}/${article.id}.md`);
-    res.render("edit-article-contents", {action: `modify/${articleID}`, defaults: article});
+    res.render("edit-article-contents", {defaults: article});
 }
 
 const post_adminModifyArticle = async (req, res) => {
