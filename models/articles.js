@@ -102,21 +102,22 @@ class ArticleDatabase extends Database {
             this.errorLogger
         );
 
-        this.db.run('DELETE from article_authors WHERE id = ?', [article.id], this.errorLogger);
-        this.db.run('DELETE from article_tags WHERE id = ?', [article.id], this.errorLogger);
-
-        for (let tag of article.tags) {
-            this.db.run('INSERT INTO article_tags VALUES(?, ?)',
-                [article.id, tag],
-                this.errorLogger
-            );
-        }
-        for (let author of article.authors) {
-            this.db.run('INSERT INTO article_authors VALUES(?, ?)',
-                [article.id, author.name],
-                this.errorLogger
-            );
-        }
+        this.db.run('DELETE from article_authors WHERE id = ?', [article.id], () => {
+            for (let author of article.authors) {
+                this.db.run('INSERT INTO article_authors VALUES(?, ?)',
+                    [article.id, author.name],
+                    this.errorLogger
+                );
+            }
+        });
+        this.db.run('DELETE from article_tags WHERE id = ?', [article.id], () => {
+            for (let tag of article.tags) {
+                this.db.run('INSERT INTO article_tags VALUES(?, ?)',
+                    [article.id, tag],
+                    this.errorLogger
+                );
+            }
+        });
     }
 
 
@@ -247,6 +248,7 @@ class ArticleDatabase extends Database {
         if (! article) return undefined;
         article.authors = await this.getArticleAuthors(id);
         article.tags = await this.getArticleTags(id);
+        //article.style = await this.getArticleStyle(id);
         return article;
     }
 
@@ -257,7 +259,7 @@ class ArticleDatabase extends Database {
     getArticleMeta = async (id) => {
         return new Promise((resolve) => {
             return this.db.get('SELECT * FROM articles WHERE id = ?', [id], (err, row) => {
-                if (err || row === undefined) {
+                if (err || (row === undefined)) {
                     return resolve(undefined);
                 }
                 return resolve(new Article(row.id, row.stage, new Date(row.timestamp), row.title, row.subtitle, row.language, row.category));
