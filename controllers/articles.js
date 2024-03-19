@@ -66,12 +66,6 @@ const post_adminAddArticle = async (req, res) => {
                     : (typeof req.body["tags[]"] === "string"
                         ? [req.body["tags[]"]]
                         : []);
-    // Escape HTML tags and backslashes
-    // NOTE: only article contents are interpreted as HTML by EJS, so only they
-    // need to be sanitised
-    //
-    // However, this affects code blocks, where everything is interpreted
-    // literally.
     const content = req.body.content.replace(/([<>\\])/g, "\\$1");
 
     let thumbnail = req.files ? req.files.thumbnail : undefined;
@@ -95,11 +89,10 @@ const post_adminAddArticle = async (req, res) => {
 
 const post_adminRemoveArticle = async (req, res) => {
     let articleID = req.body.id;
-    let [_, articlePublisher] = await articleDatabase.getArticleMeta(articleID);
-    if (articlePublisher == req.user.id) {
+    //(articlePublisher == req.user.id) {
         await articleDatabase.removeArticle(articleID)
         await queryDatabase.unindexArticle(articleID);
-    }
+    //}
     res.redirect("/admin");
 }
 

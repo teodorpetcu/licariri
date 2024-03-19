@@ -18,7 +18,7 @@
     </div>
     <div id="article-pannel">
         <h1>Articole</h1><!--
-        --><a class="action-button" href="/admin/add" id="add-article-button" ><!--
+        --><a class="action-button" href="/admin/articles/new" id="add-article-button" ><!--
             --><input type="submit" value="+"></input><!--
         --></a>
         <% for (article of articles) { %>
@@ -26,7 +26,7 @@
             <a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>,
             publicat <%= article.date %>
             <div>
-                <a class="" href="/admin/modify/<%= article.id %>"><!--
+                <a class="" href="/admin/articles/<%= article.id %>"><!--
                     --><input type="submit" value="Modifică"></input><!--
                 --></a>
                 <span style="padding: 20px;"></span>

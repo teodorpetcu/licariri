@@ -1,7 +1,10 @@
-const { USERS_DATABASE_PATH, ARTICLE_DATABASE_PATH, COOKIE_OPTIONS, USER_PRIVILEGES } = require("../config.js");
+const { USERS_DATABASE_PATH, ARTICLE_DATABASE_PATH, COOKIE_OPTIONS,
+    USER_PRIVILEGES, ARTICLE_CONTENTS_PATH } = require("../config.js");
 const { UsersDatabase, User, Session } = require("../models/admin.js");
 const { ArticleDatabase } = require("../models/articles.js");
 const { Article } = require("../models/types.js");
+
+const fs = require("fs");
 
 const usersDatabase = new UsersDatabase(USERS_DATABASE_PATH);
 usersDatabase.init();
@@ -54,10 +57,20 @@ const post_adminLoginCheck = async (req, res) => {
     res.redirect("/admin");
 }
 
-const get_adminAddArticle = async (_, res) => {
-    let emptyArticle = new Article(id=undefined, stage="draft", timestamp=undefined);
-    articleDatabase.saveEmptyArticle(emptyArticle);
-    res.render("edit-article-contents", {defaults: emptyArticle});
+const get_adminAddArticle = async (req, res) => {
+    let article = await articleDatabase.getArticle(req.params.articleID);
+    if (article) {
+        article.style = await articleDatabase.getArticleStyle(article.id);
+        let contentsPath = `${ARTICLE_CONTENTS_PATH}/${article.id}.md`;
+        if (fs.existsSync(contentsPath)) {
+            article.content = fs.readFileSync(contentsPath, {encoding: "utf-8"});
+        }
+    } else {
+        article = new Article(id=undefined, stage="draft", timestamp=undefined);
+        article.style = {};
+        articleDatabase.saveEmptyArticle(article);
+    }
+    res.render("edit-article-contents", {defaults: article});
 }
 
 const get_adminAddUserPage = async (req, res) => {
