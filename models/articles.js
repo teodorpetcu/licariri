@@ -1,4 +1,4 @@
-const { Author, Article } = require("./types.js");
+const { Author, Article, ArticleStyle } = require("./types.js");
 const { Database } = require("./database.js");
 const { logger } = require("../logger.js");
 
@@ -126,14 +126,37 @@ class ArticleDatabase extends Database {
      * @param {ArticleStyle}
      */
     updateArticleStyles = (article, articleStyle) => {
-        this.db.run('DELETE FROM article_styles WHERE id = ?', [article.id], this.errorLogger);
-        this.db.run('INSERT INTO article_styles VALUES (?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [article.id, articleStyle.hide_title_in_thumbnail, articleStyle.title_font, articleStyle.title_fill_style,
-                articleStyle.title_color, articleStyle.title_fontsize_thumbnail, articleStyle.title_fontsize_article,
-                articleStyle.title_fontweight, articleStyle.title_position, articleStyle.subtitle_font,
-                articleStyle.subtitle_fontsize, articleStyle.subtitle_fontweight, articleStyle.subtitle_color,
-                articleStyle.subtitle_position, articleStyle.dropcap],
-            this.errorLogger);
+        this.db.run('DELETE FROM article_styles WHERE id = ?', [article.id], () => {
+            this.db.run('INSERT INTO article_styles VALUES (?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [article.id, articleStyle.hide_title_in_thumbnail, articleStyle.title_font, articleStyle.title_fill_style,
+                    articleStyle.title_color, articleStyle.title_fontsize_thumbnail, articleStyle.title_fontsize_article,
+                    articleStyle.title_fontweight, articleStyle.title_position, articleStyle.subtitle_font,
+                    articleStyle.subtitle_fontsize, articleStyle.subtitle_fontweight, articleStyle.subtitle_color,
+                    articleStyle.subtitle_position, articleStyle.dropcap],
+                this.errorLogger);
+            }
+        );
+    }
+
+    /**
+     * Remove previous article style and insert the new one in its place
+     * @param {string} articleID
+     * @returns {Promise<ArticleStyle|undefined>}
+     */
+    getArticleStyle = async (articleID) => {
+        return new Promise((resolve) => {
+            return this.db.get('SELECT * FROM article_styles WHERE id = ?', [articleID], (err, row) => {
+                if (err || row === undefined) {
+                    return resolve(undefined);
+                }
+                return resolve(new ArticleStyle(row.hide_title_in_thumbnail,
+                    row.title_font, row.title_fill_style, row.title_color,
+                    row.title_fontsize_thumbnail, row.title_fontsize_article,
+                    row.title_fontweight, row.title_position, row.subtitle_font,
+                    row.subtitle_fontsize, row.subtitle_fontweight,
+                    row.subtitle_color, row.subtitle_position, row.dropcap));
+            });
+        });
     }
 
     /**

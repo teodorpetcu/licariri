@@ -22,22 +22,26 @@ const get_mainPage = async (_, res) => {
     // TODO: replace with prerendered page that updates every time a published
     // article is added, removed, or otherwise simply changes
     let articles = await articleDatabase.searchArticles();
+    for (let i = 0; i < articles.length; i++) {
+        articles[i].style = await articleDatabase.getArticleStyle(articles[i].id);
+    }
+    console.log(articles)
     res.render("main", {articles});
 }
 
 const get_articlePage = async (req, res) => {
     const articleID = req.params.articleID;
     const article = await articleDatabase.getArticle(articleID);
+    const articleStyle = await articleDatabase.getArticleStyle(articleID);
     const markdown = `${ARTICLE_CONTENTS_PATH}/${articleID}.md`
     fs.readFile(markdown, "utf8", (err, data) => {
         if (err) {
             // TODO: make a 404 page
-            article.contents = "";
-            res.render("article", {article});
+            res.redirect("/");
         } else {
             // todo: purify using DOMPurify
             article.contents = marked.parse(data.toString());
-            res.render("article", {article});
+            res.render("article", {article, articleStyle});
         }
     })
 }

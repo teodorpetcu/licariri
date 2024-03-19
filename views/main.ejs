@@ -33,7 +33,14 @@
         <% for (article of articles) { %>
             <a href="/articles/<%= article.id %>">
                 <div class="article-thumbnail">
-                    <h1 class="center"><%= article.title %></h1>
+                    <% if (! article.style.hide_title_in_thumbnail) { %>
+                    <h1 style="font-family: <%= article.style.title_font %>;
+                                font-size: <%= article.style.title_fontsize_thumbnail %>rem;
+                                font-weight: <%= article.style.title_fontweight %>;
+                                color: <%= article.style.title_color %>"
+                        class="center <% if (article.style.title_fill_style) { %>colour-complement-background<% } %>""
+                        ><%= article.title %></h1>
+                    <% } %>
                     <img src="/images/<%= article.id %>">
                 </div>
             </a>

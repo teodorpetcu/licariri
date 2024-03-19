@@ -9,7 +9,24 @@
 <body>
     <div id="article-headline">
         <img id="article-thumbnail" src="/images/<%= article.id %>" class="no-select">
-        <h1 id="article-title" class="center colour-complement-background"><%= article.title %></h1>
+        <% if (articleStyle.title_position == "thumbnail") { %>
+        <h1 id="article-title"
+            style="font-family: <%= articleStyle.title_font %>;
+                    font-size: <%= articleStyle.title_fontsize_article %>rem;
+                    font-weight: <%= articleStyle.title_fontweight %>;
+                    color: <%= articleStyle.title_color %>"
+            class="center <% if (articleStyle.title_fill_style) { %>colour-complement-background<% } %>""
+            ><%= article.title %></h1>
+        <% } %>
+        <% if (articleStyle.subtitle_position == "thumbnail") { %>
+        <h2 id="article-subtitle"
+            style="font-family: <%= articleStyle.subtitle_font %>;
+                    font-size: <%= articleStyle.subtitle_fontsize %>rem;
+                    font-weight: <%= articleStyle.subtitle_fontweight %>;
+                    color: <%= articleStyle.subtitle_color %>"
+            class="center"
+            ><%= article.subtitle %></h2>
+        <% } %>
     </div>
     <div id="article-info">
         <div id="article-authors-list">
@@ -36,5 +53,14 @@
         <%- article.contents %>
     </div>
 </body>
+<% if (articleStyle.subtitle_position == "thumbnail") { %>
+<script>
+    articleTitle = document.getElementById("article-title");
+    articleSubtitle = document.getElementById("article-subtitle");
+    articleSubtitle.style.marginTop =
+        (articleTitle.offsetHeight +
+        articleSubtitle.offsetHeight) + "px";
+</script>
+<% } %>
 
 </html>
