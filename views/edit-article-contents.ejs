@@ -68,7 +68,7 @@
 
             <label>Ascunde titlul din thumbnail:</label>
             <input id="input-title-hide-on-thumbnail"
-                type="checkbox" name="title_hide_in_thumbnail">
+                type="checkbox" name="hide_title_in_thumbnail">
 
             <label>Fontul titlului:</label>
             <select id="input-title-font"
@@ -79,12 +79,12 @@
 
             <label>Mărimea fontului titlului din thumbnail:</label>
             <input id="input-title-thumbnail-font-size"
-                name="title_thumbnail_font_size"
+                name="title_fontsize_thumbnail"
                 type="range" min="1.5" max="2.5" value = "2" step="0.1" >
 
             <label>Mărimea fontului titlului din articol:</label>
             <input id="input-title-article-font-size"
-                name="title_article_font_size"
+                name="title_fontsize_article"
                 type="range" min="2" max="5" value = "3.5" step="0.1" >
 
             <label>Grosimea fontului titlului:</label>
@@ -118,7 +118,7 @@
 
             <label>Mărimea fontului subtitlului din articol:</label>
             <input id="input-subtitle-font-size"
-                name="subtitle_font_size"
+                name="subtitle_fontsize"
                 type="range" min="1" max="2" value = "1.5" step="0.1" >
 
             <label>Grosimea fontului subtitlului:</label>
@@ -430,7 +430,7 @@
         if (inputSubtitlePosition.value == "article") {
             previewArticleSubtitle.classList.remove("center");
             previewArticleAlternateTitlePosition.append(previewArticleSubtitle);
-            previeArticleSubtitle.style.marginTop = 0;
+            previewArticleSubtitle.style.marginTop = 0;
         } else {
             previewArticleSubtitle.classList.add("center");
             previewArticleDefaultTitlePosition.append(previewArticleSubtitle);
