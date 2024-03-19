@@ -25,7 +25,6 @@ const get_mainPage = async (_, res) => {
     for (let i = 0; i < articles.length; i++) {
         articles[i].style = await articleDatabase.getArticleStyle(articles[i].id);
     }
-    console.log(articles)
     res.render("main", {articles});
 }
 
@@ -33,14 +32,14 @@ const get_articlePage = async (req, res) => {
     const articleID = req.params.articleID;
     const article = await articleDatabase.getArticle(articleID);
     const articleStyle = await articleDatabase.getArticleStyle(articleID);
-    const markdown = `${ARTICLE_CONTENTS_PATH}/${articleID}.md`
-    fs.readFile(markdown, "utf8", (err, data) => {
+    const markdownPath = `${ARTICLE_CONTENTS_PATH}/${articleID}.md`
+    fs.readFile(markdownPath, "utf8", (err, data) => {
         if (err) {
             // TODO: make a 404 page
             res.redirect("/");
         } else {
             // todo: purify using DOMPurify
-            article.contents = marked.parse(data.toString());
+            article.contents = marked.parse(data.toString()).trim();
             res.render("article", {article, articleStyle});
         }
     })

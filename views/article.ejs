@@ -15,7 +15,7 @@
                     font-size: <%= articleStyle.title_fontsize_article %>rem;
                     font-weight: <%= articleStyle.title_fontweight %>;
                     color: <%= articleStyle.title_color %>"
-            class="center <% if (articleStyle.title_fill_style) { %>colour-complement-background<% } %>""
+            class="center <% if (articleStyle.title_fill_style === '') { %>colour-complement-background<% } %>""
             ><%= article.title %></h1>
         <% } %>
         <% if (articleStyle.subtitle_position == "thumbnail") { %>
@@ -29,6 +29,16 @@
         <% } %>
     </div>
     <div id="article-info">
+        <% if (articleStyle.title_position == "article") { %>
+        <div style="text-align: center">
+        <h1 id="article-title"
+            style="font-family: <%= articleStyle.title_font %>;
+                    font-size: <%= articleStyle.title_fontsize_article %>rem;
+                    font-weight: <%= articleStyle.title_fontweight %>;
+                    color: <%= articleStyle.title_color %>"
+            ><%= article.title %></h1>
+        </div>
+        <% } %>
         <div id="article-authors-list">
             <% if (article.authors.length) { %>
             <h3>Scris de:</h3>
@@ -60,6 +70,13 @@
     articleSubtitle.style.marginTop =
         (articleTitle.offsetHeight +
         articleSubtitle.offsetHeight) + "px";
+    <% if (articleStyle.dropcap == "dropcap") { %>
+    articleContents = document.getElementById("article-contents");
+    while(articleContents.firstChild.nodeName == "#text") {
+        articleContents.removeChild(articleContents.firstChild);
+    }
+    articleContents.firstChild.classList.add("dropcap");
+    <% } %>
 </script>
 <% } %>
 
