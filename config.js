@@ -4,9 +4,11 @@ module.exports = {
     ARTICLE_DATABASE_PATH: __dirname + "/data/articles.sql",
     USERS_DATABASE_PATH: __dirname + "/data/users.sql",
     QUERY_DATABASE_PATH: __dirname + "/data/query.sql",
-    PDFPRINT_DATABASE_PATH: __dirname + "/data/pdfprints.sql",
     ARTICLE_CONTENTS_PATH: __dirname + "/public/articles",
     ARTICLE_IMAGES_PATH: __dirname + "/public/images",
+    PDFPRINT_DATABASE_PATH: __dirname + "/data/pdfprints.sql",
+    PDFPRINT_CONTENTS_PATH: __dirname + "/public/pdfprints",
+    PDFPRINT_THUMBNAILS_PATH: __dirname + "/public/pdfprints/images",
     USER_PRIVILEGES: {
         SUPERUSER: 100,
         COORDONATOR: 50,

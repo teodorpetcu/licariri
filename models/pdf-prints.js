@@ -34,9 +34,12 @@ class PDFPrintsDatabase extends Database {
         );
     }
 
-    addPDFPrint = (PDFPrint) => {
+    /**
+     * @param {PDFPrint} pdfprint
+     */
+    addPDFPrint = (pdfprint) => {
         this.db.run(`INSERT OR UPDATE pdfprints VALUES (?, ?)`,
-            [PDFPrint.timestamp, PDFPrint.description],
+            [pdfprint.timestamp, pdfprint.description],
             this.errorLogger
         );
     }

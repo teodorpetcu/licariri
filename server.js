@@ -32,6 +32,11 @@ const {
     post_adminChangeUserPassword,
 } = require("./controllers/admin.js")
 
+const {
+    get_adminPDFprintPage,
+    post_adminAddPDFprintPage,
+} = require("./controllers/pdf-prints.js")
+
 const { LISTENING_PORT } = require("./config.js");
 
 const { logger, requestLogger } = require("./logger.js");
@@ -58,12 +63,14 @@ app.get("/admin/articles/new", identifyAuthorisedUser, forbidUnauthorised, get_a
 app.get("/admin/articles/:articleID", identifyAuthorisedUser, forbidUnauthorised, get_adminAddArticle);
 app.get("/admin/user/add", identifyAuthorisedUser, forbidUnauthorised, get_adminAddUserPage);
 app.get("/admin/user/password", identifyAuthorisedUser, forbidUnauthorised, get_adminChangeUserPassword);
+app.get("/admin/pdfprints", identifyAuthorisedUser, forbidUnauthorised, get_adminPDFprintPage);
 
 app.post("/admin", post_adminLoginCheck);
 app.post("/admin/articles/:articleID", identifyAuthorisedUser, forbidUnauthorised, post_adminAddArticle);
 app.post("/admin/remove", identifyAuthorisedUser, forbidUnauthorised, post_adminRemoveArticle);
 app.post("/admin/user/add", identifyAuthorisedUser, forbidUnauthorised, post_adminAddUser);
 app.post("/admin/user/password", identifyAuthorisedUser, forbidUnauthorised, post_adminChangeUserPassword);
+app.post("/admin/pdfprints/add", identifyAuthorisedUser, forbidUnauthorised, post_adminAddPDFprintPage);
 
 // TODO: ensure that we first connect to all the databases before starting to
 // listen on the internet
