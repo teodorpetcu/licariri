@@ -43,6 +43,24 @@ class PDFPrintsDatabase extends Database {
             this.errorLogger
         );
     }
+
+    /**
+     * @param {Promise<[PDFPrint]>}
+     */
+    getAllPDFPrintsSorted = async () => {
+        return new Promise((resolve) => {
+            this.db.all(`SELECT * FROM pdfprints ORDER BY timestamp DESC`,
+                (err, rows) => {
+                    if(err || rows.undefined) {
+                        this.errorLogger(err);
+                        return resolve([]);
+                    } else {
+                        return resolve(rows.map((row) => new PDFPrint(row.timestamp, row.description)));
+                    }
+                }
+            )
+        });
+    }
 }
 
 module.exports = {

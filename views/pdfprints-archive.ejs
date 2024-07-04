@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <title>Revista Licăriri</title>
+    <%- include("meta"); %>
+    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">-->
+</head>
+
+<body>
+    <div id="main-page-header">
+        <div id="website-title-container">
+            <h1>Licăriri</h1>
+            <h6><i>revista elevilor Colegiului Național Dr. Ioan Meșotă, Brașov</i></h6>
+        </div>
+    </div>
+    <div id="pdfprints-grid">
+    <% for (pdfprint of pdfprints) { %>
+        <div class="pdfprint-grid-item">
+            <a href="/pdfprints/<%= pdfprint.description %>.pdf">
+                <img src="/pdfprints/thumbnails/<%= pdfprint.description %>.png">
+            </a>
+            <br>
+            <a class="pdfprint-description"
+                href="/pdfprints/<%= pdfprint.description %>.pdf"><%= pdfprint.description %></a>
+        </div>
+    <% } %>
+    </div>
+</body>
+
+<script type="text/javascript">
+</script>
+
+</html>
