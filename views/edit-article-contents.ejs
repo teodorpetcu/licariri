@@ -374,18 +374,20 @@
         }
         previewArticleTags.textContent = "";
 
-        if (inputAuthors.length) {
+        let authors = []; inputAuthors.forEach((i) => {if(i.value) authors.push(i.value)});
+        authors.sort();
+
+        if (authors.length >= 1) {
             let authorDivIntroduction = document.createElement("h3");
             previewArticleAuthors.append(authorDivIntroduction);
             authorDivIntroduction.textContent = "Autor";
-            if (inputAuthors.length != 1) {
+            if (authors.length > 1) {
                 authorDivIntroduction.textContent += "i";
             }
             authorDivIntroduction.textContent += ":";
         }
 
-        for (inputAuthor of inputAuthors) {
-            if (!inputAuthor.value) continue;
+        for (author of authors) {
             let authorDiv = document.createElement("div");
             authorDiv.classList.add("author");
             let span1 = document.createElement("span");
@@ -397,7 +399,7 @@
             let authorLink = document.createElement("a");
             authorLink.href = "#";
             authorLink.style.display = "inline-block";
-            authorLink.textContent = inputAuthor.value;
+            authorLink.textContent = author;
 
             authorDiv.appendChild(span1);
             authorDiv.appendChild(authorLink);
