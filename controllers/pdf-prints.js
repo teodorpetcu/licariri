@@ -1,4 +1,5 @@
 const fs = require("fs");
+const pdf2img = require("pdf-img-convert")
 
 const { PDFPrint } = require("../models/types.js");
 const { PDFPrintsDatabase } = require("../models/pdf-prints.js");
@@ -23,7 +24,14 @@ const post_adminAddPDFprintPage = async (req, res) => {
     const pdfprint = new PDFPrint(timestamp, description);
 
     if (pdffile && /pdf$/.test(pdffile.mimetype)) {
-        fs.writeFileSync(`${PDFPRINT_CONTENTS_PATH}/${pdfprint.filename}`, pdffile.data);
+        const pdffilepath = `${PDFPRINT_CONTENTS_PATH}/${pdfprint.filename}`;
+        fs.writeFileSync(pdffilepath, pdffile.data);
+        const thumbnail = (await pdf2img.convert(pdffile.data,
+            conversion_config = {
+                height: 750,
+                page_numbers: [1],
+            }))[0];
+        fs.writeFileSync(`${PDFPRINT_THUMBNAILS_PATH}/${pdfprint.description}.png`, thumbnail);
         res.sendStatus(200);
     } else {
         res.sendStatus(500);
