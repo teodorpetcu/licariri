@@ -1,12 +1,16 @@
-module.exports = {
+const fs = require("fs");
+
+const DATABASES_DIRECTORY = __dirname + "/data",
+
+CONFIG = {
     LISTENING_PORT: 8000,
     LOG_FILE_PATH: __dirname + "/data/runtime.log",
-    ARTICLE_DATABASE_PATH: __dirname + "/data/articles.sql",
-    USERS_DATABASE_PATH: __dirname + "/data/users.sql",
-    QUERY_DATABASE_PATH: __dirname + "/data/query.sql",
+    ARTICLE_DATABASE_PATH: DATABASES_DIRECTORY + "/articles.sql",
+    USERS_DATABASE_PATH: DATABASES_DIRECTORY + "/users.sql",
+    QUERY_DATABASE_PATH: DATABASES_DIRECTORY + "/query.sql",
+    PDFPRINT_DATABASE_PATH: DATABASES_DIRECTORY+ "/pdfprints.sql",
     ARTICLE_CONTENTS_PATH: __dirname + "/public/articles",
     ARTICLE_IMAGES_PATH: __dirname + "/public/images",
-    PDFPRINT_DATABASE_PATH: __dirname + "/data/pdfprints.sql",
     PDFPRINT_CONTENTS_PATH: __dirname + "/public/pdfprints",
     PDFPRINT_THUMBNAILS_PATH: __dirname + "/public/pdfprints/images",
     USER_PRIVILEGES: {
@@ -24,3 +28,17 @@ module.exports = {
     SESSION_TOKEN_LENGTH: 64,
     HASH_COST: 15,
 };
+
+const mkdir_if_not_exists = (dir) => {
+    if(!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, {recursive: true});
+    }
+}
+
+mkdir_if_not_exists(DATABASES_DIRECTORY);
+mkdir_if_not_exists(CONFIG.ARTICLE_CONTENTS_PATH);
+mkdir_if_not_exists(CONFIG.ARTICLE_IMAGES_PATH);
+mkdir_if_not_exists(CONFIG.PDFPRINT_DATABASE_PATH);
+mkdir_if_not_exists(CONFIG.PDFPRINT_THUMBNAILS_PATH);
+
+module.exports = CONFIG;
