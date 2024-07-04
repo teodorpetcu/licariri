@@ -12,7 +12,7 @@ CONFIG = {
     ARTICLE_CONTENTS_PATH: __dirname + "/public/articles",
     ARTICLE_IMAGES_PATH: __dirname + "/public/images",
     PDFPRINT_CONTENTS_PATH: __dirname + "/public/pdfprints",
-    PDFPRINT_THUMBNAILS_PATH: __dirname + "/public/pdfprints/images",
+    PDFPRINT_THUMBNAILS_PATH: __dirname + "/public/pdfprints-thumbnails",
     USER_PRIVILEGES: {
         SUPERUSER: 100,
         COORDONATOR: 50,
@@ -38,7 +38,7 @@ const mkdir_if_not_exists = (dir) => {
 mkdir_if_not_exists(DATABASES_DIRECTORY);
 mkdir_if_not_exists(CONFIG.ARTICLE_CONTENTS_PATH);
 mkdir_if_not_exists(CONFIG.ARTICLE_IMAGES_PATH);
-mkdir_if_not_exists(CONFIG.PDFPRINT_DATABASE_PATH);
+mkdir_if_not_exists(CONFIG.PDFPRINT_CONTENTS_PATH);
 mkdir_if_not_exists(CONFIG.PDFPRINT_THUMBNAILS_PATH);
 
 module.exports = CONFIG;

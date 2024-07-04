@@ -8,27 +8,29 @@
 </head>
 
 <body>
-    <h1>Adaugă ediție print</h1>
-    <form action="/admin/pdfprints/add" method="post" autocomplete="off" enctype="multipart/form-data">
-        <div>
-            <label>Fișier PDF</label>
-            <input required type="file"
-                accept="application/pdf" name="pdffile">
-        </div>
-        <div>
-            <label>Descriere</label>
-            <input required type="text"
-                name="description">
-        </div>
-        <div>
-            <label>Data ediției</label>
-            <input required type="date"
-                name="date" min="1960-01-01" max="<%= new Date().getFullYear() + '-12-31' %>">
-        </div>
-        <div>
-            <input type="submit" value="Trimite">
-        </div>
-    </form>
+    <div>
+        <h1>Adaugă ediție print</h1>
+        <form action="/admin/pdfprints/add" method="post" autocomplete="off" enctype="multipart/form-data">
+            <div>
+                <label>Fișier PDF</label>
+                <input required type="file"
+                    accept="application/pdf" name="pdffile">
+            </div>
+            <div>
+                <label>Descriere</label>
+                <input required type="text"
+                    name="description">
+            </div>
+            <div>
+                <label>Data ediției</label>
+                <input required type="date"
+                    name="date" min="1960-01-01" max="<%= new Date().getFullYear() + '-12-31' %>">
+            </div>
+            <div>
+                <input type="submit" value="Trimite">
+            </div>
+        </form>
+    </div>
 </body>
 
 </html>

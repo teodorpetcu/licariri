@@ -37,7 +37,12 @@ const {
     post_adminAddPDFprintPage,
 } = require("./controllers/pdf-prints.js")
 
-const { LISTENING_PORT } = require("./config.js");
+const {
+    LISTENING_PORT,
+    PDFPRINT_CONTENTS_PATH,
+    PDFPRINT_THUMBNAILS_PATH,
+    ARTICLE_IMAGES_PATH,
+} = require("./config.js");
 
 const { logger, requestLogger } = require("./logger.js");
 
@@ -50,7 +55,9 @@ app.use(cookieParser());
 app.use(requestLogger);
 
 app.use("/css", express.static(__dirname + "/views/css"));
-app.use("/images", express.static(__dirname + "/public/images"));
+app.use("/images", express.static(ARTICLE_IMAGES_PATH));
+app.use("/pdfprints", express.static(PDFPRINT_CONTENTS_PATH));
+app.use("/pdfprints/thumbnails", express.static(PDFPRINT_THUMBNAILS_PATH));
 
 app.get("/", get_mainPage);
 app.get("/query", get_queryPage);

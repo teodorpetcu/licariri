@@ -22,7 +22,7 @@ class PDFPrintsDatabase extends Database {
             (
                 timestamp           INT,
                 description         TEXT,
-                UNIQUE (timestamp)
+                UNIQUE (description)
             );
         `, (err) => {
                 if (err) {
@@ -38,7 +38,7 @@ class PDFPrintsDatabase extends Database {
      * @param {PDFPrint} pdfprint
      */
     addPDFPrint = (pdfprint) => {
-        this.db.run(`INSERT OR UPDATE pdfprints VALUES (?, ?)`,
+        this.db.run(`INSERT OR IGNORE into pdfprints VALUES (?, ?)`,
             [pdfprint.timestamp, pdfprint.description],
             this.errorLogger
         );

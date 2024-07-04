@@ -24,6 +24,7 @@ const post_adminAddPDFprintPage = async (req, res) => {
     const pdfprint = new PDFPrint(timestamp, description);
 
     if (pdffile && /pdf$/.test(pdffile.mimetype)) {
+        pdfprintDatabase.addPDFPrint(pdfprint);
         const pdffilepath = `${PDFPRINT_CONTENTS_PATH}/${pdfprint.filename}`;
         fs.writeFileSync(pdffilepath, pdffile.data);
         const thumbnail = (await pdf2img.convert(pdffile.data,
