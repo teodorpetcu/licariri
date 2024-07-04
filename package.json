@@ -7,8 +7,7 @@
     "main": "server.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "clear": "rm -f data/articles.sql data/query.sql public/articles/* public/images/*",
-        "postinstall": "mkdir -p data/ && mkdir -p public/articles && mkdir -p public/images"
+        "clear": "rm -f data/articles.sql data/query.sql public/articles/* public/images/*"
     },
     "dependencies": {
         "ip": "^1.1.8",

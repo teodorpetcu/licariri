@@ -9,11 +9,11 @@
 
 <body>
     <h1>Adaugă ediție print</h1>
-    <form action="/admin/pdfprints/add" method="post" autocomplete="off">
+    <form action="/admin/pdfprints/add" method="post" autocomplete="off" enctype="multipart/form-data">
         <div>
             <label>Fișier PDF</label>
-            <input required type="file" name="file"
-                accept="application/pdf">
+            <input required type="file"
+                accept="application/pdf" name="pdffile">
         </div>
         <div>
             <label>Descriere</label>
