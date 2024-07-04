@@ -90,8 +90,21 @@ class ArticleStyle {
     }
 }
 
+class PDFPrint {
+    /**
+     * @param {int} timestamp
+     * @param {string} description
+     */
+    constructor(timestamp, description) {
+        this.timestamp = timestamp;
+        this.description = description;
+        this.filename = description + ".pdf";
+    }
+}
+
 module.exports = {
     Author,
     Article,
     ArticleStyle,
+    PDFPrint,
 };

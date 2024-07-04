@@ -4,6 +4,7 @@ module.exports = {
     ARTICLE_DATABASE_PATH: __dirname + "/data/articles.sql",
     USERS_DATABASE_PATH: __dirname + "/data/users.sql",
     QUERY_DATABASE_PATH: __dirname + "/data/query.sql",
+    PDFPRINT_DATABASE_PATH: __dirname + "/data/pdfprints.sql",
     ARTICLE_CONTENTS_PATH: __dirname + "/public/articles",
     ARTICLE_IMAGES_PATH: __dirname + "/public/images",
     USER_PRIVILEGES: {
