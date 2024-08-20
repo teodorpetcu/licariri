@@ -1,5 +1,8 @@
 const marked = require("marked");
+const ejs = require("ejs");
 const fs = require("fs");
+
+const { logger } = require("../logger.js")
 
 const { Author, Article, ArticleStyle } = require("../models/types.js");
 const { ArticleDatabase } = require("../models/articles.js");
@@ -36,19 +39,7 @@ const get_mainPage = async (_, res) => {
 
 const get_articlePage = async (req, res) => {
     const articleID = req.params.articleID;
-    const article = await articleDatabase.getArticle(articleID);
-    const articleStyle = await articleDatabase.getArticleStyle(articleID);
-    const markdownPath = `${ARTICLE_CONTENTS_PATH}/${articleID}.md`
-    fs.readFile(markdownPath, "utf8", (err, data) => {
-        if (err) {
-            // TODO: make a 404 page
-            res.redirect("/");
-        } else {
-            // todo: purify using DOMPurify
-            article.contents = marked.parse(data.toString()).trim();
-            res.render("article", {article, articleStyle});
-        }
-    })
+    res.sendFile(`${ARTICLE_CONTENTS_PATH}/${articleID}.html`)
 }
 
 const post_adminAddArticle = async (req, res) => {
@@ -83,11 +74,19 @@ const post_adminAddArticle = async (req, res) => {
         fs.writeFileSync(`${ARTICLE_IMAGES_PATH}/${article.id}`, thumbnail.data);
     }
 
-    fs.writeFileSync(`${ARTICLE_CONTENTS_PATH}/${article.id}.md`, content);
-    await queryDatabase.unindexArticle(article.id);
-    await queryDatabase.indexArticle(article.id, content);
-    articleDatabase.updateMetadata(article);
-    articleDatabase.updateArticleStyles(article, articleStyle);
+    article.contents = marked.parse(content).trim();
+    await ejs.renderFile(__dirname + "/../views/article.ejs", {article, articleStyle}, async (err, res) => {
+        if (err) {
+            logger.error(err);
+        } else {
+            fs.writeFileSync(`${ARTICLE_CONTENTS_PATH}/${article.id}.html`, res);
+            fs.writeFileSync(`${ARTICLE_CONTENTS_PATH}/${article.id}.md`, content);
+            await queryDatabase.unindexArticle(article.id);
+            await queryDatabase.indexArticle(article.id, content);
+            articleDatabase.updateMetadata(article);
+            articleDatabase.updateArticleStyles(article, articleStyle);
+        }
+    });
 
     res.redirect(`/articles/${article.id}`);
 }
