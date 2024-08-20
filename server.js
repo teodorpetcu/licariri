@@ -9,9 +9,11 @@ const serverPrivateIP = ip.address();
 const {
     get_mainPage,
     get_articlePage,
+    get_adminPDFprintPage,
 
     post_adminAddArticle,
     post_adminRemoveArticle,
+    post_adminAddPDFprintPage,
 } = require("./controllers/articles.js")
 
 const {
@@ -31,11 +33,6 @@ const {
     post_adminLoginCheck,
     post_adminChangeUserPassword,
 } = require("./controllers/admin.js")
-
-const {
-    get_adminPDFprintPage,
-    post_adminAddPDFprintPage,
-} = require("./controllers/pdf-prints.js")
 
 const {
     LISTENING_PORT,

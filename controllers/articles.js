@@ -1,20 +1,25 @@
 const marked = require("marked");
 const ejs = require("ejs");
 const fs = require("fs");
+const pdf2img = require("pdf-img-convert")
 
 const { logger } = require("../logger.js")
 
 const { Author, Article, ArticleStyle } = require("../models/types.js");
+const { PDFPrint } = require("../models/types.js");
 const { ArticleDatabase } = require("../models/articles.js");
 const { QueryDatabase } = require("../models/query.js");
 const { PDFPrintsDatabase } = require("../models/pdf-prints.js");
 
 const {
+    MAIN_PAGE_HTML_FILE_PATH,
     ARTICLE_DATABASE_PATH,
     ARTICLE_CONTENTS_PATH,
     ARTICLE_IMAGES_PATH,
     QUERY_DATABASE_PATH,
     PDFPRINT_DATABASE_PATH,
+    PDFPRINT_CONTENTS_PATH,
+    PDFPRINT_THUMBNAILS_PATH,
 } = require("../config.js");
 
 const articleDatabase = new ArticleDatabase(ARTICLE_DATABASE_PATH);
@@ -26,20 +31,28 @@ queryDatabase.init();
 const pdfprintDatabase = new PDFPrintsDatabase(PDFPRINT_DATABASE_PATH);
 pdfprintDatabase.init();
 
-const get_mainPage = async (_, res) => {
-    // TODO: replace with prerendered page that updates every time a published
-    // article is added, removed, or otherwise simply changes
+const updateMainPage = async () => {
     const pdfprints = await pdfprintDatabase.getAllPDFPrintsSorted();
     let articles = await articleDatabase.searchArticles();
     for (let i = 0; i < articles.length; i++) {
         articles[i].style = await articleDatabase.getArticleStyle(articles[i].id);
     }
-    res.render("main", {articles, pdfprints});
+    ejs.renderFile(__dirname + "/../views/main.ejs", {articles, pdfprints}, (err, res) => {
+        if (err) {
+            logger.error(err);
+        } else {
+            fs.writeFileSync(`${MAIN_PAGE_HTML_FILE_PATH}`, res);
+        }
+    });
+}
+
+const get_mainPage = async (_, res) => {
+    res.sendFile(`${MAIN_PAGE_HTML_FILE_PATH}`);
 }
 
 const get_articlePage = async (req, res) => {
     const articleID = req.params.articleID;
-    res.sendFile(`${ARTICLE_CONTENTS_PATH}/${articleID}.html`)
+    res.sendFile(`${ARTICLE_CONTENTS_PATH}/${articleID}.html`);
 }
 
 const post_adminAddArticle = async (req, res) => {
@@ -89,6 +102,7 @@ const post_adminAddArticle = async (req, res) => {
             await queryDatabase.indexArticle(article.id, content);
             articleDatabase.updateMetadata(article);
             articleDatabase.updateArticleStyles(article, articleStyle);
+            await updateMainPage();
         }
     });
 
@@ -104,9 +118,38 @@ const post_adminRemoveArticle = async (req, res) => {
     res.redirect("/admin");
 }
 
+const get_adminPDFprintPage = async (_, res) => {
+    res.render("pdfprints");
+}
+
+const post_adminAddPDFprintPage = async (req, res) => {
+    let timestamp = new Date(req.body.date).getTime();
+    let description = req.body.description;
+    let pdffile = req.files ? req.files.pdffile : undefined;
+    const pdfprint = new PDFPrint(timestamp, description);
+
+    if (pdffile && /pdf$/.test(pdffile.mimetype)) {
+        pdfprintDatabase.addPDFPrint(pdfprint);
+        const pdffilepath = `${PDFPRINT_CONTENTS_PATH}/${pdfprint.filename}`;
+        fs.writeFileSync(pdffilepath, pdffile.data);
+        const thumbnail = (await pdf2img.convert(pdffile.data,
+            conversion_config = {
+                height: 750,
+                page_numbers: [1],
+            }))[0];
+        fs.writeFileSync(`${PDFPRINT_THUMBNAILS_PATH}/${pdfprint.description}.png`, thumbnail);
+        await updateMainPage();
+        res.sendStatus(200);
+    } else {
+        res.sendStatus(500);
+    }
+}
+
 module.exports = {
     get_mainPage,
     get_articlePage,
+    get_adminPDFprintPage,
     post_adminAddArticle,
     post_adminRemoveArticle,
+    post_adminAddPDFprintPage,
 };

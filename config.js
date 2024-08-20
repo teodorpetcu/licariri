@@ -18,7 +18,8 @@ CONFIG = {
         COORDONATOR: 50,
         USER: 10,
     },
-    MAIN_PAGE_ARTICLE_COUNT: 9,
+    MAIN_PAGE_HTML_FILE_PATH: __dirname + "/public/main.html",
+    MAIN_PAGE_ARTICLE_COUNT: 12,
     COOKIE_OPTIONS: {
         httpOnly: true,
         // TODO: set to true if HTTPS only
