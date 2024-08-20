@@ -17,11 +17,6 @@ const get_adminPDFprintPage = async (_, res) => {
     res.render("pdfprints");
 }
 
-const get_pdfprintsArchive = async (_, res) => {
-    const pdfprints = await pdfprintDatabase.getAllPDFPrintsSorted();
-    res.render("pdfprints-archive", {pdfprints})
-}
-
 const post_adminAddPDFprintPage = async (req, res) => {
     let timestamp = new Date(req.body.date).getTime();
     let description = req.body.description;
@@ -45,7 +40,6 @@ const post_adminAddPDFprintPage = async (req, res) => {
 }
 
 module.exports = {
-    get_pdfprintsArchive,
     get_adminPDFprintPage,
     post_adminAddPDFprintPage,
 };

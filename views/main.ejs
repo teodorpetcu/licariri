@@ -16,19 +16,12 @@
         <div id="links">
         </div>
     </div>
-    <div id="introduction-square">
-        <h2>ANUL XXXX</h2>
-        <p>Dacă ești actual elev sau absolvent meșotist și vrei să ne
-        împărtășești gândurile tale despre un subiect care te
-        pasionează, despre o problemă care te nemulțumește, sau să-ți
-        fie publicate creațiile literare, atunci te invităm cu cel mai
-        mare drag să ne trimiți ideile tale sub forma unui document Word
-        la adresa
-        <a href="mailto:licariri@mesota.ro">licariri@mesota.ro</a>.
-        Te așteptăm!
-        </p>
-    </div>
-    <div id="articles-section" class="no-select">
+    <!--<div id="introduction-square" class="colour-complement-background">-->
+        <!--<h2>ANUL XXXX</h2>-->
+        <!--<p>renaștere și origini</p>-->
+    <!--</div>-->
+    <div style="text-align: center; margin-top: 450px">
+        <h1 style="color: white">ARTICOLE</h1>
         <div id="article-thumbnail-grid">
         <% for (article of articles) { %>
             <a href="/articles/<%= article.id %>">
@@ -44,6 +37,20 @@
                     <img src="/images/<%= article.id %>">
                 </div>
             </a>
+        <% } %>
+        </div>
+
+        <h1 style="color: white">ARHIVĂ REVISTE</h1>
+        <div id="pdfprint-thumbnail-grid">
+        <% for (pdfprint of pdfprints) { %>
+            <div class="pdfprint-thumbnail">
+                <a href="/pdfprints/<%= pdfprint.description %>.pdf">
+                    <img src="/pdfprints/thumbnails/<%= pdfprint.description %>.png">
+                </a>
+                <br>
+                <a class="pdfprint-description"
+                    href="/pdfprints/<%= pdfprint.description %>.pdf"><%= pdfprint.description %></a>
+            </div>
         <% } %>
         </div>
     </div>

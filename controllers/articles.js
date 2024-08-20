@@ -4,12 +4,14 @@ const fs = require("fs");
 const { Author, Article, ArticleStyle } = require("../models/types.js");
 const { ArticleDatabase } = require("../models/articles.js");
 const { QueryDatabase } = require("../models/query.js");
+const { PDFPrintsDatabase } = require("../models/pdf-prints.js");
 
 const {
     ARTICLE_DATABASE_PATH,
     ARTICLE_CONTENTS_PATH,
     ARTICLE_IMAGES_PATH,
     QUERY_DATABASE_PATH,
+    PDFPRINT_DATABASE_PATH,
 } = require("../config.js");
 
 const articleDatabase = new ArticleDatabase(ARTICLE_DATABASE_PATH);
@@ -18,14 +20,18 @@ articleDatabase.init();
 const queryDatabase = new QueryDatabase(QUERY_DATABASE_PATH);
 queryDatabase.init();
 
+const pdfprintDatabase = new PDFPrintsDatabase(PDFPRINT_DATABASE_PATH);
+pdfprintDatabase.init();
+
 const get_mainPage = async (_, res) => {
     // TODO: replace with prerendered page that updates every time a published
     // article is added, removed, or otherwise simply changes
+    const pdfprints = await pdfprintDatabase.getAllPDFPrintsSorted();
     let articles = await articleDatabase.searchArticles();
     for (let i = 0; i < articles.length; i++) {
         articles[i].style = await articleDatabase.getArticleStyle(articles[i].id);
     }
-    res.render("main", {articles});
+    res.render("main", {articles, pdfprints});
 }
 
 const get_articlePage = async (req, res) => {

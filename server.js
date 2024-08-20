@@ -33,7 +33,6 @@ const {
 } = require("./controllers/admin.js")
 
 const {
-    get_pdfprintsArchive,
     get_adminPDFprintPage,
     post_adminAddPDFprintPage,
 } = require("./controllers/pdf-prints.js")
@@ -63,7 +62,6 @@ app.use("/pdfprints/thumbnails", express.static(PDFPRINT_THUMBNAILS_PATH));
 app.get("/", get_mainPage);
 app.get("/query", get_queryPage);
 app.get("/articles/:articleID", get_articlePage);
-app.get("/pdfprints/archive", get_pdfprintsArchive);
 
 // TODO: limit the amount of login attempts
 app.get("/admin", identifyAuthorisedUser, get_adminPannelPage);
