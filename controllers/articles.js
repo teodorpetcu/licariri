@@ -48,21 +48,22 @@ const post_adminAddArticle = async (req, res) => {
 
     const stage = originalArticle.stage;
     const timestamp = new Date(originalArticle.timestamp);
-    const title = req.body.title;
-    const subtitle = req.body.subtitle;
+    const title = req.body.title.trim();
+    const subtitle = req.body.subtitle.trim();
     const language = req.body.language;
     const category = req.body.category;
     const authors = Array.isArray(req.body["authors[]"])
-                    ? req.body["authors[]"].map((a) => new Author(a))
+                    ? req.body["authors[]"].map((a) => new Author(a.trim()))
                     : (typeof req.body["authors[]"] === "string"
-                        ? [new Author(req.body["authors[]"])]
+                        ? [new Author(req.body["authors[]"].trim())]
                         : []);
     const tags = Array.isArray(req.body["tags[]"])
-                    ? req.body["tags[]"]
+                    ? req.body["tags[]"].map((t) => t.trim())
                     : (typeof req.body["tags[]"] === "string"
-                        ? [req.body["tags[]"]]
+                        ? [req.body["tags[]"].trim()]
                         : []);
     const content = req.body.content.replace(/([<>\\])/g, "\\$1");
+    // TODO: thumbnail credits (+ don't forget trim)
 
     let thumbnail = req.files ? req.files.thumbnail : undefined;
 
@@ -79,6 +80,9 @@ const post_adminAddArticle = async (req, res) => {
         if (err) {
             logger.error(err);
         } else {
+            // the contents are also saved in markdown since it makes editing
+            // the article a lot easier later; same as with those "articleStyle"
+            // options
             fs.writeFileSync(`${ARTICLE_CONTENTS_PATH}/${article.id}.html`, res);
             fs.writeFileSync(`${ARTICLE_CONTENTS_PATH}/${article.id}.md`, content);
             await queryDatabase.unindexArticle(article.id);
