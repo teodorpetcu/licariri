@@ -20,6 +20,7 @@ CONFIG = {
         USER: 10,
     },
     MAIN_PAGE_HTML_FILE_PATH: __dirname + "/public/main.html",
+    MAIN_PAGE_BACKGROUND_IMAGE_PATH: __dirname + "/public/main.png",
     MAIN_PAGE_ARTICLE_COUNT: 12,
     COOKIE_OPTIONS: {
         httpOnly: true,
