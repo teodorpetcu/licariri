@@ -121,11 +121,14 @@ class ArticleDatabase extends Database {
     }
 
     /**
+     * NOTE: this function supposes that you change the stage on the article
+     * object, preferrably using `Article.failsafe_setStage()` as to avoid
+     * invalid values
      * @param {Article} article
      */
-    updateArticleStage = (articleID, stage) => {
+    updateArticleStage = (article) => {
         this.db.run('UPDATE articles SET stage = ? WHERE id = ?',
-            [stage, articleID],
+            [article.stage, article.id],
             this.errorLogger
         );
     }

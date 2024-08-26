@@ -35,7 +35,6 @@ class Article {
     constructor(id = undefined, stage = "", timestamp = new Date(),
                 title, subtitle, language = "", category,
                 authors = [], tags = []) {
-        if (! ["public", "draft", "trash"].includes(stage)) stage = "draft";
         language = language.toLowerCase();
         if (! ["ro", "en", "fr", "de"].includes(language)) language = "ro";
 
@@ -53,6 +52,17 @@ class Article {
         this.category = category;
         this.authors = authors;
         this.tags = tags;
+
+        this.failsafe_setStage(stage);
+    }
+
+    /**
+     * Using this function, ensure that no invalid value gets set
+     * @param {string} stage
+     */
+    failsafe_setStage = (stage) => {
+        if (! ["public", "draft", "trash"].includes(stage)) stage = "draft";
+        this.stage = stage;
     }
 }
 

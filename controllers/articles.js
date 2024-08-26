@@ -15,8 +15,8 @@ const { ViewsDatabase } = require("../models/view-count.js");
 const {
     MAIN_PAGE_HTML_FILE_PATH,
     ARTICLE_DATABASE_PATH,
+    ARTICLES_DIRECTORY,
     PUBLIC_ARTICLE_CONTENTS_PATH,
-    PUBLIC_ARTICLE_IMAGES_PATH,
     QUERY_DATABASE_PATH,
     PDFPRINT_DATABASE_PATH,
     PDFPRINT_CONTENTS_PATH,
@@ -92,7 +92,7 @@ const post_adminAddArticle = async (req, res) => {
 
     if (thumbnail && /^image/.test(thumbnail.mimetype)) {
         // it's not actually a png image, but who cares
-        fs.writeFileSync(`${PUBLIC_ARTICLE_IMAGES_PATH}/${article.id}.png`, thumbnail.data);
+        fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.png`, thumbnail.data);
     }
 
     article.contents = marked.parse(content).trim();
@@ -103,8 +103,8 @@ const post_adminAddArticle = async (req, res) => {
             // the contents are also saved in markdown since it makes editing
             // the article a lot easier later; same as with those "articleStyle"
             // options
-            fs.writeFileSync(`${PUBLIC_ARTICLE_CONTENTS_PATH}/${article.id}.html`, res);
-            fs.writeFileSync(`${PUBLIC_ARTICLE_CONTENTS_PATH}/${article.id}.md`, content);
+            fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`, res);
+            fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, content);
             await queryDatabase.unindexArticle(article.id);
             await queryDatabase.indexArticle(article.id, content);
             articleDatabase.updateMetadata(article);
@@ -117,7 +117,16 @@ const post_adminAddArticle = async (req, res) => {
 }
 
 const post_updateArticleStage = async (req, res) => {
-    articleDatabase.updateArticleStage(req.body.id, req.body.stage);
+    const article = await articleDatabase.getArticleMeta(req.body.id);
+    const originalStage = article.stage;
+    article.failsafe_setStage(req.body.stage)
+    fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.html`,
+                   `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`)
+    fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.md`,
+                   `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`)
+    fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/images/${article.id}.png`,
+                   `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.png`)
+    articleDatabase.updateArticleStage(article);
     await updateMainPage();
     res.redirect("/admin");
 }
