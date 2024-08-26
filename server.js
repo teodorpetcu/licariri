@@ -49,32 +49,31 @@ app.set("view engine", "ejs");
 app.use(fileUpload());
 app.use(bodyParser.urlencoded({ extended: true, }));
 app.use(cookieParser());
-app.use(requestLogger);
 
 app.use("/css", express.static(__dirname + "/views/css"));
-app.use("/images", express.static(ARTICLE_IMAGES_PATH));
-app.use("/pdfprints", express.static(PDFPRINT_CONTENTS_PATH));
-app.use("/pdfprints/thumbnails", express.static(PDFPRINT_THUMBNAILS_PATH));
+app.use("/images", express.static(ARTICLE_IMAGES_PATH), requestLogger);
+app.use("/pdfprints", express.static(PDFPRINT_CONTENTS_PATH), requestLogger);
+app.use("/pdfprints/thumbnails", express.static(PDFPRINT_THUMBNAILS_PATH), requestLogger);
 
-app.get("/", get_mainPage);
-app.get("/query", get_queryPage);
+app.get("/", requestLogger, get_mainPage);
+app.get("/query", requestLogger, get_queryPage);
 app.get("/articles/:articleID", get_articlePage);
 
 // TODO: limit the amount of login attempts
-app.get("/admin", identifyAuthorisedUser, get_adminPannelPage);
+app.get("/admin", requestLogger, identifyAuthorisedUser, get_adminPannelPage);
 
-app.get("/admin/articles/new", identifyAuthorisedUser, forbidUnauthorised, get_adminAddArticle);
-app.get("/admin/articles/:articleID", identifyAuthorisedUser, forbidUnauthorised, get_adminAddArticle);
-app.get("/admin/user/add", identifyAuthorisedUser, forbidUnauthorised, get_adminAddUserPage);
-app.get("/admin/user/password", identifyAuthorisedUser, forbidUnauthorised, get_adminChangeUserPassword);
-app.get("/admin/pdfprints", identifyAuthorisedUser, forbidUnauthorised, get_adminPDFprintPage);
+app.get("/admin/articles/new", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminAddArticle);
+app.get("/admin/articles/:articleID", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminAddArticle);
+app.get("/admin/user/add", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminAddUserPage);
+app.get("/admin/user/password", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminChangeUserPassword);
+app.get("/admin/pdfprints", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminPDFprintPage);
 
-app.post("/admin", post_adminLoginCheck);
-app.post("/admin/articles/:articleID", identifyAuthorisedUser, forbidUnauthorised, post_adminAddArticle);
-app.post("/admin/remove", identifyAuthorisedUser, forbidUnauthorised, post_adminRemoveArticle);
-app.post("/admin/user/add", identifyAuthorisedUser, forbidUnauthorised, post_adminAddUser);
-app.post("/admin/user/password", identifyAuthorisedUser, forbidUnauthorised, post_adminChangeUserPassword);
-app.post("/admin/pdfprints/add", identifyAuthorisedUser, forbidUnauthorised, post_adminAddPDFprintPage);
+app.post("/admin", requestLogger, post_adminLoginCheck);
+app.post("/admin/articles/:articleID", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddArticle);
+app.post("/admin/remove", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminRemoveArticle);
+app.post("/admin/user/add", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddUser);
+app.post("/admin/user/password", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminChangeUserPassword);
+app.post("/admin/pdfprints/add", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddPDFprintPage);
 
 // TODO: ensure that we first connect to all the databases before starting to
 // listen on the internet
