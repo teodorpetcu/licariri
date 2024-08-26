@@ -10,6 +10,7 @@ const { PDFPrint } = require("../models/types.js");
 const { ArticleDatabase } = require("../models/articles.js");
 const { QueryDatabase } = require("../models/query.js");
 const { PDFPrintsDatabase } = require("../models/pdf-prints.js");
+const { ViewsDatabase } = require("../models/view-count.js");
 
 const {
     MAIN_PAGE_HTML_FILE_PATH,
@@ -20,6 +21,7 @@ const {
     PDFPRINT_DATABASE_PATH,
     PDFPRINT_CONTENTS_PATH,
     PDFPRINT_THUMBNAILS_PATH,
+    VIEWS_DATABASE_PATH,
 } = require("../config.js");
 
 const articleDatabase = new ArticleDatabase(ARTICLE_DATABASE_PATH);
@@ -30,6 +32,9 @@ queryDatabase.init();
 
 const pdfprintDatabase = new PDFPrintsDatabase(PDFPRINT_DATABASE_PATH);
 pdfprintDatabase.init();
+
+const viewsDatabase = new ViewsDatabase(VIEWS_DATABASE_PATH);
+viewsDatabase.init();
 
 const updateMainPage = async () => {
     const pdfprints = await pdfprintDatabase.getAllPDFPrintsSorted();
@@ -52,6 +57,7 @@ const get_mainPage = async (_, res) => {
 
 const get_articlePage = async (req, res) => {
     const articleID = req.params.articleID;
+    viewsDatabase.logRequest(Date.now(), req.ip, articleID);
     res.sendFile(`${ARTICLE_CONTENTS_PATH}/${articleID}.html`);
 }
 
