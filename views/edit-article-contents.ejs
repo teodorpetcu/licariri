@@ -323,7 +323,7 @@
         if (thumbnail) {
             imgObj.src = URL.createObjectURL(thumbnail)
         } else {
-            imgObj.src = "/articles/images/<%= defaults.id %>.png"
+            imgObj.src = "/admin/articles/images/<%= defaults.id %>.png"
         }
     }
     updateThumbnail(previewMinifiedThumbnailImage);

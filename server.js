@@ -40,6 +40,8 @@ const {
     PDFPRINT_CONTENTS_PATH,
     PDFPRINT_THUMBNAILS_PATH,
     PUBLIC_ARTICLE_IMAGES_PATH,
+    DRAFT_ARTICLE_IMAGES_PATH,
+    TRASH_ARTICLE_IMAGES_PATH,
     MAIN_PAGE_BACKGROUND_IMAGE_PATH,
 } = require("./config.js");
 
@@ -53,9 +55,11 @@ app.use(bodyParser.urlencoded({ extended: true, }));
 app.use(cookieParser());
 
 app.use("/css", express.static(__dirname + "/views/css"));
-app.use("/articles/images", express.static(PUBLIC_ARTICLE_IMAGES_PATH), requestLogger);
-app.use("/pdfprints", express.static(PDFPRINT_CONTENTS_PATH), requestLogger);
-app.use("/pdfprints/thumbnails", express.static(PDFPRINT_THUMBNAILS_PATH), requestLogger);
+app.use("/articles/images", requestLogger, express.static(PUBLIC_ARTICLE_IMAGES_PATH));
+app.use("/pdfprints", requestLogger, express.static(PDFPRINT_CONTENTS_PATH));
+app.use("/pdfprints/thumbnails", requestLogger, express.static(PDFPRINT_THUMBNAILS_PATH));
+app.use("/admin/articles/images", requestLogger, identifyAuthorisedUser, forbidUnauthorised);
+app.use("/admin/articles/images", express.static(PUBLIC_ARTICLE_IMAGES_PATH), express.static(DRAFT_ARTICLE_IMAGES_PATH), express.static(TRASH_ARTICLE_IMAGES_PATH));
 app.get("/main.png", (_, res) => res.sendFile(MAIN_PAGE_BACKGROUND_IMAGE_PATH));
 
 app.get("/", requestLogger, get_mainPage);
