@@ -15,7 +15,7 @@
                     font-size: <%= articleStyle.title_fontsize_article %>rem;
                     font-weight: <%= articleStyle.title_fontweight %>;
                     color: <%= articleStyle.title_color %>"
-            class="center <% if (articleStyle.title_fill_style === '') { %>colour-complement-background<% } %>""
+            class="center <% if (articleStyle.title_fill_style === 'on') { %>colour-complement-background<% } %>""
             ><%= article.title %></h1>
         <% } %>
         <% if (articleStyle.subtitle_position == "thumbnail") { %>

@@ -152,15 +152,16 @@ class ArticleDatabase extends Database {
     }
 
     /**
-     * Remove previous article style and insert the new one in its place
+     * Return the style object for the given article; note that an object with
+     * undefined properties is returned if the database entry doesn't exist.
      * @param {string} articleID
-     * @returns {Promise<ArticleStyle|undefined>}
+     * @returns {Promise<ArticleStyle>}
      */
     getArticleStyle = async (articleID) => {
         return new Promise((resolve) => {
             return this.db.get('SELECT * FROM article_styles WHERE id = ?', [articleID], (err, row) => {
                 if (err || row === undefined) {
-                    return resolve(undefined);
+                    return resolve(new ArticleStyle());
                 }
                 return resolve(new ArticleStyle(row.hide_title_in_thumbnail,
                     row.title_font, row.title_fill_style, row.title_color,

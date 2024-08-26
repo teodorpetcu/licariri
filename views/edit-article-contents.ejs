@@ -69,7 +69,9 @@
             <label>Ascunde titlul din thumbnail:</label>
             <input id="input-title-hide-on-thumbnail"
                 type="checkbox" name="hide_title_in_thumbnail"
-                value="<%= defaults.style.hide_title_in_thumbnail %>">
+                <% if (defaults.style.hide_title_in_thumbnail) { %>
+                checked
+                <% } %>>
 
             <label>Fontul titlului:</label>
             <select id="input-title-font"
@@ -100,8 +102,10 @@
             <label>Titlul contrastează cu fundalul (ignoră culoarea):</label>
             <!--TITLE FILL STYLE == <select>-->
             <input id="input-title-contrast-background"
-                value="<%= defaults.style.title_fill_style %>"
-                type="checkbox" name="title_fill_style">
+                type="checkbox" name="title_fill_style"
+                <% if (defaults.style.title_fill_style) { %>
+                checked
+                <% } %>>
 
             <label>Culoarea titlului:</label>
             <input id="input-title-color" name="title_color"
@@ -324,7 +328,7 @@
         if (thumbnail) {
             imgObj.src = URL.createObjectURL(thumbnail)
         } else {
-            imgObj.src = "/images/<%= defaults.id %>"
+            imgObj.src = "/articles/images/<%= defaults.id %>.png"
         }
     }
     updateThumbnail(previewMinifiedThumbnailImage);

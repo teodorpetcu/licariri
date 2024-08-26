@@ -26,12 +26,12 @@
         <% for (article of articles) { %>
             <a href="/articles/<%= article.id %>">
                 <div class="article-thumbnail">
-                    <% if (article.style.hide_title_in_thumbnail !== '') { %>
+                    <% if (article.style.hide_title_in_thumbnail !== 'on') { %>
                     <h1 style="font-family: <%= article.style.title_font %>;
                                 font-size: <%= article.style.title_fontsize_thumbnail %>rem;
                                 font-weight: <%= article.style.title_fontweight %>;
                                 color: <%= article.style.title_color %>"
-                        class="center <% if (article.style.title_fill_style === '') { %>colour-complement-background<% } %>""
+                        class="center <% if (article.style.title_fill_style === 'on') { %>colour-complement-background<% } %>""
                         ><%= article.title %></h1>
                     <% } %>
                     <img src="/articles/images/<%= article.id %>.png">
