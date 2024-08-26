@@ -120,6 +120,15 @@ class ArticleDatabase extends Database {
         });
     }
 
+    /**
+     * @param {Article} article
+     */
+    updateArticleStage = (articleID, stage) => {
+        this.db.run('UPDATE articles SET stage = ? WHERE id = ?',
+            [stage, articleID],
+            this.errorLogger
+        );
+    }
 
     /**
      * Remove previous article style and insert the new one in its place
@@ -186,7 +195,7 @@ class ArticleDatabase extends Database {
      */
     searchArticleIDs = async (key, value, exact = true) => {
         return new Promise((resolve) => {
-            let validKeyValues = ["title", "tag", "author", undefined]
+            let validKeyValues = ["title", "stage", "tag", "author", undefined]
             if (! validKeyValues.includes(key)) {
                 return resolve(undefined);
             }

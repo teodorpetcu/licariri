@@ -14,6 +14,7 @@ const {
     post_adminAddArticle,
     post_adminRemoveArticle,
     post_adminAddPDFprintPage,
+    post_updateArticleStage,
 } = require("./controllers/articles.js")
 
 const {
@@ -70,6 +71,7 @@ app.get("/admin/pdfprints", requestLogger, identifyAuthorisedUser, forbidUnautho
 
 app.post("/admin", requestLogger, post_adminLoginCheck);
 app.post("/admin/articles/:articleID", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddArticle);
+app.post("/admin/stage", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_updateArticleStage);
 app.post("/admin/remove", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminRemoveArticle);
 app.post("/admin/user/add", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddUser);
 app.post("/admin/user/password", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminChangeUserPassword);

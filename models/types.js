@@ -35,16 +35,17 @@ class Article {
     constructor(id = undefined, stage = "", timestamp = new Date(),
                 title, subtitle, language = "", category,
                 authors = [], tags = []) {
-        if (! ["draft"].includes(stage)) stage = "draft";
-        if (! ["ro"].includes(language.toLowerCase())) language = "ro";
+        if (! ["public", "draft", "trash"].includes(stage)) stage = "draft";
+        language = language.toLowerCase();
+        if (! ["ro", "en", "fr", "de"].includes(language)) language = "ro";
 
         if (id) {
             this.id = id;
         } else {
             this.id = crypto.randomUUID();
         }
-        this.stage = stage;
         this.timestamp = timestamp.valueOf();
+        this.stage = stage;
         this.date = formatDate(timestamp);
         this.title = title;
         this.subtitle = subtitle;

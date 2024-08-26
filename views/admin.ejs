@@ -30,11 +30,38 @@
                     --><input type="submit" value="Modifică"></input><!--
                 --></a>
                 <span style="padding: 20px;"></span>
-                <form action="/admin/remove" method="post">
+                <% if (article.stage == "draft") { %>
+                <form action="/admin/stage" method="post">
                     <input type="hidden" name="id"
                         value="<%= article.id %>">
+                    <input type="hidden" name="stage"
+                        value="public">
+                    <input type="submit" onclick="return confirm(`Sigur vrei să publici articolul?`)" value="PUBLICĂ"></input>
+                </form>
+                <form action="/admin/stage" method="post">
+                    <input type="hidden" name="id"
+                        value="<%= article.id %>">
+                    <input type="hidden" name="stage"
+                        value="trash">
                     <input type="submit" onclick="return confirm(`Sigur vrei să ștergi articolul?`)" value="ȘTERGE" style="background-color: #BB0000"></input>
                 </form>
+                <% } else if (article.stage == "public") { %>
+                <form action="/admin/stage" method="post">
+                    <input type="hidden" name="id"
+                        value="<%= article.id %>">
+                    <input type="hidden" name="stage"
+                        value="draft">
+                    <input type="submit" onclick="return confirm(`Sigur vrei să ascunzi articolul?`)" value="ASCUNDE"></input>
+                </form>
+                <% } else if (article.stage == "trash") { %>
+                <form action="/admin/stage" method="post">
+                    <input type="hidden" name="id"
+                        value="<%= article.id %>">
+                    <input type="hidden" name="stage"
+                        value="draft">
+                    <input type="submit" onclick="return confirm(`Sigur vrei să restaurezi articolul?`)" value="RESTAUREAZĂ"></input>
+                </form>
+                <% } %>
             </div>
         </div>
         <% } %>

@@ -38,7 +38,7 @@ viewsDatabase.init();
 
 const updateMainPage = async () => {
     const pdfprints = await pdfprintDatabase.getAllPDFPrintsSorted();
-    let articles = await articleDatabase.searchArticles();
+    let articles = await articleDatabase.searchArticles("stage", "public");
     for (let i = 0; i < articles.length; i++) {
         articles[i].style = await articleDatabase.getArticleStyle(articles[i].id);
     }
@@ -115,6 +115,12 @@ const post_adminAddArticle = async (req, res) => {
     res.redirect(`/articles/${article.id}`);
 }
 
+const post_updateArticleStage = async (req, res) => {
+    articleDatabase.updateArticleStage(req.body.id, req.body.stage);
+    await updateMainPage();
+    res.redirect("/admin");
+}
+
 const post_adminRemoveArticle = async (req, res) => {
     let articleID = req.body.id;
     //(articlePublisher == req.user.id) {
@@ -158,4 +164,5 @@ module.exports = {
     post_adminAddArticle,
     post_adminRemoveArticle,
     post_adminAddPDFprintPage,
+    post_updateArticleStage,
 };
