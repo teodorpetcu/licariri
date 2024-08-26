@@ -132,5 +132,4 @@ dist
 
 # Project-specific
 #config.js
-data/
-public/
+appdata

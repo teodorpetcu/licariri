@@ -1,5 +1,10 @@
-const { USERS_DATABASE_PATH, ARTICLE_DATABASE_PATH, COOKIE_OPTIONS,
-    USER_PRIVILEGES, ARTICLE_CONTENTS_PATH } = require("../config.js");
+const {
+    USERS_DATABASE_PATH,
+    ARTICLE_DATABASE_PATH,
+    COOKIE_OPTIONS,
+    USER_PRIVILEGES,
+    PUBLIC_ARTICLE_CONTENTS_PATH
+} = require("../config.js");
 const { UsersDatabase, User, Session } = require("../models/admin.js");
 const { ArticleDatabase } = require("../models/articles.js");
 const { Article } = require("../models/types.js");
@@ -61,7 +66,7 @@ const get_adminAddArticle = async (req, res) => {
     let article = await articleDatabase.getArticle(req.params.articleID);
     if (article) {
         article.style = await articleDatabase.getArticleStyle(article.id);
-        let contentsPath = `${ARTICLE_CONTENTS_PATH}/${article.id}.md`;
+        let contentsPath = `${PUBLIC_ARTICLE_CONTENTS_PATH}/${article.id}.md`;
         if (fs.existsSync(contentsPath)) {
             article.content = fs.readFileSync(contentsPath, {encoding: "utf-8"});
         }

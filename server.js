@@ -39,7 +39,7 @@ const {
     LISTENING_PORT,
     PDFPRINT_CONTENTS_PATH,
     PDFPRINT_THUMBNAILS_PATH,
-    ARTICLE_IMAGES_PATH,
+    PUBLIC_ARTICLE_IMAGES_PATH,
     MAIN_PAGE_BACKGROUND_IMAGE_PATH,
 } = require("./config.js");
 
@@ -53,7 +53,7 @@ app.use(bodyParser.urlencoded({ extended: true, }));
 app.use(cookieParser());
 
 app.use("/css", express.static(__dirname + "/views/css"));
-app.use("/images", express.static(ARTICLE_IMAGES_PATH), requestLogger);
+app.use("/articles/images", express.static(PUBLIC_ARTICLE_IMAGES_PATH), requestLogger);
 app.use("/pdfprints", express.static(PDFPRINT_CONTENTS_PATH), requestLogger);
 app.use("/pdfprints/thumbnails", express.static(PDFPRINT_THUMBNAILS_PATH), requestLogger);
 app.get("/main.png", (_, res) => res.sendFile(MAIN_PAGE_BACKGROUND_IMAGE_PATH));
