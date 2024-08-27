@@ -1,5 +1,6 @@
 const { Database } = require("./database.js");
 const { logger } = require("../logger.js");
+const { QUERY_DATABASE_PATH } = require("../config.js");
 
 class QueryDatabase extends Database {
     /**
@@ -139,6 +140,9 @@ class QueryDatabase extends Database {
     }
 }
 
+const queryDatabase = new QueryDatabase(QUERY_DATABASE_PATH);
+queryDatabase.init();
+
 module.exports = {
-    QueryDatabase
+    queryDatabase
 };

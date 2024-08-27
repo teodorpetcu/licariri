@@ -1,5 +1,6 @@
 const { Database } = require("./database.js");
 const { logger } = require("../logger.js");
+const { VIEWS_DATABASE_PATH } = require("../config.js");
 
 class ViewsDatabase extends Database {
     /**
@@ -69,6 +70,9 @@ class ViewsDatabase extends Database {
     }
 }
 
+const viewsDatabase = new ViewsDatabase(VIEWS_DATABASE_PATH);
+viewsDatabase.init();
+
 module.exports = {
-    ViewsDatabase,
+    viewsDatabase,
 }

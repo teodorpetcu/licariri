@@ -3,7 +3,7 @@ const crypto = require("crypto"); // for randomBytes
 
 const { Database } = require("./database.js");
 
-const { HASH_COST, SESSION_TOKEN_LENGTH } = require("../config.js");
+const { HASH_COST, SESSION_TOKEN_LENGTH, USERS_DATABASE_PATH } = require("../config.js");
 const { logger } = require("../logger.js");
 
 /**
@@ -206,8 +206,11 @@ class UsersDatabase extends Database {
     }
 }
 
+const usersDatabase = new UsersDatabase(USERS_DATABASE_PATH);
+usersDatabase.init();
+
 module.exports = {
     User,
-    UsersDatabase,
+    usersDatabase,
     Session,
 };

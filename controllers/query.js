@@ -1,16 +1,5 @@
-const { QueryDatabase } = require("../models/query.js");
-const { ArticleDatabase } = require("../models/articles.js");
-
-const {
-    ARTICLE_DATABASE_PATH,
-    QUERY_DATABASE_PATH,
-} = require("../config.js");
-
-const queryDatabase = new QueryDatabase(QUERY_DATABASE_PATH);
-queryDatabase.init();
-
-const articleDatabase = new ArticleDatabase(ARTICLE_DATABASE_PATH);
-articleDatabase.init();
+const { queryDatabase } = require("../models/query.js");
+const { articleDatabase } = require("../models/articles.js");
 
 const get_queryPage = async (req, res) => {
     let articleIDs = [];

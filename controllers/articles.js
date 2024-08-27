@@ -7,42 +7,21 @@ const { logger } = require("../logger.js")
 
 const { Author, Article, ArticleStyle } = require("../models/types.js");
 const { PDFPrint } = require("../models/types.js");
-const { ArticleDatabase } = require("../models/articles.js");
-const { QueryDatabase } = require("../models/query.js");
-const { PDFPrintsDatabase } = require("../models/pdf-prints.js");
-const { ViewsDatabase } = require("../models/view-count.js");
-const { UsersDatabase } = require("../models/admin.js")
+const { articleDatabase } = require("../models/articles.js");
+const { queryDatabase } = require("../models/query.js");
+const { viewsDatabase } = require("../models/view-count.js");
+const { usersDatabase } = require("../models/admin.js")
 
 const {
     MAIN_PAGE_HTML_FILE_PATH,
-    ARTICLE_DATABASE_PATH,
     ARTICLES_DIRECTORY,
     PUBLIC_ARTICLE_CONTENTS_PATH,
-    QUERY_DATABASE_PATH,
-    PDFPRINT_DATABASE_PATH,
     PDFPRINT_CONTENTS_PATH,
     PDFPRINT_THUMBNAILS_PATH,
-    VIEWS_DATABASE_PATH,
-    USERS_DATABASE_PATH,
 } = require("../config.js");
 
-const articleDatabase = new ArticleDatabase(ARTICLE_DATABASE_PATH);
-articleDatabase.init();
-
-const queryDatabase = new QueryDatabase(QUERY_DATABASE_PATH);
-queryDatabase.init();
-
-const pdfprintDatabase = new PDFPrintsDatabase(PDFPRINT_DATABASE_PATH);
-pdfprintDatabase.init();
-
-const viewsDatabase = new ViewsDatabase(VIEWS_DATABASE_PATH);
-viewsDatabase.init();
-
-const usersDatabase = new UsersDatabase(USERS_DATABASE_PATH);
-usersDatabase.init();
-
 const updateMainPage = async () => {
-    const pdfprints = await pdfprintDatabase.getAllPDFPrintsSorted();
+    const pdfprints = await articleDatabase.getAllPDFPrintsSorted();
     let articles = await articleDatabase.searchArticles("stage", "public");
     for (let i = 0; i < articles.length; i++) {
         articles[i].style = await articleDatabase.getArticleStyle(articles[i].id);
@@ -166,7 +145,7 @@ const post_adminAddPDFprintPage = async (req, res) => {
     const pdfprint = new PDFPrint(timestamp, description);
 
     if (pdffile && /pdf$/.test(pdffile.mimetype)) {
-        pdfprintDatabase.addPDFPrint(pdfprint);
+        articleDatabase.addPDFPrint(pdfprint);
         const pdffilepath = `${PDFPRINT_CONTENTS_PATH}/${pdfprint.filename}`;
         fs.writeFileSync(pdffilepath, pdffile.data);
         const thumbnail = (await pdf2img.convert(pdffile.data,

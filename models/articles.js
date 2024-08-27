@@ -1,6 +1,7 @@
 const { Author, Article, ArticleStyle } = require("./types.js");
 const { Database } = require("./database.js");
 const { logger } = require("../logger.js");
+const { ARTICLE_DATABASE_PATH } = require("../config.js");
 
 class ArticleDatabase extends Database {
     /**
@@ -70,6 +71,13 @@ class ArticleDatabase extends Database {
                 reason  TEXT NOT NULL,
                 FOREIGN KEY (id) REFERENCES articles (id)
             );
+            CREATE TABLE IF NOT EXISTS pdfprints
+            (
+                timestamp           INT,
+                description         TEXT,
+                UNIQUE (description)
+            );
+
             `, (err) => {
                 if (err) {
                     logger.error(`database '${this.path}' tables: ${err}`);
@@ -313,8 +321,39 @@ class ArticleDatabase extends Database {
             });
         });
     }
+
+    /**
+     * @param {PDFPrint} pdfprint
+     */
+    addPDFPrint = (pdfprint) => {
+        this.db.run(`INSERT OR IGNORE into pdfprints VALUES (?, ?)`,
+            [pdfprint.timestamp, pdfprint.description],
+            this.errorLogger
+        );
+    }
+
+    /**
+     * @param {Promise<[PDFPrint]>}
+     */
+    getAllPDFPrintsSorted = async () => {
+        return new Promise((resolve) => {
+            this.db.all(`SELECT * FROM pdfprints ORDER BY timestamp DESC`,
+                (err, rows) => {
+                    if(err || rows.undefined) {
+                        this.errorLogger(err);
+                        return resolve([]);
+                    } else {
+                        return resolve(rows.map((row) => new PDFPrint(row.timestamp, row.description)));
+                    }
+                }
+            )
+        });
+    }
 }
 
+const articleDatabase = new ArticleDatabase(ARTICLE_DATABASE_PATH);
+articleDatabase.init();
+
 module.exports = {
-    ArticleDatabase,
+    articleDatabase,
 };

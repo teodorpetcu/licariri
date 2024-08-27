@@ -1,21 +1,13 @@
 const {
-    USERS_DATABASE_PATH,
-    ARTICLE_DATABASE_PATH,
     COOKIE_OPTIONS,
     USER_PRIVILEGES,
     ARTICLES_DIRECTORY,
 } = require("../config.js");
-const { UsersDatabase, User, Session } = require("../models/admin.js");
-const { ArticleDatabase } = require("../models/articles.js");
+const { usersDatabase, User, Session } = require("../models/admin.js");
+const { articleDatabase } = require("../models/articles.js");
 const { Article } = require("../models/types.js");
 
 const fs = require("fs");
-
-const usersDatabase = new UsersDatabase(USERS_DATABASE_PATH);
-usersDatabase.init();
-
-const articleDatabase = new ArticleDatabase(ARTICLE_DATABASE_PATH);
-articleDatabase.init();
 
 const MILISECONDS_IN_A_DAY = 24 * 60 * 60 * 1000;
 
