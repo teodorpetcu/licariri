@@ -41,7 +41,11 @@
         <% } %>
         <div id="article-authors-list">
             <% if (article.authors.length) { %>
-            <h3>Scris de:</h3>
+            <% if (article.authors.length == 1) { %>
+            <h3>Autor:</h3>
+            <% } else { %>
+            <h3>Autori:</h3>
+            <% } %>
             <% for (let author of article.authors) { %>
             <div class="author">
                 <span style="opacity: 0.5">—</span><!--
