@@ -114,6 +114,7 @@ class PDFPrint {
 }
 
 module.exports = {
+    formatDate,
     Author,
     Article,
     ArticleStyle,

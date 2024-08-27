@@ -52,6 +52,8 @@ const app = express();
 
 // putting this before other `app.use()` calls makes it not use other middleware
 app.get("/robots.txt", requestLogger, (_, res) => res.sendFile(__dirname + "/robots.txt"));
+// REMEMBER TO ADD `Sitemap` CLAUSE TO robots.txt !!!!
+//app.get("/sitemap.xml", requestLogger, (_, res) => res.sendFile(__dirname + "/sitemap.xml"));
 
 app.set("view engine", "ejs");
 

@@ -5,6 +5,7 @@ const DATABASES_DIRECTORY = APPDATA_DIR + "/databases";
 const ARTICLES_DIRECTORY = APPDATA_DIR + "/articles";
 
 const CONFIG = {
+    WEBSITE_URL:  "https://licariri.ro", // PLACEHOLDER; used for sitemap
     LISTENING_PORT: 8000,
     LOG_FILE_PATH: APPDATA_DIR + "/runtime.log",
     ARTICLES_DIRECTORY: ARTICLES_DIRECTORY,
