@@ -50,7 +50,11 @@ const { logger, requestLogger } = require("./logger.js");
 
 const app = express();
 
+// putting this before other `app.use()` calls makes it not use other middleware
+app.get("/robots.txt", requestLogger, (_, res) => res.sendFile(__dirname + "/robots.txt"));
+
 app.set("view engine", "ejs");
+
 app.use(fileUpload());
 app.use(bodyParser.urlencoded({ extended: true, }));
 app.use(cookieParser());
