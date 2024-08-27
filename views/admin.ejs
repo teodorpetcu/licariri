@@ -15,6 +15,9 @@
         <% if (canManageUsers) { %>
             <a href="/admin/user/add">Adaugă utilizator</a>
         <% } %>
+        <form id="logout-button" action="/admin/logout" method="POST">
+            <input type="submit" onclick="return confirm(`Sigur vrei să te deloghezi?`)" value="DELOGARE"></input>
+        </form>
     </div>
     <div id="article-pannel">
         <h1>Articole</h1><!--

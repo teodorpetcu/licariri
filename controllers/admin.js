@@ -61,6 +61,11 @@ const post_adminLoginCheck = async (req, res) => {
     res.redirect("/admin");
 }
 
+const post_adminLogout = async(req, res) => {
+    usersDatabase.removeSession(req.cookies.session);
+    res.redirect("/admin")
+}
+
 const get_adminAddArticle = async (req, res) => {
     let article = await articleDatabase.getArticle(req.params.articleID);
     if (article) {
@@ -117,6 +122,7 @@ module.exports = {
     get_adminPannelPage,
     get_adminAddArticle,
     post_adminLoginCheck,
+    post_adminLogout,
     get_adminAddUserPage,
     post_adminAddUser,
     get_adminChangeUserPassword,

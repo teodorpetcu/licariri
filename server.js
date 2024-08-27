@@ -12,7 +12,7 @@ const {
     get_adminPDFprintPage,
 
     post_adminAddArticle,
-    post_adminRemoveArticle,
+    //post_adminRemoveArticle,
     post_adminAddPDFprintPage,
     post_updateArticleStage,
 } = require("./controllers/articles.js")
@@ -32,6 +32,7 @@ const {
 
     post_adminAddUser,
     post_adminLoginCheck,
+    post_adminLogout,
     post_adminChangeUserPassword,
 } = require("./controllers/admin.js")
 
@@ -76,6 +77,7 @@ app.get("/admin/user/password", requestLogger, identifyAuthorisedUser, forbidUna
 app.get("/admin/pdfprints", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminPDFprintPage);
 
 app.post("/admin", requestLogger, post_adminLoginCheck);
+app.post("/admin/logout", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminLogout);
 app.post("/admin/articles/:articleID", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddArticle);
 app.post("/admin/stage", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_updateArticleStage);
 //app.post("/admin/remove", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminRemoveArticle);

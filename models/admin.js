@@ -80,6 +80,7 @@ class UsersDatabase extends Database {
                 user        TEXT NOT NULL,
                 token       TEXT NOT NULL,
                 timestamp   INT,
+                UNIQUE(token),
                 FOREIGN KEY (user) REFERENCES users (id)
             );
             CREATE TABLE IF NOT EXISTS activity
@@ -190,6 +191,15 @@ class UsersDatabase extends Database {
                 }
             })
         });
+    }
+
+    /**
+     * Given a session token, remove its record from the `sessions` table, thus
+     * effectively making it unusable and logging the user off
+     * @param {string} token
+     */
+    removeSession = async (token) => {
+        this.db.run(`DELETE FROM sessions WHERE token = ?`, [token], this.errorLogger);
     }
 
     /**
