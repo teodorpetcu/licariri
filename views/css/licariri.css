@@ -192,6 +192,11 @@ body {
         float: right;
         opacity: 0.6;
     }
+    #article-tags-list {
+        width: 55%;
+        white-space: initial;
+        word-wrap: break-word;
+    }
 }
 
 #article-alternate-title-position {
