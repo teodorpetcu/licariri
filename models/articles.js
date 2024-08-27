@@ -1,4 +1,4 @@
-const { Author, Article, ArticleStyle } = require("./types.js");
+const { Author, Article, ArticleStyle, PDFPrint } = require("./types.js");
 const { Database } = require("./database.js");
 const { logger } = require("../logger.js");
 const { ARTICLE_DATABASE_PATH } = require("../config.js");
