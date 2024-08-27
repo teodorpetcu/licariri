@@ -17,6 +17,8 @@ usersDatabase.init();
 const articleDatabase = new ArticleDatabase(ARTICLE_DATABASE_PATH);
 articleDatabase.init();
 
+const MILISECONDS_IN_A_DAY = 24 * 60 * 60 * 1000;
+
 /**
  * Middleware: look at the cookies on the request and attach user information to
  * `req.user`, if the session token is valid, or `undefined`, if invalid.
@@ -54,10 +56,15 @@ const get_adminPannelPage = async (req, res) => {
 const post_adminLoginCheck = async (req, res) => {
     const id = req.body.id;
     const pass = req.body.password;
+    const rememberMe = req.body.remember_me;
+    let cookieOptions = COOKIE_OPTIONS;
     if (await usersDatabase.isCorrectLoginCombo(id, pass)) {
         const session = new Session(id);
         usersDatabase.addSession(session);
-        res.cookie("session", session.token, COOKIE_OPTIONS);
+        if (rememberMe == "on") {
+            cookieOptions.maxAge = 28 * MILISECONDS_IN_A_DAY; // 4 weeks
+        }
+        res.cookie("session", session.token, cookieOptions);
     }
     res.redirect("/admin");
 }
