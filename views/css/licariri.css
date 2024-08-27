@@ -52,6 +52,8 @@ body {
             font-family: "Kameron";
             font-size: 0.9em;
             margin: 0;
+            margin-left: 5px;
+            margin-right: 5px;
         }
     }
     #links {
@@ -62,15 +64,8 @@ body {
     }
 }
 
-#articles-section {
-    position: relative;
-    margin: 0 auto;
-    background-color: var(--neutral-color);
-    width: 72%;
-    height: calc(400vh);
-    border-radius: 25px;
-    padding: 25px;
-    margin-bottom: 30px;
+#main-page-contents {
+    text-align: center;
 }
 
 #article-thumbnail-grid {
@@ -302,5 +297,47 @@ hr {
 @media(max-width: 670px) {
     #article-info, #article-contents {
         width: 95%;
+    }
+}
+
+@media(max-height: 300px) {
+    #main-page-contents {
+        margin-top: 75px;
+    }
+}
+
+@media(min-height: 300px) {
+    #main-page-contents {
+        margin-top: 150px;
+    }
+}
+
+@media(min-height: 400px) {
+    #main-page-contents {
+        margin-top: 200px;
+    }
+}
+
+@media(min-height: 500px) {
+    #main-page-contents {
+        margin-top: 250px;
+    }
+}
+
+@media(min-height: 600px) {
+    #main-page-contents {
+        margin-top: 350px;
+    }
+}
+
+@media(max-height: 699px) {
+    #main-page-contents h1 {
+        margin: 0;
+    }
+}
+
+@media(min-height: 700px) {
+    #main-page-contents {
+        margin-top: 450px;
     }
 }
