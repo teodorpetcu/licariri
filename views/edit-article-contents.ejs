@@ -74,7 +74,7 @@
                 <% } %>>
 
             <label>Fontul titlului:</label>
-            <select id="input-title-font">
+            <select id="input-title-font" name="title_font">
                 <option value="Baskervville">Baskervville</option>
                 <option value="Kameron" <% if (defaults.style.title_font == "Kameron") { %>selected<% } %>>Kameron</option>
             </select>
@@ -112,29 +112,25 @@
                 type="color" value="#ffffff">
 
             <label>Poziția titlului în articol:</label>
-            <select id="input-title-position"
-                name="title_position">
+            <select id="input-title-position" name="title_position">
                 <option value="thumbnail">Pe thumbnail</option>
                 <option value="article" <% if (defaults.style.title_position == "article") { %>selected<% } %>>Sub thumbnail</option>
 
             </select>
 
             <label>Fontul subtitlului:</label>
-            <select id="input-subtitle-font"
-                name="subtitle_font">
+            <select id="input-subtitle-font" name="subtitle_font">
                 <option value="Baskervville">Baskervville</option>
                 <option value="Kameron" <% if (defaults.style.subtitle_font == "Kameron") { %>selected<% } %>>Kameron</option>
             </select>
 
             <label>Mărimea fontului subtitlului din articol:</label>
-            <input id="input-subtitle-font-size"
-                name="subtitle_fontsize"
+            <input id="input-subtitle-font-size" name="subtitle_fontsize"
                 value="<%= defaults.style.subtitle_fontsize %>"
                 type="range" min="1" max="2" value = "1.5" step="0.1" >
 
             <label>Grosimea fontului subtitlului:</label>
-            <input id="input-subtitle-fontweight"
-                name="subtitle_fontweight"
+            <input id="input-subtitle-fontweight" name="subtitle_fontweight"
                 value="<%= defaults.style.subtitle_fontweight %>"
                 type="range" min="400" max="800" value = "600" step="50">
             </select>
@@ -145,8 +141,7 @@
                 type="color" name="subtitle_color" value="#ffffff">
 
             <label>Poziția subtitlului în articol:</label>
-            <select id="input-subtitle-position"
-                name="subtitle_position">
+            <select id="input-subtitle-position" name="subtitle_position">
                 <option value="thumbnail">Pe thumbnail</option>
                 <option value="article" <% if (defaults.style.subtitle_position == "article") { %>selected<% } %>>Sub thumbnail</option>
             </select>
