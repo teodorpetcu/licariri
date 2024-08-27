@@ -56,12 +56,13 @@ const post_adminAddArticle = async (req, res) => {
     const language = req.body.language;
     const category = req.body.category;
     const authors = Array.isArray(req.body["authors[]"])
-                    ? req.body["authors[]"].map((a) => new Author(a.trim()))
+                    // two maps may seem redundant, but it's to ensure proper sorting
+                    ? req.body["authors[]"].map((a) => a.trim()).sort().map((a) => new Author(a))
                     : (typeof req.body["authors[]"] === "string"
                         ? [new Author(req.body["authors[]"].trim())]
                         : []);
     const tags = Array.isArray(req.body["tags[]"])
-                    ? req.body["tags[]"].map((t) => t.trim())
+                    ? req.body["tags[]"].map((t) => t.trim()).sort()
                     : (typeof req.body["tags[]"] === "string"
                         ? [req.body["tags[]"].trim()]
                         : []);
