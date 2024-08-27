@@ -81,6 +81,14 @@ class UsersDatabase extends Database {
                 token       TEXT NOT NULL,
                 timestamp   INT,
                 FOREIGN KEY (user) REFERENCES users (id)
+            );
+            CREATE TABLE IF NOT EXISTS activity
+            (
+                timestamp   INT,
+                user        TEXT NOT NULL,
+                action      TEXT NOT NULL,
+                target      TEXT,
+                FOREIGN KEY (user) REFERENCES users (id)
             );`, (err) => {
                 if (err) {
                     logger.error(`database '${this.path}' tables: ${err}`);
@@ -89,6 +97,10 @@ class UsersDatabase extends Database {
                 }
             }
         );
+        // `activity` table action types:
+        //      ["modify", "publish", "draft", "trash"] articles
+        //      ["adduser", "suspenduser", "activateuser"] user
+        //      ["addpdfprint"] pdfprint
     }
 
     /**
@@ -178,6 +190,19 @@ class UsersDatabase extends Database {
                 }
             })
         });
+    }
+
+    /**
+     * Add a record to the `activity` table
+     * @param {User} user
+     * @param {string} action
+     * @param {string} target
+     */
+    addActivity = async (user, action, target) => {
+        this.db.run('INSERT INTO activity VALUES (?, ?, ?, ?)',
+            [Date.now(), user.id, action, target],
+            this.errorLogger
+        );
     }
 }
 

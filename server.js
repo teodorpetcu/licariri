@@ -60,7 +60,7 @@ app.use("/pdfprints", requestLogger, express.static(PDFPRINT_CONTENTS_PATH));
 app.use("/pdfprints/thumbnails", requestLogger, express.static(PDFPRINT_THUMBNAILS_PATH));
 app.use("/admin/articles/images", requestLogger, identifyAuthorisedUser, forbidUnauthorised);
 app.use("/admin/articles/images", express.static(PUBLIC_ARTICLE_IMAGES_PATH), express.static(DRAFT_ARTICLE_IMAGES_PATH), express.static(TRASH_ARTICLE_IMAGES_PATH));
-app.get("/main.png", (_, res) => res.sendFile(MAIN_PAGE_BACKGROUND_IMAGE_PATH));
+app.get("/main.png", requestLogger, (_, res) => res.sendFile(MAIN_PAGE_BACKGROUND_IMAGE_PATH));
 
 app.get("/", requestLogger, get_mainPage);
 app.get("/query", requestLogger, get_queryPage);
@@ -78,7 +78,7 @@ app.get("/admin/pdfprints", requestLogger, identifyAuthorisedUser, forbidUnautho
 app.post("/admin", requestLogger, post_adminLoginCheck);
 app.post("/admin/articles/:articleID", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddArticle);
 app.post("/admin/stage", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_updateArticleStage);
-app.post("/admin/remove", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminRemoveArticle);
+//app.post("/admin/remove", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminRemoveArticle);
 app.post("/admin/user/add", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddUser);
 app.post("/admin/user/password", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminChangeUserPassword);
 app.post("/admin/pdfprints/add", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddPDFprintPage);

@@ -93,6 +93,7 @@ const post_adminAddUser = async (req, res) => {
         let privilege = USER_PRIVILEGES[req.body.privilege];
         let user = new User(req.body.id, req.body.name, privilege);
         await usersDatabase.addUser(user, req.body.password);
+        await usersDatabase.addActivity(req.user, "adduser", user.id); // NOTE: req.user =/= user
         res.sendStatus(200);
     }
 }
@@ -104,6 +105,7 @@ const get_adminChangeUserPassword = async (_, res) => {
 const post_adminChangeUserPassword = async (req, res) => {
     if (await usersDatabase.isCorrectLoginCombo(req.user.id, req.body.original)) {
         await usersDatabase.changePassword(req.user, req.body.password);
+        await usersDatabase.addActivity(req.user, "changepassword", "self");
         res.sendStatus(200);
     } else {
         res.sendStatus(401);

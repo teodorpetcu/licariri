@@ -11,6 +11,7 @@ const { ArticleDatabase } = require("../models/articles.js");
 const { QueryDatabase } = require("../models/query.js");
 const { PDFPrintsDatabase } = require("../models/pdf-prints.js");
 const { ViewsDatabase } = require("../models/view-count.js");
+const { UsersDatabase } = require("../models/admin.js")
 
 const {
     MAIN_PAGE_HTML_FILE_PATH,
@@ -22,6 +23,7 @@ const {
     PDFPRINT_CONTENTS_PATH,
     PDFPRINT_THUMBNAILS_PATH,
     VIEWS_DATABASE_PATH,
+    USERS_DATABASE_PATH,
 } = require("../config.js");
 
 const articleDatabase = new ArticleDatabase(ARTICLE_DATABASE_PATH);
@@ -35,6 +37,9 @@ pdfprintDatabase.init();
 
 const viewsDatabase = new ViewsDatabase(VIEWS_DATABASE_PATH);
 viewsDatabase.init();
+
+const usersDatabase = new UsersDatabase(USERS_DATABASE_PATH);
+usersDatabase.init();
 
 const updateMainPage = async () => {
     const pdfprints = await pdfprintDatabase.getAllPDFPrintsSorted();
@@ -110,6 +115,7 @@ const post_adminAddArticle = async (req, res) => {
             articleDatabase.updateMetadata(article);
             articleDatabase.updateArticleStyles(article, articleStyle);
             await updateMainPage();
+            usersDatabase.addActivity(req.user, "modify", article.id)
         }
     });
 
@@ -120,15 +126,24 @@ const post_updateArticleStage = async (req, res) => {
     const article = await articleDatabase.getArticleMeta(req.body.id);
     const originalStage = article.stage;
     article.failsafe_setStage(req.body.stage)
-    fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.html`,
-                   `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`)
-    fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.md`,
-                   `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`)
-    fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/images/${article.id}.png`,
-                   `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.png`)
-    articleDatabase.updateArticleStage(article);
-    await updateMainPage();
-    res.redirect("/admin");
+    if (article.stage != originalStage) {
+        fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.html`,
+                       `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`)
+        fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.md`,
+                       `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`)
+        fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/images/${article.id}.png`,
+                       `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.png`)
+        articleDatabase.updateArticleStage(article);
+        await updateMainPage();
+
+        let actionType = "publish";
+        if (article.stage == "draft" || article.stage == "trash") {
+            actionType = article.stage
+        }
+        usersDatabase.addActivity(req.user, actionType, article.id)
+
+        res.redirect("/admin");
+    }
 }
 
 const post_adminRemoveArticle = async (req, res) => {
@@ -160,6 +175,7 @@ const post_adminAddPDFprintPage = async (req, res) => {
                 page_numbers: [1],
             }))[0];
         fs.writeFileSync(`${PDFPRINT_THUMBNAILS_PATH}/${pdfprint.description}.png`, thumbnail);
+        await usersDatabase.addActivity(req.user, "addpdfprint", description)
         await updateMainPage();
         res.sendStatus(200);
     } else {
