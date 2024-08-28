@@ -119,7 +119,14 @@ const post_adminAddArticle = async (req, res) => {
         }
     });
 
-    res.redirect(`/articles/${article.id}`);
+    if (article.stage == "public") {
+        // actually, editing public articles should be restricted to at least
+        // supervisors, right?
+        res.redirect(`/articles/${article.id}`);
+    } else {
+        // display a success message somewhere
+        res.redirect(`/admin`);
+    }
 }
 
 const post_updateArticleStage = async (req, res) => {
