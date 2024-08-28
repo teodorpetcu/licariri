@@ -22,7 +22,7 @@ class Author {
 
 class Article {
     /**
-     * @param {string} id
+     * NOTE: the ID is inferrable from the title
      * @param {string} stage
      * @param {Date} timestamp
      * @param {string} title
@@ -32,17 +32,13 @@ class Article {
      * @param {Author[]} authors
      * @param {string[]} tags
      */
-    constructor(id = undefined, stage = "", timestamp = new Date(),
+    constructor(stage = "", timestamp = new Date(),
                 title, subtitle, language = "", category,
                 authors = [], tags = []) {
         language = language.toLowerCase();
         if (! ["ro", "en", "fr", "de"].includes(language)) language = "ro";
 
-        if (id) {
-            this.id = id;
-        } else {
-            this.id = crypto.randomUUID();
-        }
+        this.id = title.toLowerCase().replaceAll(/[,.?]/g, "").replaceAll(/\s/g, "-");
         this.timestamp = timestamp.valueOf();
         this.stage = stage;
         this.date = formatDate(timestamp);

@@ -94,7 +94,7 @@ class ArticleDatabase extends Database {
      */
     saveEmptyArticle = (article) => {
         this.db.run('INSERT INTO articles VALUES(?, ?, ?, ?, ?, ?, ?)',
-            [article.id, article.stage, article.timestamp, "", "", "", ""],
+            [article.id, article.stage, article.timestamp, article.title, article.subtitle, article.language, article.category],
             this.errorLogger
         );
     }
@@ -104,13 +104,13 @@ class ArticleDatabase extends Database {
      * and timestamp)
      * @param {Article} article
      */
-    updateMetadata = (article) => {
-        this.db.run('UPDATE articles SET title = ?, subtitle = ?, language = ?, category = ? WHERE id = ?',
-            [article.title, article.subtitle, article.language, article.category, article.id],
+    updateMetadata = (originalArticleID, article) => {
+        this.db.run('UPDATE articles SET id = ?, title = ?, subtitle = ?, language = ?, category = ? WHERE id = ?',
+            [article.id, article.title, article.subtitle, article.language, article.category, originalArticleID],
             this.errorLogger
         );
 
-        this.db.run('DELETE from article_authors WHERE id = ?', [article.id], () => {
+        this.db.run('DELETE from article_authors WHERE id = ?', [originalArticleID], () => {
             for (let author of article.authors) {
                 this.db.run('INSERT INTO article_authors VALUES(?, ?)',
                     [article.id, author.name],
@@ -118,7 +118,7 @@ class ArticleDatabase extends Database {
                 );
             }
         });
-        this.db.run('DELETE from article_tags WHERE id = ?', [article.id], () => {
+        this.db.run('DELETE from article_tags WHERE id = ?', [originalArticleID], () => {
             for (let tag of article.tags) {
                 this.db.run('INSERT INTO article_tags VALUES(?, ?)',
                     [article.id, tag],
@@ -146,8 +146,8 @@ class ArticleDatabase extends Database {
      * @param {Article}
      * @param {ArticleStyle}
      */
-    updateArticleStyles = (article, articleStyle) => {
-        this.db.run('DELETE FROM article_styles WHERE id = ?', [article.id], () => {
+    updateArticleStyles = (originalArticleID, article, articleStyle) => {
+        this.db.run('DELETE FROM article_styles WHERE id = ?', [originalArticleID], () => {
             this.db.run('INSERT INTO article_styles VALUES (?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 [article.id, articleStyle.hide_title_in_thumbnail, articleStyle.title_font, articleStyle.title_fill_style,
                     articleStyle.title_color, articleStyle.title_fontsize_thumbnail, articleStyle.title_fontsize_article,
@@ -283,7 +283,7 @@ class ArticleDatabase extends Database {
                 if (err || (row === undefined)) {
                     return resolve(undefined);
                 }
-                return resolve(new Article(row.id, row.stage, new Date(row.timestamp), row.title, row.subtitle, row.language, row.category));
+                return resolve(new Article(row.stage, new Date(row.timestamp), row.title, row.subtitle, row.language, row.category));
             });
         });
     }
@@ -320,6 +320,16 @@ class ArticleDatabase extends Database {
                 return resolve(rows.map((row) => row.tag));
             });
         });
+    }
+
+    /**
+     * Return the number of articles with the default title that are in draft
+     * stage. This is used to prevent `UNIQUE (id)` conflicts when creating new
+     * articles.
+     * @returns {int}
+     */
+    getUntitledArticleCount = async () => {
+        return (await this.searchArticles("title", "Articol fără titlu", false)).filter((a) => a.stage == "draft").length;
     }
 
     /**

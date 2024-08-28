@@ -71,13 +71,16 @@ const post_adminAddArticle = async (req, res) => {
 
     let thumbnail = req.files ? req.files.thumbnail : undefined;
 
-    const article = new Article(articleID, stage, timestamp,
-                                    title, subtitle, language, category, authors, tags);
+    const article = new Article(stage, timestamp, title, subtitle, language, category, authors, tags);
     const articleStyle = new ArticleStyle(req.body.hide_title_in_thumbnail, req.body.title_font, req.body.title_fill_style, req.body.title_color, req.body.title_fontsize_thumbnail, req.body.title_fontsize_article, req.body.title_fontweight, req.body.title_position, req.body.subtitle_font, req.body.subtitle_fontsize, req.body.subtitle_fontweight, req.body.subtitle_color, req.body.subtitle_position, req.body.dropcap)
 
-    if (thumbnail && /^image/.test(thumbnail.mimetype)) {
-        // it's not actually a png image, but who cares
-        fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.png`, thumbnail.data);
+    if (article.id != originalArticle.id && await articleDatabase.getArticleMeta(article.id)) {
+        // todo: handle articles with the same title properly
+        // todo: save edits somewhere to avoid losing data; delete after a
+        // certain interval
+        logger.error(`title ID '${article.id}' already exists`)
+        res.sendStatus(401);
+        return;
     }
 
     article.contents = marked.parse(content).trim();
@@ -85,15 +88,32 @@ const post_adminAddArticle = async (req, res) => {
         if (err) {
             logger.error(err);
         } else {
+            // if the article happens to be renamed, then its ID changes, and
+            // its leftover files which won't be used anymore must be destroyed
+            if (originalArticle.id && originalArticle.id != article.id) {
+                if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.html`)) {
+                    fs.unlinkSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.html`)
+                }
+                if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.md`)) {
+                    fs.unlinkSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.md`)
+                }
+            }
+            if (thumbnail && /^image/.test(thumbnail.mimetype)) {
+                if (originalArticle.id && originalArticle.id != article.id) {
+                    fs.unlinkSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.png`)
+                }
+                // it's not actually a png image, but who cares
+                fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.png`, thumbnail.data);
+            }
             // the contents are also saved in markdown since it makes editing
             // the article a lot easier later; same as with those "articleStyle"
             // options
             fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`, res);
             fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, content);
-            await queryDatabase.unindexArticle(article.id);
+            await queryDatabase.unindexArticle(originalArticle.id);
             await queryDatabase.indexArticle(article.id, content);
-            articleDatabase.updateMetadata(article);
-            articleDatabase.updateArticleStyles(article, articleStyle);
+            articleDatabase.updateMetadata(originalArticle.id, article);
+            articleDatabase.updateArticleStyles(originalArticle.id, article, articleStyle);
             await updateMainPage();
             usersDatabase.addActivity(req.user, "modify", article.id)
         }
@@ -106,13 +126,16 @@ const post_updateArticleStage = async (req, res) => {
     const article = await articleDatabase.getArticleMeta(req.body.id);
     const originalStage = article.stage;
     article.failsafe_setStage(req.body.stage)
+    // TODO: ensure the article has a thumbnail, etc. before publishing
     if (article.stage != originalStage) {
         fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.html`,
                        `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`)
         fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.md`,
                        `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`)
-        fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/images/${article.id}.png`,
-                       `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.png`)
+        if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalStage}/images/${article.id}.png`)) {
+            fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/images/${article.id}.png`,
+                           `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.png`)
+        }
         articleDatabase.updateArticleStage(article);
         await updateMainPage();
 

@@ -75,7 +75,8 @@ const get_adminAddArticle = async (req, res) => {
             article.content = fs.readFileSync(contentsPath, {encoding: "utf-8"});
         }
     } else {
-        article = new Article(id=undefined, stage="draft", timestamp=undefined);
+        article = new Article(stage="draft", timestamp=undefined,
+            title=`Articol fără titlu (${await articleDatabase.getUntitledArticleCount() + 1})`);
         article.style = {};
         articleDatabase.saveEmptyArticle(article);
     }
