@@ -18,7 +18,7 @@
             class="center <% if (articleStyle.title_fill_style === 'on') { %>colour-complement-background<% } %>""
             ><%= article.title %></h1>
         <% } %>
-        <% if (articleStyle.subtitle_position == "thumbnail") { %>
+        <% if (article.subtitle && articleStyle.subtitle_position == "thumbnail") { %>
         <h2 id="article-subtitle"
             style="font-family: <%= articleStyle.subtitle_font %>;
                     font-size: <%= articleStyle.subtitle_fontsize %>rem;

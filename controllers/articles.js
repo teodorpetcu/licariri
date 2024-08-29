@@ -74,9 +74,11 @@ const post_adminAddArticle = async (req, res) => {
     const article = new Article(stage, timestamp, title, subtitle, language, category, authors, tags);
     const articleStyle = new ArticleStyle(req.body.hide_title_in_thumbnail, req.body.title_font, req.body.title_fill_style, req.body.title_color, req.body.title_fontsize_thumbnail, req.body.title_fontsize_article, req.body.title_fontweight, req.body.title_position, req.body.subtitle_font, req.body.subtitle_fontsize, req.body.subtitle_fontweight, req.body.subtitle_color, req.body.subtitle_position, req.body.dropcap)
 
-    if (article.id != originalArticle.id && await articleDatabase.getArticleMeta(article.id)) {
-        // if there's already an article with the same ID, then don't change the
-        // title from the original, but otherwise save the modifications
+    if ((article.id != originalArticle.id && await articleDatabase.getArticleMeta(article.id))
+        || !article.id) {
+        // if there's already an article with the same ID, or the wanted ID is
+        // empty, then don't change the title from the original, but otherwise
+        // keep the modifications
         article.id = originalArticle.id;
         article.title = originalArticle.title;
     }
