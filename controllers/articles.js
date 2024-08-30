@@ -42,7 +42,11 @@ const get_mainPage = async (_, res) => {
 const get_articlePage = async (req, res) => {
     const articleID = req.params.articleID;
     viewsDatabase.logRequest(Date.now(), req.ip, articleID);
-    res.sendFile(`${PUBLIC_ARTICLE_CONTENTS_PATH}/${articleID}.html`);
+    if (fs.existsSync(`${PUBLIC_ARTICLE_CONTENTS_PATH}/${articleID}.html`)) {
+        res.sendFile(`${PUBLIC_ARTICLE_CONTENTS_PATH}/${articleID}.html`);
+    } else {
+        res.render("404");
+    }
 }
 
 const post_adminAddArticle = async (req, res) => {

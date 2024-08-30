@@ -91,6 +91,8 @@ app.post("/admin/user/add", requestLogger, identifyAuthorisedUser, forbidUnautho
 app.post("/admin/user/password", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminChangeUserPassword);
 app.post("/admin/pdfprints/add", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddPDFprintPage);
 
+app.get("*", requestLogger, (req, res) => res.status(404).render("404", {url: req.url}));
+
 // TODO: ensure that we first connect to all the databases before starting to
 // listen on the internet
 app.listen(LISTENING_PORT, async () => {

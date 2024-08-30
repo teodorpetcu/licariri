@@ -34,7 +34,7 @@ body {
 #main-page-header {
     position: relative;
     width: 100%;
-    height: 120px;
+    height: 130px;
     color: var(--neutral-color);
     #website-title-container {
         position: relative;
@@ -43,6 +43,8 @@ body {
         text-align: center;
         transform: translateX(-50%);
         h1 {
+            -webkit-text-stroke-width: 2.4px;
+            -webkit-text-stroke-color: #ff4b3390;
             font-family: "Baskervville";
             line-height: 1;
             font-size: 4.8em;
@@ -276,6 +278,36 @@ hr {
     /*font-size: 1.3em;*/
     /*padding: 6px;*/
 /*}*/
+
+#not-found-page {
+    #not-found-info {
+        text-align: center;
+        position: absolute;
+        top: 70px;
+        left: 50%;
+        transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+        font-size: 2rem;
+        h1 {
+            color: transparent;
+            font-family: "Kameron";
+            -webkit-text-stroke-width: 2px;
+            -webkit-text-stroke-color: black;
+            margin-bottom: 0;
+        }
+        h2 {
+            line-height: 1;
+            margin-top: 0;
+        }
+        a {
+            color: #0000ff;
+            transition: color 0.1s;
+        }
+        a:hover {
+            color: #0070ff;
+        }
+    }
+}
 
 /************ MEDIA QUERIES ************/
 @media(max-width: calc(1250px + 7rem)) {
