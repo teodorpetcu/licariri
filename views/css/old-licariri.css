@@ -306,53 +306,53 @@ a {
     }
 
     #main-nav-button {
-        position: absolute;
-        right: 25px;
-        top: 18px;
-        z-index: 10;
+        position: fixed;
+        right: 30px;
+        top: 30px;
+        z-index: 1;
         display: flex;
         flex-direction: column;
-    }
 
-    #main-nav-button input {
-        position: absolute;
-        cursor: pointer;
-        margin: -2px 0px 0px -5px;
-        width: 32px;
-        height: 32px;
-        opacity: 0;
-        z-index: 3;
-    }
+        input {
+            position: absolute;
+            cursor: pointer;
+            margin: -2px 0px 0px -2px;
+            width: 35px;
+            height: 35px;
+            opacity: 0;
+            z-index: 3;
+        }
 
-    #main-nav-button span {
-        background: var(--font-color);
-        width: 32px;
-        height: 3px;
-        margin-top: 4px;
-        margin-bottom: 4px;
-        z-index: 1;
-    }
+        span {
+            border: 0.1px solid black;
+            background: var(--neutral-color);
+            width: 32px;
+            height: 3px;
+            margin-top: 4px;
+            margin-bottom: 4px;
+            z-index: 1;
+            transform-origin: 0% 0%;
+            transition: transform 0.2s ease-in-out;
+        }
 
-    #main-nav-button span {
-        transform-origin: 0% 0%;
-        transition: transform 0.2s ease-in-out;
-    }
-    #main-nav-button span:nth-last-child(2) {
-        transition: transform 0.1s ease-in-out;
-    }
-    #main-nav-button span:nth-last-child(1) {
-        transform-origin: 0% 100%;
-        transition: transform 0.2s ease-in-out;
-    }
+        span:nth-last-child(2) {
+            transition: transform 0.1s ease-in-out;
+        }
 
-    #main-nav-button input:checked ~ span {
-        transform: rotate(45deg) translate(0px, 0px);
-    }
-    #main-nav-button input:checked ~ span:nth-last-child(2) {
-        transform: scaleY(0);
-    }
-    #main-nav-button input:checked ~ span:nth-last-child(1) {
-        transform: rotate(-45deg) translate(0px, 0px);
+        span:nth-last-child(1) {
+            transform-origin: 0% 100%;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        input:checked ~ span {
+            transform: rotate(45deg) translate(0px, 0px);
+        }
+        input:checked ~ span:nth-last-child(2) {
+            transform: scaleY(0);
+        }
+        input:checked ~ span:nth-last-child(1) {
+            transform: rotate(-45deg) translate(0px, 0px);
+        }
     }
 }
 

@@ -38,7 +38,7 @@ class Article {
         language = language.toLowerCase();
         if (! ["ro", "en", "fr", "de"].includes(language)) language = "ro";
 
-        this.id = title.toLowerCase().replaceAll(/[,.?]/g, "").replaceAll(/\s/g, "-");
+        this.id = title.toLowerCase().replaceAll(/[,.?*!]/g, "").replaceAll(/\s/g, "-");
         this.timestamp = timestamp.valueOf();
         this.stage = stage;
         this.date = formatDate(timestamp);
