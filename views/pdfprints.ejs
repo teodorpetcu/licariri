@@ -9,6 +9,17 @@
 
 <body>
     <div>
+        <% for (pdfprint of pdfprints) { %>
+        <div>
+            <a href="/pdfprints/<%= pdfprint.filename %>"><%= pdfprint.description %></a>
+            <form action="/admin/pdfprints/remove" method="POST">
+                <input type="hidden" name="description" value="<%= pdfprint.description %>">
+                <input type="submit" value="ȘTERGE">
+            </form>
+        </div>
+        <% } %>
+    </div>
+    <div>
         <h1>Adaugă ediție print</h1>
         <form action="/admin/pdfprints/add" method="post" autocomplete="off" enctype="multipart/form-data">
             <div>
