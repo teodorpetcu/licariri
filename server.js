@@ -13,7 +13,8 @@ const {
 
     post_adminAddArticle,
     //post_adminRemoveArticle,
-    post_adminAddPDFprintPage,
+    post_adminAddPDFprint,
+    post_adminRemovePDFprint,
     post_updateArticleStage,
 } = require("./controllers/articles.js")
 
@@ -89,7 +90,8 @@ app.post("/admin/stage", requestLogger, identifyAuthorisedUser, forbidUnauthoris
 //app.post("/admin/remove", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminRemoveArticle);
 app.post("/admin/user/add", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddUser);
 app.post("/admin/user/password", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminChangeUserPassword);
-app.post("/admin/pdfprints/add", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddPDFprintPage);
+app.post("/admin/pdfprints/add", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddPDFprint);
+app.post("/admin/pdfprints/remove", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminRemovePDFprint);
 
 app.get("*", requestLogger, (req, res) => res.status(404).render("404", {url: req.url}));
 

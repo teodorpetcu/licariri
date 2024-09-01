@@ -171,10 +171,11 @@ const post_adminRemoveArticle = async (req, res) => {
 }
 
 const get_adminPDFprintPage = async (_, res) => {
-    res.render("pdfprints");
+    const pdfprints = await articleDatabase.getAllPDFPrintsSorted();
+    res.render("pdfprints", { pdfprints });
 }
 
-const post_adminAddPDFprintPage = async (req, res) => {
+const post_adminAddPDFprint = async (req, res) => {
     let timestamp = new Date(req.body.date).getTime();
     let description = req.body.description;
     let pdffile = req.files ? req.files.pdffile : undefined;
@@ -192,10 +193,18 @@ const post_adminAddPDFprintPage = async (req, res) => {
         fs.writeFileSync(`${PDFPRINT_THUMBNAILS_PATH}/${pdfprint.description}.png`, thumbnail);
         await usersDatabase.addActivity(req.user, "addpdfprint", description)
         await updateMainPage();
-        res.sendStatus(200);
+        res.status(200).redirect("/admin/pdfprints");
     } else {
-        res.sendStatus(500);
+        res.status(500).redirect("/admin/pdfprints");
     }
+}
+
+const post_adminRemovePDFprint = async (req, res) => {
+    let pdfprintDescription = req.body.description;
+    articleDatabase.removePDFPrint(pdfprintDescription);
+    await usersDatabase.addActivity(req.user, "rmpdfprint", pdfprintDescription)
+    await updateMainPage();
+    res.status(200).redirect("/admin/pdfprints");
 }
 
 module.exports = {
@@ -204,6 +213,7 @@ module.exports = {
     get_adminPDFprintPage,
     post_adminAddArticle,
     post_adminRemoveArticle,
-    post_adminAddPDFprintPage,
+    post_adminAddPDFprint,
+    post_adminRemovePDFprint,
     post_updateArticleStage,
 };

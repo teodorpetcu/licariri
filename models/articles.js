@@ -343,6 +343,16 @@ class ArticleDatabase extends Database {
     }
 
     /**
+     * @param {PDFPrint} pdfprint
+     */
+    removePDFPrint = (pdfprintDescription) => {
+        this.db.run(`DELETE FROM pdfprints WHERE description = ?`,
+            [pdfprintDescription],
+            this.errorLogger
+        );
+    }
+
+    /**
      * @param {Promise<[PDFPrint]>}
      */
     getAllPDFPrintsSorted = async () => {
