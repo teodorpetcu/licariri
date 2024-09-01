@@ -140,10 +140,14 @@ const post_updateArticleStage = async (req, res) => {
     article.failsafe_setStage(req.body.stage)
     // TODO: ensure the article has a thumbnail, etc. before publishing
     if (article.stage != originalStage) {
-        fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.html`,
-                       `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`)
-        fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.md`,
-                       `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`)
+        if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.html`)) {
+            fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.html`,
+                           `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`)
+        }
+        if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.md`)) {
+            fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.md`,
+                           `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`)
+        }
         if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalStage}/images/${article.id}.png`)) {
             fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/images/${article.id}.png`,
                            `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.png`)
