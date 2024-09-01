@@ -46,7 +46,7 @@ const get_adminPannelPage = async (req, res) => {
 }
 
 const post_adminLoginCheck = async (req, res) => {
-    const id = req.body.id;
+    const id = req.body.username;
     const pass = req.body.password;
     const rememberMe = req.body.remember_me;
     let cookieOptions = COOKIE_OPTIONS;

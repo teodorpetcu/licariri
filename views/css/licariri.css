@@ -338,6 +338,69 @@ hr {
     }
 }
 
+#login-page {
+    background-color: #090707;
+    #login-input-credentials {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #ffffff50;
+        width: 350px;
+        padding: 30px;
+        border-radius: 10px;
+        font-family: "Hind";
+        color: var(--neutral-color);
+        h1 {
+            font-size: 48px;
+            text-align: center;
+        }
+        form {
+            * {
+                color: var(--neutral-color);
+                font-family: "Hind";
+                border: none;
+                outline: none;
+            }
+            label {
+                margin-bottom: 5px;
+                margin-top: 20px;
+                display: block;
+            }
+            input[type="text"],
+            input[type="password"] {
+                padding: 5px;
+                border-radius: 3px;
+                box-shadow: 0;
+                background-color: #ffffff25;
+                height: 50px;
+                font-size: 14px;
+                width: 100%;
+            }
+            label[for="remember_me"] {
+                display: inline-block !important;
+                cursor: pointer;
+            }
+            input[type="checkbox"] {
+                padding: 0;
+                margin: 0;
+                height: 100%;
+                aspect-ratio: 1;
+                cursor: pointer;
+            }
+            input[type="submit"] {
+                margin-top: 15px;
+                color: var(--font-color);
+                font-weight: 700;
+                width: 100%;
+                background-color: var(--neutral-color);
+                height: 60px;
+                cursor: pointer;
+            }
+        }
+    }
+}
+
 /************ MEDIA QUERIES ************/
 @media(max-width: calc(1250px + 7rem)) {
     #article-thumbnail-grid {
