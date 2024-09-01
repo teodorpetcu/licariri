@@ -22,9 +22,8 @@ const identifyAuthorisedUser = async (req, _, next) => {
 }
 
 /**
- * Middleware: return 401 to all requests that have no (valid) session token
- *
- * On requests that are authorised, attach `user` to the `req` object.
+ * Security through obscurity: send a 404 error if the user is unauthorized to
+ * do something.
  *
  * Must be used in conjunction with `identifyAuthorisedUser`
  */
@@ -32,7 +31,7 @@ const forbidUnauthorised = async (req, res, next) => {
     if (req.user) {
         next();
     } else {
-        res.sendStatus(401);
+        res.status(404).render("404");
     }
 }
 
