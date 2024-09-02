@@ -5,48 +5,58 @@
     <title>Administrare</title>
     <%- include("meta"); %>
     <link rel="stylesheet" href="/css/admin.css" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
-<body>
-    <div id="account-pannel">
-        <h1>Panou de administrare</h1>
-        <a href="/admin/user/password">Schimbă-ți parola</a>
-        <br>
+<body id="admin-page">
+    <div id="panels">
+        <div id="userinfo">
+            <img src="/admin/user.png"><p><%= user.name %></p>
+        </div>
+
+        <hr>
+        <button id="inputButton-tab-changePassword">Schimbă-ți parola</button>
         <% if (canManageUsers) { %>
-            <a href="/admin/user/add">Adaugă utilizator</a>
+        <button id="inputButton-tab-manageUsers">Gestionare utilizatori</button>
         <% } %>
-        <form id="logout-button" action="/admin/logout" method="POST">
-            <input type="submit" onclick="return confirm(`Sigur vrei să te deloghezi?`)" value="DELOGARE"></input>
+        <button id="inputButton-tab-userActivity">Activitate utilizatori</button>
+
+        <hr>
+        <button id="inputButton-tab-published">Articole publicate</button>
+        <button id="inputButton-tab-drafts">Schițe</button>
+        <button id="inputButton-tab-trash">Coșul de gunoi</button>
+
+        <hr>
+
+        <button id="inputButton-tab-pdfprints">Arhivă reviste</button>
+
+        <form style="position: absolute; bottom: 10px; right:10px;" action="/admin/logout" method="POST">
+            <button type="submit">
+                <i class="fa fa-sign-out"></i> Deconectare
+            </button>
         </form>
     </div>
-    <div id="article-pannel">
-        <h1>Articole</h1><!--
-        --><a class="action-button" href="/admin/articles/new" id="add-article-button" ><!--
-            --><input type="submit" value="+"></input><!--
-        --></a>
+    <div id="content">
+        <div class="article-list">
         <% for (article of articles) { %>
         <div class="article-actions">
-            <a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>,
-            publicat <%= article.date %>
+            <p><a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>, publicat <%= article.date %></p>
             <div>
-                <a class="" href="/admin/articles/<%= article.id %>"><!--
-                    --><input type="submit" value="Modifică"></input><!--
-                --></a>
-                <span style="padding: 20px;"></span>
+                <form action="/admin/articles/<%= article.id %>" method="GET">
+                    <button type="submit">Modifică</button>
+                </form>
                 <% if (article.stage == "draft") { %>
                 <form action="/admin/stage" method="post">
-                    <input type="hidden" name="id"
-                        value="<%= article.id %>">
-                    <input type="hidden" name="stage"
-                        value="public">
-                    <input type="submit" onclick="return confirm(`Sigur vrei să publici articolul?`)" value="PUBLICĂ"></input>
+                    <input type="hidden" name="id" value="<%= article.id %>">
+                    <input type="hidden" name="stage" value="public">
+                    <input type="submit" onclick="return confirm(`Sigur vrei să publici articolul?`)" value="Publică articolul"></input>
                 </form>
                 <form action="/admin/stage" method="post">
                     <input type="hidden" name="id"
                         value="<%= article.id %>">
                     <input type="hidden" name="stage"
                         value="trash">
-                    <input type="submit" onclick="return confirm(`Sigur vrei să ștergi articolul?`)" value="ȘTERGE" style="background-color: #BB0000"></input>
+                    <input type="submit" onclick="return confirm(`Sigur vrei să ștergi articolul?`)" value="Mută în coșul de gunoi" style="background-color: #BB0000"></input>
                 </form>
                 <% } else if (article.stage == "public") { %>
                 <form action="/admin/stage" method="post">
@@ -54,7 +64,7 @@
                         value="<%= article.id %>">
                     <input type="hidden" name="stage"
                         value="draft">
-                    <input type="submit" onclick="return confirm(`Sigur vrei să ascunzi articolul?`)" value="ASCUNDE"></input>
+                    <input type="submit" onclick="return confirm(`Sigur vrei să ascunzi articolul?`)" value="Mută în schițe"></input>
                 </form>
                 <% } else if (article.stage == "trash") { %>
                 <form action="/admin/stage" method="post">
@@ -62,12 +72,13 @@
                         value="<%= article.id %>">
                     <input type="hidden" name="stage"
                         value="draft">
-                    <input type="submit" onclick="return confirm(`Sigur vrei să restaurezi articolul?`)" value="RESTAUREAZĂ"></input>
+                    <input type="submit" onclick="return confirm(`Sigur vrei să restaurezi articolul?`)" value="Mută în schițe"></input>
                 </form>
                 <% } %>
             </div>
         </div>
         <% } %>
+        </div>
     </div>
 </body>
 

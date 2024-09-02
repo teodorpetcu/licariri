@@ -64,6 +64,7 @@ app.use(cookieParser());
 
 app.get("/css/licariri.css", requestLogger, (_, res) => res.sendFile(__dirname + "/views/css/licariri.css"));
 app.get("/css/admin.css", requestLogger, identifyAuthorisedUser, forbidUnauthorised, (_, res) => res.sendFile(__dirname + "/views/css/admin.css"));
+app.get("/admin/user.png", requestLogger, identifyAuthorisedUser, forbidUnauthorised, (_, res) => res.sendFile(__dirname + "/appdata/user.png"));
 app.use("/articles/images", requestLogger, express.static(PUBLIC_ARTICLE_IMAGES_PATH));
 app.use("/pdfprints", requestLogger, express.static(PDFPRINT_CONTENTS_PATH));
 app.use("/pdfprints/thumbnails", requestLogger, express.static(PDFPRINT_THUMBNAILS_PATH));

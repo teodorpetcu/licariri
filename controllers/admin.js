@@ -38,7 +38,7 @@ const forbidUnauthorised = async (req, res, next) => {
 const get_adminPannelPage = async (req, res) => {
     if (req.user) {
         let articles = await articleDatabase.searchArticles();
-        res.render("admin", {articles, canManageUsers: req.user.privilege == USER_PRIVILEGES["SUPERUSER"]});
+        res.render("admin", {articles, user: req.user, canManageUsers: req.user.privilege == USER_PRIVILEGES["SUPERUSER"]});
     } else {
         res.render("login", {});
     }

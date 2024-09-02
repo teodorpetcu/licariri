@@ -5,9 +5,10 @@
     <title>Editează articol</title>
     <%- include("meta"); %>
     <link rel="stylesheet" type="text/css" href="/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
-<body>
+<body id="edit-article-page">
     <div id="editing-stages">
         <button type="button" id="button-edit-content">Conținut</button>
         <button id="button-edit-dtp">Tehnoredactare</button>
@@ -190,7 +191,7 @@
         field.classList.add(type);
 
         let fieldInput = document.createElement("input");
-        fieldInput.name = type +  "s[]";
+        fieldInput.name = type + "s[]";
         if (type == "image") {
             fieldInput.type = "file";
             fieldInput.accept = "image/*";
@@ -202,7 +203,8 @@
         let fieldDeleteButton = document.createElement("button");
         fieldDeleteButton.type = "button";
         fieldDeleteButton.classList.add("delete-button");
-        fieldDeleteButton.textContent = "-";
+        fieldDeleteButton.classList.add("fa");
+        fieldDeleteButton.classList.add("fa-trash-o");
         fieldDeleteButton.addEventListener("click", () => {
             fieldsContainer.removeChild(field)
         })
