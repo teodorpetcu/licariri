@@ -22,9 +22,9 @@
         <button id="inputButton-tab-userActivity">Activitate utilizatori</button>
 
         <hr>
-        <button id="inputButton-tab-published">Articole publicate</button>
-        <button id="inputButton-tab-drafts">Schițe</button>
-        <button id="inputButton-tab-trash">Coșul de gunoi</button>
+        <button id="inputButton-tab-articlesPublished">Articole publicate</button>
+        <button id="inputButton-tab-articlesDrafts" class="active-button">Schițe</button>
+        <button id="inputButton-tab-articlesTrash">Coșul de gunoi</button>
 
         <hr>
 
@@ -37,49 +37,87 @@
         </form>
     </div>
     <div id="content">
-        <div class="article-list">
-        <% for (article of articles) { %>
-        <div class="article-actions">
-            <p><a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>, publicat <%= article.date %></p>
-            <div>
-                <form action="/admin/articles/<%= article.id %>" method="GET">
-                    <button type="submit">Modifică</button>
-                </form>
-                <% if (article.stage == "draft") { %>
-                <form action="/admin/stage" method="post">
-                    <input type="hidden" name="id" value="<%= article.id %>">
-                    <input type="hidden" name="stage" value="public">
-                    <input type="submit" onclick="return confirm(`Sigur vrei să publici articolul?`)" value="Publică articolul"></input>
-                </form>
-                <form action="/admin/stage" method="post">
-                    <input type="hidden" name="id"
-                        value="<%= article.id %>">
-                    <input type="hidden" name="stage"
-                        value="trash">
-                    <input type="submit" onclick="return confirm(`Sigur vrei să ștergi articolul?`)" value="Mută în coșul de gunoi" style="background-color: #BB0000"></input>
-                </form>
-                <% } else if (article.stage == "public") { %>
-                <form action="/admin/stage" method="post">
-                    <input type="hidden" name="id"
-                        value="<%= article.id %>">
-                    <input type="hidden" name="stage"
-                        value="draft">
-                    <input type="submit" onclick="return confirm(`Sigur vrei să ascunzi articolul?`)" value="Mută în schițe"></input>
-                </form>
-                <% } else if (article.stage == "trash") { %>
-                <form action="/admin/stage" method="post">
-                    <input type="hidden" name="id"
-                        value="<%= article.id %>">
-                    <input type="hidden" name="stage"
-                        value="draft">
-                    <input type="submit" onclick="return confirm(`Sigur vrei să restaurezi articolul?`)" value="Mută în schițe"></input>
-                </form>
-                <% } %>
-            </div>
+        <div id="tab-changePassword">
         </div>
+        <!-- todo: hide on regular users -->
+        <div id="tab-manageUsers">
+        </div>
+        <div id="tab-userActivity">
+        </div>
+        <div id="tab-articlesPublished">
+        </div>
+        <div id="tab-articlesDrafts" class="article-list active-tab">
+        <% for (article of articles) { %>
+            <div class="article-actions">
+                <p><a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>, publicat <%= article.date %></p>
+                <div>
+                    <form action="/admin/articles/<%= article.id %>" method="GET">
+                        <button type="submit">Modifică</button>
+                    </form>
+                    <% if (article.stage == "draft") { %>
+                    <form action="/admin/stage" method="post">
+                        <input type="hidden" name="id" value="<%= article.id %>">
+                        <input type="hidden" name="stage" value="public">
+                        <input type="submit" onclick="return confirm(`Sigur vrei să publici articolul?`)" value="Publică articolul"></input>
+                    </form>
+                    <form action="/admin/stage" method="post">
+                        <input type="hidden" name="id"
+                            value="<%= article.id %>">
+                        <input type="hidden" name="stage"
+                            value="trash">
+                        <input type="submit" onclick="return confirm(`Sigur vrei să ștergi articolul?`)" value="Mută în coșul de gunoi" style="background-color: #BB0000"></input>
+                    </form>
+                    <% } else if (article.stage == "public") { %>
+                    <form action="/admin/stage" method="post">
+                        <input type="hidden" name="id"
+                            value="<%= article.id %>">
+                        <input type="hidden" name="stage"
+                            value="draft">
+                        <input type="submit" onclick="return confirm(`Sigur vrei să ascunzi articolul?`)" value="Mută în schițe"></input>
+                    </form>
+                    <% } else if (article.stage == "trash") { %>
+                    <form action="/admin/stage" method="post">
+                        <input type="hidden" name="id"
+                            value="<%= article.id %>">
+                        <input type="hidden" name="stage"
+                            value="draft">
+                        <input type="submit" onclick="return confirm(`Sigur vrei să restaurezi articolul?`)" value="Mută în schițe"></input>
+                    </form>
+                    <% } %>
+                </div>
+            </div>
         <% } %>
+        </div>
+        <div id="tab-articlesTrash">
+        </div>
+        <div id="tab-pdfprints">
         </div>
     </div>
 </body>
+
+<script type="text/javascript">
+    let activeTab = "articlesDrafts";
+    const tabs = [
+        "changePassword",
+        "manageUsers", // might want to hide this
+        "userActivity",
+        "articlesPublished",
+        "articlesDrafts",
+        "articlesTrash",
+        "pdfprints",
+    ];
+
+    const refreshActiveTab = () => {
+        document.getElementsByClassName("active-tab")[0].classList.remove("active-tab");
+        document.getElementById(`tab-${activeTab}`).classList.add("active-tab");
+        document.getElementsByClassName("active-button")[0].classList.remove("active-button");
+        document.getElementById(`inputButton-tab-${activeTab}`).classList.add("active-button");
+    }
+
+    tabs.forEach(tab => {
+        document.getElementById(`inputButton-tab-${tab}`)
+            .addEventListener("click", () => {activeTab = tab; refreshActiveTab()});
+    });
+</script>
 
 </html>

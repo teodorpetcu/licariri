@@ -2,7 +2,6 @@
     background-color: #a46044;
     width: 100%;
 
-    color: #ffffff;
     font-family: "Hind";
     #panels, #content {
         position: absolute;
@@ -32,7 +31,7 @@
             p {
                 font-family: "Baskervville";
                 font-size: 1.2em;
-                -webkit-text-stroke-color: white;
+                -webkit-text-stroke-color: black;
                 -webkit-text-stroke-width: 1px;
             }
             img {
@@ -49,18 +48,33 @@
             font-size: 1rem;
         }
 
+        .active-button {
+            background-color: lightgreen;
+        }
+
         hr {
             margin: 10px;
         }
     }
 
     #content {
+        > div {
+            position: absolute;
+            opacity: 0;
+            transition: opacity 0.1s;
+        }
+        > .active-tab {
+            opacity: 1;
+        }
         padding: 10px;
         left: 340px;
         border-radius: 12px;
         width: calc(100% - 340px - 20px);
         .article-list {
             .article-actions {
+                a {
+                    color: darkblue;
+                }
                 p {
                     margin: 0;
                 }
