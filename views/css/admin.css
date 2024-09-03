@@ -10,9 +10,6 @@
         top: 50%;
         transform: translateY(-50%);
         border: 1px solid black;
-        > div {
-            width: 100%;
-        }
     }
 
     #panels {
@@ -60,29 +57,65 @@
     #content {
         > div {
             position: absolute;
-            opacity: 0;
-            transition: opacity 0.1s;
+            display: none;
         }
         > .active-tab {
-            opacity: 1;
+            display: initial;
         }
-        padding: 10px;
+        padding: 30px;
         left: 340px;
         border-radius: 12px;
         width: calc(100% - 340px - 20px);
+        font-size: 1.2rem;
         .article-list {
-            .article-actions {
+            text-align: center;
+            width: calc(100% - 2 * 30px);
+            .article-row {
+                display: grid;
+                grid-template-columns: 1.2rem 4fr 1fr 1fr 1fr 1fr;
+                padding-bottom: 15px;
                 a {
                     color: darkblue;
+                    transition: color 0.2s;
+                }
+                a:hover {
+                    color: #007080;
                 }
                 p {
                     margin: 0;
                 }
-                padding-bottom: 15px;
                 form {
                     display: inline-block;
                 }
             }
+        }
+        .pdfprint-row {
+            display: grid;
+            grid-template-columns: 1.2rem 1fr 1fr 1fr !important;
+            margin: 0 auto !important;
+            width: 60% !important;
+        }
+        #tab-articlesDrafts {
+            text-align: center;
+            #add-article-form {
+                margin-left: 1.2rem;
+                button {
+                    width: 40px;
+                    aspect-ratio: 1;
+                    line-height: 40px;
+                    border-radius: 50%;
+                    font-size: 2rem;
+                    padding: 0;
+                    margin: 0;
+                }
+            }
+        }
+        #tab-changePassword {
+            text-align: center;
+            border-radius: 10px;
+            padding: 15px;
+            background-color: #ffffff50;
+            border: 1px solid black;
         }
     }
 }
@@ -102,7 +135,7 @@ button {
     transition: background-color 0.2s;
 }
 
-input:not([type="text"]),
+input:not([type="text"]):not([type="password"]),
 button,
 select {
     cursor: pointer;

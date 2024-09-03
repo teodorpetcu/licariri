@@ -37,8 +37,12 @@ const forbidUnauthorised = async (req, res, next) => {
 
 const get_adminPannelPage = async (req, res) => {
     if (req.user) {
-        let articles = await articleDatabase.searchArticles();
-        res.render("admin", {articles, user: req.user, canManageUsers: req.user.privilege == USER_PRIVILEGES["SUPERUSER"]});
+        let draftArticles = await articleDatabase.searchArticles("stage", "draft");
+        let publicArticles = await articleDatabase.searchArticles("stage", "public");
+        let trashArticles = await articleDatabase.searchArticles("stage", "trash");
+        // todo: implement pagination in the function itself and rename it
+        let pdfprints = await articleDatabase.getAllPDFPrintsSorted().slice(0, 12);
+        res.render("admin", {publicArticles, draftArticles, trashArticles, pdfprints, user: req.user, canManageUsers: req.user.privilege == USER_PRIVILEGES["SUPERUSER"]});
     } else {
         res.render("login", {});
     }

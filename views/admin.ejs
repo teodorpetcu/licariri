@@ -38,59 +38,145 @@
     </div>
     <div id="content">
         <div id="tab-changePassword">
+            <h2>Autentificat ca: <%= user.name %></h2>
+            <form action="/admin/user/password" method="post" autocomplete="off">
+                <div>
+                    <label for="original-password">Parola originală:</label>
+                    <input required id="original-password" type="password" name="original">
+                </div>
+                <div>
+                    <label for="password">Parolă nouă:</label>
+                    <input required id="password" type="password" name="password">
+                </div>
+                <div>
+                    <label for="confirm_password">Confirmare parolă:</label>
+                    <input required id="confirm_password" type="password">
+                </div>
+                <div>
+                    <input type="submit" value="Validează">
+                </div>
+            </form>
         </div>
         <!-- todo: hide on regular users -->
         <div id="tab-manageUsers">
         </div>
         <div id="tab-userActivity">
         </div>
-        <div id="tab-articlesPublished">
+        <div id="tab-articlesPublished" class="article-list">
+            <h1>Articole publicate</h1>
+            <% for ([index, article] of publicArticles.entries()) { %>
+            <div class="article-row">
+                <p><%= index + 1 %>.</p>
+                <div>
+                    <a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>
+                </div>
+                <p><%= article.date %></p>
+                <form action="/admin/articles/<%= article.id %>" method="GET">
+                    <button type="submit">Modifică</button>
+                </form>
+                <form action="/admin/stage" method="post">
+                    <input type="hidden" name="id"
+                        value="<%= article.id %>">
+                    <input type="hidden" name="stage"
+                        value="draft">
+                    <input type="submit" onclick="return confirm(`Sigur vrei să ascunzi articolul?`)" value="Mută în schițe"></input>
+                </form>
+            </div>
+            <% } %>
         </div>
         <div id="tab-articlesDrafts" class="article-list active-tab">
-        <% for (article of articles) { %>
-            <div class="article-actions">
-                <p><a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>, publicat <%= article.date %></p>
-                <div>
-                    <form action="/admin/articles/<%= article.id %>" method="GET">
-                        <button type="submit">Modifică</button>
-                    </form>
-                    <% if (article.stage == "draft") { %>
-                    <form action="/admin/stage" method="post">
-                        <input type="hidden" name="id" value="<%= article.id %>">
-                        <input type="hidden" name="stage" value="public">
-                        <input type="submit" onclick="return confirm(`Sigur vrei să publici articolul?`)" value="Publică articolul"></input>
-                    </form>
-                    <form action="/admin/stage" method="post">
-                        <input type="hidden" name="id"
-                            value="<%= article.id %>">
-                        <input type="hidden" name="stage"
-                            value="trash">
-                        <input type="submit" onclick="return confirm(`Sigur vrei să ștergi articolul?`)" value="Mută în coșul de gunoi" style="background-color: #BB0000"></input>
-                    </form>
-                    <% } else if (article.stage == "public") { %>
-                    <form action="/admin/stage" method="post">
-                        <input type="hidden" name="id"
-                            value="<%= article.id %>">
-                        <input type="hidden" name="stage"
-                            value="draft">
-                        <input type="submit" onclick="return confirm(`Sigur vrei să ascunzi articolul?`)" value="Mută în schițe"></input>
-                    </form>
-                    <% } else if (article.stage == "trash") { %>
-                    <form action="/admin/stage" method="post">
-                        <input type="hidden" name="id"
-                            value="<%= article.id %>">
-                        <input type="hidden" name="stage"
-                            value="draft">
-                        <input type="submit" onclick="return confirm(`Sigur vrei să restaurezi articolul?`)" value="Mută în schițe"></input>
-                    </form>
-                    <% } %>
-                </div>
+            <div style="display: flex; align-items: center; justify-content: center;">
+                <h1>Schițe de articole</h1>
+                <a id="add-article-form" href="/admin/articles/new">
+                    <button type="submit">+</button>
+                </a>
             </div>
-        <% } %>
+            <% for ([index, article] of draftArticles.entries()) { %>
+            <div class="article-row">
+                <p><%= index + 1 %>.</p>
+                <div>
+                    <a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>
+                </div>
+                <p><%= article.date %></p>
+                <form action="/admin/articles/<%= article.id %>" method="GET">
+                    <button type="submit">Modifică</button>
+                </form>
+
+                <form action="/admin/stage" method="post">
+                    <input type="hidden" name="id" value="<%= article.id %>">
+                    <input type="hidden" name="stage" value="public">
+                    <input type="submit" onclick="return confirm(`Sigur vrei să publici articolul?`)" value="Publică articolul"></input>
+                </form>
+                <form action="/admin/stage" method="post">
+                    <input type="hidden" name="id"
+                        value="<%= article.id %>">
+                    <input type="hidden" name="stage"
+                        value="trash">
+                    <input type="submit" onclick="return confirm(`Sigur vrei să ștergi articolul?`)" value="Mută în coșul de gunoi"></input>
+                </form>
+            </div>
+            <% } %>
         </div>
-        <div id="tab-articlesTrash">
+        <div id="tab-articlesTrash" class="article-list">
+            <h1>Articole în coșul de gunoi</h1>
+            <% for ([index, article] of trashArticles.entries()) { %>
+            <div class="article-row">
+                <p><%= index + 1 %>.</p>
+                <div>
+                    <a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>
+                </div>
+                <p><%= article.date %></p>
+                <form action="/admin/articles/<%= article.id %>" method="GET">
+                    <button type="submit">Modifică</button>
+                </form>
+                <form action="/admin/stage" method="post">
+                    <input type="hidden" name="id"
+                        value="<%= article.id %>">
+                    <input type="hidden" name="stage"
+                        value="draft">
+                    <input type="submit" onclick="return confirm(`Sigur vrei să restaurezi articolul?`)" value="Mută în schițe"></input>
+                </form>
+            </div>
+            <% } %>
         </div>
-        <div id="tab-pdfprints">
+        <div id="tab-pdfprints" class="article-list">
+            <h1>Ediții ale revistei publicate pe site</h1>
+            <% for ([index, pdfprint] of pdfprints.entries()) { %>
+            <div class="article-row pdfprint-row">
+                <p><%= index + 1 %>.</p>
+                <div>
+                    <a href="/pdfprints/<%= pdfprint.filename %>"><%= pdfprint.description %></a>
+                </div>
+                <p><%= pdfprint.date %> </p>
+                <form action="/admin/pdfprints/remove" method="POST">
+                    <input type="hidden" name="description" value="<%= pdfprint.description %>">
+                    <input type="submit" value="ȘTERGE">
+                </form>
+            </div>
+            <% } %>
+            <div>
+                <h1>Adaugă ediție print</h1>
+                <form action="/admin/pdfprints/add" method="post" autocomplete="off" enctype="multipart/form-data">
+                    <div>
+                        <label>Fișier PDF</label>
+                        <input required type="file"
+                            accept="application/pdf" name="pdffile">
+                    </div>
+                    <div>
+                        <label>Descriere</label>
+                        <input required type="text"
+                            name="description">
+                    </div>
+                    <div>
+                        <label>Data ediției</label>
+                        <input required type="date"
+                            name="date" min="1960-01-01" max="<%= new Date().getFullYear() + '-12-31' %>">
+                    </div>
+                    <div>
+                        <input type="submit" value="Trimite">
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </body>
@@ -118,6 +204,22 @@
         document.getElementById(`inputButton-tab-${tab}`)
             .addEventListener("click", () => {activeTab = tab; refreshActiveTab()});
     });
+</script>
+
+<script>
+    let password = document.getElementById("password");
+    let confirmPassword = document.getElementById("confirm_password");
+
+    const validatePassword = () => {
+        if (password.value != confirmPassword.value) {
+            confirmPassword.setCustomValidity("Parolele sunt diferite");
+        } else {
+            confirmPassword.setCustomValidity("");
+        }
+    }
+
+    password.onchange = validatePassword;
+    confirmPassword.onkeyup = validatePassword;
 </script>
 
 </html>
