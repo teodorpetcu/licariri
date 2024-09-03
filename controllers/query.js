@@ -12,9 +12,9 @@ const get_queryPage = async (req, res) => {
     let exactMatch = true;
     let successMessage = "Rezultatele căutării:";
     let failureMessage = "Ne pare rău, nu am putut găsi nimic!";
+    let searchPageTitle = "Căutare - Revista Licăriri";
 
     if (any) {
-        message = `Rezultatele căutării pentru: ${any}`;
         failureMessage = `Ne pare rău, nu am putut găsi nimic pentru: ${any}`;
         author = any;
         tag = any;
@@ -44,6 +44,7 @@ const get_queryPage = async (req, res) => {
         if (!tag && !text) {
             successMessage = `Articole scrise de ${author}:`;
             failureMessage = `Ne pare rău, nu am putut găsi nici un articol scris de ${author}`;
+            searchPageTitle = `Autor: ${author} - Revista Licăriri`;
         }
     }
     if (tag) {
@@ -56,6 +57,7 @@ const get_queryPage = async (req, res) => {
         if (!author && !text) {
             successMessage = `Articole cu tag-ul #${tag}:`;
             failureMessage = `Ne pare rău, nu am putut găsi nici un articol cu tag-ul #${tag}`;
+            searchPageTitle = `Tag: #${tag} - Revista Licăriri`;
         }
     }
     if (text) {
@@ -74,9 +76,12 @@ const get_queryPage = async (req, res) => {
     articleIDs = [... new Set(articleIDs)];
 
     searchResults = await Promise.all(articleIDs.map(async (id) => articleDatabase.getArticle(id)))
+    for (let i = 0; i < searchResults.length; i++) {
+        searchResults[i].style = await articleDatabase.getArticleStyle(searchResults[i].id);
+    }
     searchResults.sort((a,b) => b.timestamp - a.timestamp);
 
-    res.render("query", {articles: searchResults, successMessage, failureMessage});
+    res.render("query", {articles: searchResults, searchPageTitle, successMessage, failureMessage});
 }
 
 module.exports = {

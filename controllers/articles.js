@@ -72,11 +72,12 @@ const post_adminAddArticle = async (req, res) => {
                         ? [req.body["tags[]"].trim()]
                         : []);
     const content = req.body.content.replace(/([<>\\])/g, "\\$1");
+    const description = content.slice(0, 250);
     // TODO: thumbnail credits (+ don't forget trim)
 
     let thumbnail = req.files ? req.files.thumbnail : undefined;
 
-    const article = new Article(stage, timestamp, title, subtitle, language, category, authors, tags);
+    const article = new Article(stage, timestamp, title, subtitle, language, category, description, authors, tags);
     const articleStyle = new ArticleStyle(req.body.hide_title_in_thumbnail, req.body.title_font, req.body.title_fill_style, req.body.title_color, req.body.title_fontsize_thumbnail, req.body.title_fontsize_article, req.body.title_fontweight, req.body.title_position, req.body.subtitle_font, req.body.subtitle_fontsize, req.body.subtitle_fontweight, req.body.subtitle_color, req.body.subtitle_position, req.body.dropcap)
 
     if ((article.id != originalArticle.id && await articleDatabase.getArticleMeta(article.id))

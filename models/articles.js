@@ -27,6 +27,7 @@ class ArticleDatabase extends Database {
                 subtitle            TEXT,
                 language            TEXT,
                 category            TEXT,
+                description         TEXT,
                 UNIQUE (id)
             );
             CREATE TABLE IF NOT EXISTS article_styles
@@ -93,8 +94,8 @@ class ArticleDatabase extends Database {
      * @param {Article} article
      */
     saveEmptyArticle = (article) => {
-        this.db.run('INSERT INTO articles VALUES(?, ?, ?, ?, ?, ?, ?)',
-            [article.id, article.stage, article.timestamp, article.title, article.subtitle, article.language, article.category],
+        this.db.run('INSERT INTO articles VALUES(?, ?, ?, ?, ?, ?, ?, ?)',
+            [article.id, article.stage, article.timestamp, article.title, article.subtitle, article.language, article.category, article.description],
             this.errorLogger
         );
     }
@@ -105,8 +106,8 @@ class ArticleDatabase extends Database {
      * @param {Article} article
      */
     updateMetadata = (originalArticleID, article) => {
-        this.db.run('UPDATE articles SET id = ?, title = ?, subtitle = ?, language = ?, category = ? WHERE id = ?',
-            [article.id, article.title, article.subtitle, article.language, article.category, originalArticleID],
+        this.db.run('UPDATE articles SET id = ?, title = ?, subtitle = ?, language = ?, category = ?, description = ? WHERE id = ?',
+            [article.id, article.title, article.subtitle, article.language, article.category, article.description, originalArticleID],
             this.errorLogger
         );
 
@@ -283,7 +284,7 @@ class ArticleDatabase extends Database {
                 if (err || (row === undefined)) {
                     return resolve(undefined);
                 }
-                return resolve(new Article(row.stage, new Date(row.timestamp), row.title, row.subtitle, row.language, row.category));
+                return resolve(new Article(row.stage, new Date(row.timestamp), row.title, row.subtitle, row.language, row.category, row.description));
             });
         });
     }

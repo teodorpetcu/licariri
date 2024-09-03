@@ -2,21 +2,57 @@
 <html lang="ro">
 
 <head>
-    <title>Căutare</title>
+    <title><%= searchPageTitle %></title>
     <%- include("meta"); %>
 </head>
 
-<body>
-    <%- include("header"); %>
-    <div id="page-body">
-        <div class="article-snippets-container" style="text-align: center">
-            <% if (articles.length > 0) { %>
-                <h1><%= successMessage %></h1>
-                <%- include("article-snippets-grid"); %>
-            <% } else { %>
-                <h1><%= failureMessage %></h1>
-            <% } %>
+<body id="main-page">
+    <div id="main-page-header">
+        <div id="website-title-container">
+            <h1><a href="/">Licăriri</a></h1>
+            <h6><i>revista elevilor Colegiului Național „Dr. Ioan Meșotă”, Brașov</i></h6>
         </div>
+    </div>
+    <div id="query-page-body">
+    <% if (articles.length > 0) { %>
+    <h1><%= successMessage %></h1>
+    <% } else { %>
+    <h1><%= failureMessage %></h1>
+    <% } %>
+    <div id="query-results-grid" style="text-align: center">
+        <% for (article of articles) { %>
+        <div class="article-queried">
+            <a href="/articles/<%= article.id %>">
+                <div class="article-thumbnail">
+                    <% if (article.style.hide_title_in_thumbnail !== 'on') { %>
+                    <h1 style="font-family: <%= article.style.title_font %>;
+                                font-size: <%= article.style.title_fontsize_thumbnail %>rem;
+                                font-weight: <%= article.style.title_fontweight %>;
+                                color: <%= article.style.title_color %>"
+                        class="center <% if (article.style.title_fill_style === 'on') { %>colour-complement-background<% } %>""
+                        ><%= article.title %></h1>
+                    <% } %>
+                    <img src="/articles/images/<%= article.id %>.png">
+                </div>
+            </a>
+            <div class="article-info">
+                <h1><a href="/articles/<%= article.id %>"><%= article.title %></a></h1>
+                <ul class="article-authors">
+                    <% for (author of article.authors) { %>
+                    <li><a href="/query/?author=<%= author.name %>"><%= author.name %></a></li>
+                    <% } %>
+                </ul>
+                <ul class="article-tags">
+                    <% for (tag of article.tags) { %>
+                    <li><a href="/query/?tag=<%= tag %>">#<%= tag %></a></li>
+                    <% } %>
+                </ul>
+                <p><%= article.description %></p>
+                <a class="read-more" href="/articles/<%= article.id %>">Citește mai mult →</a>
+            </div>
+        </div>
+        <% } %>
+    </div>
     </div>
 </body>
 

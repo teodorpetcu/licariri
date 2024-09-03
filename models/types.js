@@ -29,11 +29,12 @@ class Article {
      * @param {string} subtitle
      * @param {string} language
      * @param {string} category
+     * @param {string} descripion
      * @param {Author[]} authors
      * @param {string[]} tags
      */
     constructor(stage = "", timestamp = new Date(),
-                title, subtitle, language = "", category,
+                title, subtitle, language = "", category, description,
                 authors = [], tags = []) {
         language = language.toLowerCase();
         if (! ["ro", "en", "fr", "de"].includes(language)) language = "ro";
@@ -46,6 +47,7 @@ class Article {
         this.subtitle = subtitle;
         this.language = language;
         this.category = category;
+        this.description = description;
         this.authors = authors;
         this.tags = tags;
 
