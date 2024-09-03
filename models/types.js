@@ -106,6 +106,7 @@ class PDFPrint {
      */
     constructor(timestamp, description) {
         this.timestamp = timestamp;
+        this.date = formatDate(timestamp);
         this.description = description;
         this.filename = description + ".pdf";
     }
