@@ -510,8 +510,22 @@ hr {
     }
 }
 
+@media(max-width: calc(800px + 4rem)) {
+    #infobox-grid-2, #infobox-grid {
+        grid-template-columns: repeat(1, 500px);
+        width: calc(500px + 2 * 25px);
+    }
+}
+
 @media(max-width: calc(650px + 3rem)) {
-    #infobox-grid-2, #infobox-grid, #article-thumbnail-grid, #pdfprint-thumbnail-grid {
+    #article-thumbnail-grid, #pdfprint-thumbnail-grid {
+        width: 350px;
+        grid-template-columns: repeat(1, 300px);
+    }
+}
+
+@media(max-width: 560px) {
+    #infobox-grid-2, #infobox-grid {
         width: 350px;
         grid-template-columns: repeat(1, 300px);
     }
