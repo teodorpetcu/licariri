@@ -206,7 +206,7 @@ class ArticleDatabase extends Database {
      * @param {string} value
      * @returns {Promise<string[]|undefined>}
      */
-    searchArticleIDs = async (key, value, exact = true, pageNumber = 0, pageSize = 12) => {
+    searchArticleIDs = async (key, value, exact = true, pageNumber = 1, pageSize = -1) => {
         return new Promise((resolve) => {
             let validKeyValues = ["title", "stage", "tag", "author", undefined]
             if (! validKeyValues.includes(key)) {
@@ -233,7 +233,9 @@ class ArticleDatabase extends Database {
                 value = `%${value}%`;
             }
             stmt += ` ORDER BY ${orderBy} DESC`;
-            stmt += ` LIMIT ${pageSize} OFFSET ${pageNumber * pageSize}`;
+            if (pageSize > 0) {
+                stmt += ` LIMIT ${pageSize} OFFSET ${pageNumber * pageSize}`;
+            }
 
             this.db.all(stmt, [value], (err, rows) => {
                 if (err || rows === undefined) {
@@ -255,7 +257,7 @@ class ArticleDatabase extends Database {
      * @param {string} value
      * @returns {Promise<Article[]|undefined>}
      */
-    searchArticles = async (key, value, exact = true, pageNumber = 0, pageSize = 12) => {
+    searchArticles = async (key, value, exact = true, pageNumber = 1, pageSize = -1) => {
         let articleIDs = await this.searchArticleIDs(key, value, exact, pageNumber, pageSize);
         if (!articleIDs) return undefined;
         return Promise.all(articleIDs.map((id) => this.getArticle(id)));

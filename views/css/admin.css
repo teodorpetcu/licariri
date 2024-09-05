@@ -60,7 +60,7 @@
             display: none;
         }
         > .active-tab {
-            display: initial;
+            display: initial !important;
         }
         padding: 30px;
         left: 340px;
@@ -68,6 +68,7 @@
         width: calc(100% - 340px - 20px);
         font-size: 1.2rem;
         .article-list {
+            height: calc(100% - 60px);
             text-align: center;
             width: calc(100% - 2 * 30px);
             .article-row {
@@ -87,6 +88,21 @@
                 form {
                     display: inline-block;
                 }
+            }
+        }
+        .article-page:not(.active-page) {
+            display: none !important;
+        }
+        .active-page-button {
+            background-color: lightgreen;
+        }
+        .page-selector {
+            bottom: 10px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            h5 {
+                margin-bottom: 0;
             }
         }
         .pdfprint-row {

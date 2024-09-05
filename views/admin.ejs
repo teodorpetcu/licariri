@@ -64,24 +64,38 @@
         </div>
         <div id="tab-articlesPublished" class="article-list">
             <h1>Articole publicate</h1>
-            <% for ([index, article] of publicArticles.entries()) { %>
-            <div class="article-row">
-                <p><%= index + 1 %>.</p>
-                <div>
-                    <a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>
+            <% if (publicArticlesPages.length) { %>
+            <% for ([pageNumber, page] of publicArticlesPages.entries()) { %>
+            <div id="tab-articlesPublished-page<%= pageNumber %>" class="article-page<% if (pageNumber == 0) { %> active-page<% } %>">
+                <% for ([articleIndex, article] of page.entries()) { %>
+                <div class="article-row">
+                    <p><%= pageNumber * publicArticlesPages[0].length + articleIndex + 1 %>.</p>
+                    <div>
+                        <a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>
+                    </div>
+                    <p><%= article.date %></p>
+                    <form action="/admin/articles/<%= article.id %>" method="GET">
+                        <button type="submit">Modifică</button>
+                    </form>
+                    <form action="/admin/stage" method="post">
+                        <input type="hidden" name="id"
+                            value="<%= article.id %>">
+                        <input type="hidden" name="stage"
+                            value="draft">
+                        <input type="submit" onclick="return confirm(`Sigur vrei să ascunzi articolul?`)" value="Mută în schițe"></input>
+                    </form>
                 </div>
-                <p><%= article.date %></p>
-                <form action="/admin/articles/<%= article.id %>" method="GET">
-                    <button type="submit">Modifică</button>
-                </form>
-                <form action="/admin/stage" method="post">
-                    <input type="hidden" name="id"
-                        value="<%= article.id %>">
-                    <input type="hidden" name="stage"
-                        value="draft">
-                    <input type="submit" onclick="return confirm(`Sigur vrei să ascunzi articolul?`)" value="Mută în schițe"></input>
-                </form>
+                <% } %>
             </div>
+            <% } %>
+            <div class="page-selector">
+                <h5>Pagina:</h5>
+                <% for (let i = 0; i < publicArticlesPages.length; i++) { %>
+                <button id="inputButton-articlesPublished-page<%= i %>" <% if (i == 0) { %>class="active-page-button"<% }%>><%= i  + 1 %></button>
+                <% } %>
+            </div>
+            <% } else { %>
+            <p>(nimic)</p>
             <% } %>
         </div>
         <div id="tab-articlesDrafts" class="article-list active-tab">
@@ -91,52 +105,80 @@
                     <button type="submit">+</button>
                 </a>
             </div>
-            <% for ([index, article] of draftArticles.entries()) { %>
-            <div class="article-row">
-                <p><%= index + 1 %>.</p>
-                <div>
-                    <a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>
-                </div>
-                <p><%= article.date %></p>
-                <form action="/admin/articles/<%= article.id %>" method="GET">
-                    <button type="submit">Modifică</button>
-                </form>
+            <% if (draftArticlesPages.length) { %>
+            <% for ([pageNumber, page] of draftArticlesPages.entries()) { %>
+            <div id="tab-articlesDrafts-page<%= pageNumber %>" class="article-page<% if (pageNumber == 0) { %> active-page<% } %>">
+                <% for ([articleIndex, article] of page.entries()) { %>
+                <div class="article-row">
+                    <p><%= pageNumber * draftArticlesPages[0].length + articleIndex + 1 %>.</p>
+                    <div>
+                        <a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>
+                    </div>
+                    <p><%= article.date %></p>
+                    <form action="/admin/articles/<%= article.id %>" method="GET">
+                        <button type="submit">Modifică</button>
+                    </form>
 
-                <form action="/admin/stage" method="post">
-                    <input type="hidden" name="id" value="<%= article.id %>">
-                    <input type="hidden" name="stage" value="public">
-                    <input type="submit" onclick="return confirm(`Sigur vrei să publici articolul?`)" value="Publică articolul"></input>
-                </form>
-                <form action="/admin/stage" method="post">
-                    <input type="hidden" name="id"
-                        value="<%= article.id %>">
-                    <input type="hidden" name="stage"
-                        value="trash">
-                    <input type="submit" onclick="return confirm(`Sigur vrei să ștergi articolul?`)" value="Mută în coșul de gunoi"></input>
-                </form>
+                    <form action="/admin/stage" method="post">
+                        <input type="hidden" name="id" value="<%= article.id %>">
+                        <input type="hidden" name="stage" value="public">
+                        <input type="submit" onclick="return confirm(`Sigur vrei să publici articolul?`)" value="Publică articolul"></input>
+                    </form>
+                    <form action="/admin/stage" method="post">
+                        <input type="hidden" name="id"
+                            value="<%= article.id %>">
+                        <input type="hidden" name="stage"
+                            value="trash">
+                        <input type="submit" onclick="return confirm(`Sigur vrei să ștergi articolul?`)" value="Mută în coșul de gunoi"></input>
+                    </form>
+                </div>
+                <% } %>
             </div>
+            <% } %>
+            <div class="page-selector">
+                <h5>Pagina:</h5>
+                <% for (let i = 0; i < draftArticlesPages.length; i++) { %>
+                <button id="inputButton-articlesDrafts-page<%= i %>" <% if (i == 0) { %>class="active-page-button"<% }%>><%= i  + 1 %></button>
+                <% } %>
+            </div>
+            <% } else { %>
+            <p>(nimic)</p>
             <% } %>
         </div>
         <div id="tab-articlesTrash" class="article-list">
             <h1>Articole în coșul de gunoi</h1>
-            <% for ([index, article] of trashArticles.entries()) { %>
-            <div class="article-row">
-                <p><%= index + 1 %>.</p>
-                <div>
-                    <a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>
+            <% if (trashArticlesPages.length) { %>
+            <% for ([pageNumber, page] of trashArticlesPages.entries()) { %>
+            <div id="tab-articlesTrash-page<%= pageNumber %>" class="article-page<% if (pageNumber == 0) { %> active-page<% } %>">
+                <% for ([articleIndex, article] of page.entries()) { %>
+                <div class="article-row">
+                    <p><%= pageNumber * trashArticlesPages[0].length + articleIndex + 1 %>.</p>
+                    <div>
+                        <a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>
+                    </div>
+                    <p><%= article.date %></p>
+                    <form action="/admin/articles/<%= article.id %>" method="GET">
+                        <button type="submit">Modifică</button>
+                    </form>
+                    <form action="/admin/stage" method="post">
+                        <input type="hidden" name="id"
+                            value="<%= article.id %>">
+                        <input type="hidden" name="stage"
+                            value="draft">
+                        <input type="submit" onclick="return confirm(`Sigur vrei să restaurezi articolul?`)" value="Mută în schițe"></input>
+                    </form>
                 </div>
-                <p><%= article.date %></p>
-                <form action="/admin/articles/<%= article.id %>" method="GET">
-                    <button type="submit">Modifică</button>
-                </form>
-                <form action="/admin/stage" method="post">
-                    <input type="hidden" name="id"
-                        value="<%= article.id %>">
-                    <input type="hidden" name="stage"
-                        value="draft">
-                    <input type="submit" onclick="return confirm(`Sigur vrei să restaurezi articolul?`)" value="Mută în schițe"></input>
-                </form>
+                <% } %>
             </div>
+            <% } %>
+            <div class="page-selector">
+                <h5>Pagina:</h5>
+                <% for (let i = 0; i < trashArticlesPages.length; i++) { %>
+                <button id="inputButton-articlesTrash-page<%= i %>" <% if (i == 0) { %>class="active-page-button"<% }%>><%= i  + 1 %></button>
+                <% } %>
+            </div>
+            <% } else { %>
+            <p>(nimic)</p>
             <% } %>
         </div>
         <div id="tab-pdfprints" class="article-list">
@@ -204,6 +246,23 @@
         document.getElementById(`inputButton-tab-${tab}`)
             .addEventListener("click", () => {activeTab = tab; refreshActiveTab()});
     });
+
+    const refreshPage = (tab, page) => {
+        document.getElementsByClassName("active-tab")[0].getElementsByClassName("active-page")[0].classList.remove("active-page");
+        document.getElementById(`tab-articles${tab}-page${page}`).classList.add("active-page");
+        document.getElementsByClassName("active-tab")[0].getElementsByClassName("active-page-button")[0].classList.remove("active-page-button");
+        document.getElementById(`inputButton-articles${tab}-page${page}`).classList.add("active-page-button");
+    }
+
+    for (let [j, k] of [["Drafts", <%= draftArticlesPages.length %>],
+                        ["Published", <%= publicArticlesPages.length %>],
+                        ["Trash", <%= trashArticlesPages.length %>]]) {
+        for (let i = 0; i < k; i++) {
+            document.getElementById(`inputButton-articles${j}-page${i}`)
+                .addEventListener("click", () => {refreshPage(j, i)});
+        }
+    }
+
 </script>
 
 <script>

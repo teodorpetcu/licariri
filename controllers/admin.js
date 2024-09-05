@@ -35,14 +35,27 @@ const forbidUnauthorised = async (req, res, next) => {
     }
 }
 
+/**
+ * Split the given array into multiple arrays of length equal to `pageSize`; if
+ * the array's length isn't divisible by `pageSize`, then the last array
+ * contains all the remainder elements.
+ * @param {arr[]} arr
+ * @param {int} pageSize
+ * @returns {arr[]}
+ */
+const paginate = (arr, pageSize) => {
+    return Array.from({ length: Math.ceil(arr.length / pageSize) }, (_, i) =>
+        arr.slice(i * pageSize, i * pageSize + pageSize)
+    )
+}
+
 const get_adminPannelPage = async (req, res) => {
     if (req.user) {
-        let draftArticles = await articleDatabase.searchArticles("stage", "draft");
-        let publicArticles = await articleDatabase.searchArticles("stage", "public");
-        let trashArticles = await articleDatabase.searchArticles("stage", "trash");
-        // todo: implement pagination in the function itself and rename it
-        let pdfprints = await articleDatabase.getAllPDFPrintsSorted().slice(0, 12);
-        res.render("admin", {publicArticles, draftArticles, trashArticles, pdfprints, user: req.user, canManageUsers: req.user.privilege == USER_PRIVILEGES["SUPERUSER"]});
+        let draftArticlesPages = paginate(await articleDatabase.searchArticles("stage", "draft"), 12);
+        let publicArticlesPages = paginate(await articleDatabase.searchArticles("stage", "public"), 12);
+        let trashArticlesPages = paginate(await articleDatabase.searchArticles("stage", "trash"), 12);
+        let pdfprints = paginate(await articleDatabase.getAllPDFPrintsSorted(), 12);
+        res.render("admin", {publicArticlesPages, draftArticlesPages, trashArticlesPages, pdfprints, user: req.user, canManageUsers: req.user.privilege == USER_PRIVILEGES["SUPERUSER"]});
     } else {
         res.render("login", {});
     }
