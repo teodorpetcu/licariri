@@ -29,6 +29,7 @@
         <hr>
 
         <button id="inputButton-tab-pdfprints">Arhivă reviste</button>
+        <button id="inputButton-tab-addpdfprint">Adaugă ediție tipărită</button>
 
         <form style="position: absolute; bottom: 10px; right:10px;" action="/admin/logout" method="POST">
             <button type="submit">
@@ -183,42 +184,57 @@
         </div>
         <div id="tab-pdfprints" class="article-list">
             <h1>Ediții ale revistei publicate pe site</h1>
-            <% for ([index, pdfprint] of pdfprints.entries()) { %>
-            <div class="article-row pdfprint-row">
-                <p><%= index + 1 %>.</p>
-                <div>
-                    <a href="/pdfprints/<%= pdfprint.filename %>"><%= pdfprint.description %></a>
+            <% if (pdfprints.length) { %>
+            <% for ([pageNumber, page] of pdfprints.entries()) { %>
+            <div id="tab-pdfprints-page<%= pageNumber %>" class="article-page<% if (pageNumber == 0) { %> active-page<% } %>">
+                <% for ([pdfprintIndex, pdfprint] of page.entries()) { %>
+                <div class="article-row pdfprint-row">
+                    <p><%= pageNumber * pdfprints[0].length + pdfprintIndex + 1 %>.</p>
+                    <div>
+                        <a href="/pdfprints/<%= pdfprint.filename %>"><%= pdfprint.description %></a>
+                    </div>
+                    <p><%= pdfprint.date %> </p>
+                    <form action="/admin/pdfprints/remove" method="POST">
+                        <input type="hidden" name="description" value="<%= pdfprint.description %>">
+                        <input type="submit" value="ȘTERGE">
+                    </form>
                 </div>
-                <p><%= pdfprint.date %> </p>
-                <form action="/admin/pdfprints/remove" method="POST">
-                    <input type="hidden" name="description" value="<%= pdfprint.description %>">
-                    <input type="submit" value="ȘTERGE">
-                </form>
+                <% } %>
+            </div>
+            <div class="page-selector">
+                <h5>Pagina:</h5>
+                <% for (let i = 0; i < pdfprints.length; i++) { %>
+                <button id="inputButton-pdfprints-page<%= i %>" <% if (i == 0) { %>class="active-page-button"<% }%>><%= i  + 1 %></button>
+                <% } %>
             </div>
             <% } %>
-            <div>
-                <h1>Adaugă ediție print</h1>
-                <form action="/admin/pdfprints/add" method="post" autocomplete="off" enctype="multipart/form-data">
-                    <div>
-                        <label>Fișier PDF</label>
-                        <input required type="file"
-                            accept="application/pdf" name="pdffile">
-                    </div>
-                    <div>
-                        <label>Descriere</label>
-                        <input required type="text"
-                            name="description">
-                    </div>
-                    <div>
-                        <label>Data ediției</label>
-                        <input required type="date"
-                            name="date" min="1960-01-01" max="<%= new Date().getFullYear() + '-12-31' %>">
-                    </div>
-                    <div>
-                        <input type="submit" value="Trimite">
-                    </div>
-                </form>
-            </div>
+            <% } else { %>
+            <p>(nimic)</p>
+            <% } %>
+        </div>
+        <div id="tab-addpdfprint">
+            <h1>Adaugă ediție tipărită</h1>
+            <form action="/admin/pdfprints/add" method="post" autocomplete="off" enctype="multipart/form-data">
+                <div>
+                    <label>Fișier PDF</label>
+                    <input required type="file"
+                        accept="application/pdf" name="pdffile">
+                </div>
+                <div>
+                    <label>Descriere</label>
+                    <input required type="text"
+                        name="description">
+                </div>
+                <div>
+                    <label>Data ediției</label>
+                    <input required type="date"
+                        name="date" min="1960-01-01" max="<%= new Date().getFullYear() + '-12-31' %>">
+                </div>
+                <div>
+                    <input type="submit" value="Trimite">
+                </div>
+            </form>
+        </div>
         </div>
     </div>
 </body>
@@ -233,6 +249,7 @@
         "articlesDrafts",
         "articlesTrash",
         "pdfprints",
+        "addpdfprint"
     ];
 
     const refreshActiveTab = () => {
