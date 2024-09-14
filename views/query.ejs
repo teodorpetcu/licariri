@@ -4,6 +4,7 @@
 <head>
     <title><%= searchPageTitle %></title>
     <%- include("meta"); %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
 <body id="main-page">
@@ -16,9 +17,6 @@
     <div id="query-page-body">
     <% if (articles.length > 0) { %>
     <h1><%= successMessage %></h1>
-    <% } else { %>
-    <h1><%= failureMessage %></h1>
-    <% } %>
     <div id="query-results-grid" style="text-align: center">
         <% for (article of articles) { %>
         <div class="article-queried">
@@ -53,6 +51,17 @@
         </div>
         <% } %>
     </div>
+    <% } else { %>
+    <h1><%= failureMessage %></h1>
+    <div id="searchbar-container">
+    <h2>Poți încerca să efectuezi o căutare nouă:</h2>
+    <form class="searchbar" action="/query" method="GET">
+        <input required name="any" type="text">
+        <button type="submit"><i class="fa fa-search"></i></button>
+    </form>
+    <h2>Sau să te întorci la pagina principală, <a href="/">apăsând aici</a></h2>
+    </div>
+    <% } %>
     </div>
 </body>
 

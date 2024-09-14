@@ -495,6 +495,47 @@ hr {
     }
 }
 
+#searchbar-container {
+    font-family: "Kameron";
+    background-color: #ffffff80;
+    border-radius: 16px;
+    margin: 0 auto;
+    text-align: center;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    max-width: 400px;
+    width: 95%;
+    border: 1px solid black;
+    a {
+        color: #5030ff;
+        transition: color 0.2s;
+    }
+    a:hover {
+        color: #5050a0;
+    }
+}
+
+.searchbar {
+    margin: 0 auto;
+    text-align: center;
+    display: grid;
+    grid-template-columns: 1fr 32px;
+    width: 95%;
+    height: 60px;;
+    border: 1px solid black;
+    background-color: #ffffff90;
+    padding: 10px;
+    border-radius: 5px;
+    * {
+        font-family: "Hind";
+        font-size: 1.1rem;
+    }
+    button {
+        transition: background-color 0.2s;
+        border: 1px solid black;
+    }
+}
+
 /************ MEDIA QUERIES ************/
 @media(max-width: calc(1250px + 7rem)) {
     #article-thumbnail-grid {
