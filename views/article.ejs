@@ -3,63 +3,49 @@
 
 <head>
     <title><%= article.title%></title>
-    <%- include("meta"); %>
+<%- include("meta"); _%>
 </head>
 
 <body>
     <div id="article-headline">
         <img id="article-thumbnail" src="/articles/images/<%= article.id %>.png" class="no-select">
-        <% if (articleStyle.title_position == "thumbnail") { %>
+        <%_ if (articleStyle.title_position == "thumbnail") { _%>
         <h1 id="article-title"
-            style="font-family: <%= articleStyle.title_font %>;
-                    font-size: <%= articleStyle.title_fontsize_article %>rem;
-                    font-weight: <%= articleStyle.title_fontweight %>;
-                    color: <%= articleStyle.title_color %>"
-            class="center <% if (articleStyle.title_fill_style === 'on') { %>colour-complement-background<% } %>""
-            ><%= article.title %></h1>
-        <% } %>
-        <% if (article.subtitle && articleStyle.subtitle_position == "thumbnail") { %>
+            style="font-family: <%= articleStyle.title_font %>; font-size: <%= articleStyle.title_fontsize_article %>rem; font-weight: <%= articleStyle.title_fontweight %>; color: <%= articleStyle.title_color %>" class="center<% if (articleStyle.title_fill_style === 'on') { %> colour-complement-background<%_ } _%>"><%= article.title _%></h1>
+        <%_ } _%>
+        <%_ if (article.subtitle && articleStyle.subtitle_position == "thumbnail") { _%>
         <h2 id="article-subtitle"
-            style="font-family: <%= articleStyle.subtitle_font %>;
-                    font-size: <%= articleStyle.subtitle_fontsize %>rem;
-                    font-weight: <%= articleStyle.subtitle_fontweight %>;
-                    color: <%= articleStyle.subtitle_color %>"
-            class="center"
-            ><%= article.subtitle %></h2>
-        <% } %>
+            style="font-family: <%= articleStyle.subtitle_font %>; font-size: <%= articleStyle.subtitle_fontsize %>rem; font-weight: <%= articleStyle.subtitle_fontweight %>; color: <%= articleStyle.subtitle_color %>" class="center"><%= article.subtitle %></h2>
+        <%_ } _%>
     </div>
     <div id="article-info">
-        <% if (articleStyle.title_position == "article") { %>
+        <%_ if (articleStyle.title_position == "article") { _%>
         <div style="text-align: center">
         <h1 id="article-title"
-            style="font-family: <%= articleStyle.title_font %>;
-                    font-size: <%= articleStyle.title_fontsize_article %>rem;
-                    font-weight: <%= articleStyle.title_fontweight %>;
-                    color: <%= articleStyle.title_color %>"
-            ><%= article.title %></h1>
+            style="font-family: <%= articleStyle.title_font %>; font-size: <%= articleStyle.title_fontsize_article %>rem; font-weight: <%= articleStyle.title_fontweight %>; color: <%= articleStyle.title_color %>"><%= article.title %></h1>
         </div>
-        <% } %>
+        <%_ } _%>
         <div id="article-authors-list">
-            <% if (article.authors.length) { %>
-            <% if (article.authors.length == 1) { %>
+            <%_ if (article.authors.length) { _%>
+            <%_ if (article.authors.length == 1) { _%>
             <h3>Autor:</h3>
-            <% } else { %>
+            <%_ } else { _%>
             <h3>Autori:</h3>
-            <% } %>
-            <% for (let author of article.authors) { %>
+            <%_ } _%>
+            <%_ for (let author of article.authors) { _%>
             <div class="author">
                 <span style="opacity: 0.5">—</span><!--
                 --><a style="display: inline-block;" href="/query?author=<%= author.name %>"><%= author.name %></a><!--
                 --><span style="opacity: 0.5">—</span>
             </div>
-            <% } %>
-            <% } %>
+            <%_ } _%>
+            <%_ } _%>
         </div>
         <b id="article-date"><%= article.date %></b>
         <div id="article-tags-list">
-            <% for (let tag of article.tags) { %>
+            <%_ for (let tag of article.tags) { _%>
             <a href="/query?tag=<%= tag %>">#<%= tag %></a>
-            <% } %>
+            <%_ } _%>
         </div>
     <hr style="width: 60%"></hr>
     </div>
@@ -67,21 +53,22 @@
 <%- article.contents %>
     </div>
 </body>
-<% if (articleStyle.subtitle_position == "thumbnail") { %>
+
+<%_ if (articleStyle.subtitle_position == "thumbnail") { _%>
 <script>
     articleTitle = document.getElementById("article-title");
     articleSubtitle = document.getElementById("article-subtitle");
     articleSubtitle.style.marginTop =
         (articleTitle.offsetHeight +
         articleSubtitle.offsetHeight) + "px";
-    <% if (articleStyle.dropcap == "dropcap") { %>
+    <%_ if (articleStyle.dropcap == "dropcap") { _%>
     articleContents = document.getElementById("article-contents");
     while(articleContents.firstChild.nodeName == "#text") {
         articleContents.removeChild(articleContents.firstChild);
     }
     articleContents.firstChild.classList.add("dropcap");
-    <% } %>
+    <%_ } _%>
 </script>
-<% } %>
+<%_ } _%>
 
 </html>

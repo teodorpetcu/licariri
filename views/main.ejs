@@ -3,7 +3,7 @@
 
 <head>
     <title>Revista Licăriri</title>
-    <%- include("meta"); %>
+<%- include("meta"); _%>
 </head>
 
 <body id="main-page">
@@ -24,11 +24,16 @@
                 <h2>tema: <i>renaștere și origini</i></h2>
                 <p>(aici intervine un scurt editorial explicând tema, max. 100
                 cuvinte)</p>
-                <p>(idee: poate fi făcut un formular pentru a vota tema revistei
-                tipărite)</p>
-                <p>(idee: chenare „DESPRE” care se deschid/închid, pentru că
-                ocupă destul de mult spațiu)</p>
-                <h4>TERMEN LIMITĂ: 5 IANUARIE 2024</h4>
+                <p>(idee: poate fi făcut un formular pentru a permite elevilor
+                să voteze tema revistei tipărite)</p>
+                <p>(idee: deși aceste anunțuri pot fi postate și pe pagina de
+                Instagram a colegiului, ar fi de preferat să fie afișate și pe
+                website, dar, spre deosebire de cum sunt în prezent, să poată fi
+                deschise/închise apăsând pe ele, întrucât ocupă destul de mult
+                spațiu)</p>
+                <p>(P.S.: articolele afișate mai jos sunt copiate în scopuri
+                demonstrative de pe site-ul <a href="https://revistalzr.ro">Revistei LZR</a>)</p>
+                <h4>TERMEN LIMITĂ PRIMIRE MATERIALE: 15 DECEMBRIE 2023</h4>
             </div>
             <div class="infobox">
                 <h2 style="margin-bottom: 5px; display: inline-block">VĂ PROPUNEM</h2>
@@ -55,7 +60,7 @@
                 <p>Dacă ești elev al colegiului nostru și îți dorești să faci
                 parte din echipa redacției, te invităm să completezi formularul
                 de mai jos:</p>
-                <h2><a href="https://example.com">https://example.com</a></h2>
+                <h2><a href="#">(linkul acesta nu face nimic)</a></h2>
                 <p>După trimiterea formularului, vei primi un mail ca să-ți
                 confirmăm că l-am primit. Noi vom revizui cererea de înscriere și
                 îți vom răspunde în termen de câteva zile.</p>
@@ -63,31 +68,26 @@
             </div>
         </div>
 
-        <% if (articles.length) { %>
+        <%_ if (articles.length) { _%>
         <h1 style="color: white">ARTICOLE</h1>
         <div id="article-thumbnail-grid">
-        <% for (article of articles) { %>
+        <%_ for (article of articles) { _%>
             <a href="/articles/<%= article.id %>">
                 <div class="article-thumbnail">
-                    <% if (article.style.hide_title_in_thumbnail !== 'on') { %>
-                    <h1 style="font-family: <%= article.style.title_font %>;
-                                font-size: <%= article.style.title_fontsize_thumbnail %>rem;
-                                font-weight: <%= article.style.title_fontweight %>;
-                                color: <%= article.style.title_color %>"
-                        class="center <% if (article.style.title_fill_style === 'on') { %>colour-complement-background<% } %>""
-                        ><%= article.title %></h1>
-                    <% } %>
+                    <%_ if (article.style.hide_title_in_thumbnail !== 'on') { _%>
+                    <h1 style="font-family: <%= article.style.title_font %>; font-size: <%= article.style.title_fontsize_thumbnail %>rem; font-weight: <%= article.style.title_fontweight %>; color: <%= article.style.title_color %>" class="center<% if (article.style.title_fill_style === 'on') { %> colour-complement-background<%_ } _%>"><%= article.title %></h1>
+                    <%_ } _%>
                     <img src="/articles/images/<%= article.id %>.png">
                 </div>
             </a>
-        <% } %>
+        <%_ } _%>
         </div>
-        <% } %>
+        <%_ } _%>
 
-        <% if (pdfprints.length) { %>
+        <%_ if (pdfprints.length) { _%>
         <h1 style="color: white">ARHIVA VOLUMELOR TIPĂRITE</h1>
         <div id="pdfprint-thumbnail-grid">
-        <% for (pdfprint of pdfprints) { %>
+        <%_ for (pdfprint of pdfprints) { _%>
             <div class="pdfprint-thumbnail">
                 <a href="/pdfprints/<%= pdfprint.description %>.pdf">
                     <img src="/pdfprints/thumbnails/<%= pdfprint.description %>.png">
@@ -96,9 +96,9 @@
                 <a class="pdfprint-description"
                     href="/pdfprints/<%= pdfprint.description %>.pdf"><%= pdfprint.description %></a>
             </div>
-        <% } %>
+        <%_ } _%>
         </div>
-        <% } %>
+        <%_ } _%>
     </div>
 </body>
 

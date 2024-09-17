@@ -3,7 +3,7 @@
 
 <head>
     <title>Administrare</title>
-    <%- include("meta"); %>
+<%- include("meta"); _%>
     <link rel="stylesheet" href="/css/admin.css" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
@@ -16,9 +16,9 @@
 
         <hr>
         <button id="inputButton-tab-changePassword">Schimbă-ți parola</button>
-        <% if (canManageUsers) { %>
+        <%_ if (canManageUsers) { _%>
         <button id="inputButton-tab-manageUsers">Gestionare utilizatori</button>
-        <% } %>
+        <%_ } _%>
         <button id="inputButton-tab-userActivity">Activitate utilizatori</button>
 
         <hr>
@@ -65,14 +65,14 @@
         </div>
         <div id="tab-articlesPublished" class="article-list">
             <h1>Articole publicate</h1>
-            <% if (publicArticlesPages.length) { %>
-            <% for ([pageNumber, page] of publicArticlesPages.entries()) { %>
-            <div id="tab-articlesPublished-page<%= pageNumber %>" class="article-page<% if (pageNumber == 0) { %> active-page<% } %>">
-                <% for ([articleIndex, article] of page.entries()) { %>
+            <%_ if (publicArticlesPages.length) { _%>
+            <%_ for ([pageNumber, page] of publicArticlesPages.entries()) { _%>
+            <div id="tab-articlesPublished-page<%= pageNumber %>" class="article-page<%_ if (pageNumber == 0) { _%> active-page<%_ } _%>">
+                <%_ for ([articleIndex, article] of page.entries()) { _%>
                 <div class="article-row">
                     <p><%= pageNumber * publicArticlesPages[0].length + articleIndex + 1 %>.</p>
                     <div>
-                        <a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>
+                        <a href="/articles/<%= article.id _%>">«<i><%= article.title %></i>»</a>
                     </div>
                     <p><%= article.date %></p>
                     <form action="/admin/articles/<%= article.id %>" method="GET">
@@ -86,18 +86,18 @@
                         <input type="submit" onclick="return confirm(`Sigur vrei să ascunzi articolul?`)" value="Mută în schițe"></input>
                     </form>
                 </div>
-                <% } %>
+                <%_ } _%>
             </div>
-            <% } %>
+            <%_ } _%>
             <div class="page-selector">
                 <h5>Pagina:</h5>
-                <% for (let i = 0; i < publicArticlesPages.length; i++) { %>
-                <button id="inputButton-articlesPublished-page<%= i %>" <% if (i == 0) { %>class="active-page-button"<% }%>><%= i  + 1 %></button>
-                <% } %>
+                <%_ for (let i = 0; i < publicArticlesPages.length; i++) { _%>
+                <button id="inputButton-articlesPublished-page<%= i %>" <%_ if (i == 0) { _%>class="active-page-button"<%_ }%>><%= i  + 1 %></button>
+                <%_ } _%>
             </div>
-            <% } else { %>
+            <%_ } else { _%>
             <p>(nimic)</p>
-            <% } %>
+            <%_ } _%>
         </div>
         <div id="tab-articlesDrafts" class="article-list active-tab">
             <div style="display: flex; align-items: center; justify-content: center;">
@@ -106,10 +106,10 @@
                     <button type="submit">+</button>
                 </a>
             </div>
-            <% if (draftArticlesPages.length) { %>
-            <% for ([pageNumber, page] of draftArticlesPages.entries()) { %>
-            <div id="tab-articlesDrafts-page<%= pageNumber %>" class="article-page<% if (pageNumber == 0) { %> active-page<% } %>">
-                <% for ([articleIndex, article] of page.entries()) { %>
+            <%_ if (draftArticlesPages.length) { _%>
+            <%_ for ([pageNumber, page] of draftArticlesPages.entries()) { _%>
+            <div id="tab-articlesDrafts-page<%= pageNumber %>" class="article-page<%_ if (pageNumber == 0) { _%> active-page<%_ } _%>">
+                <%_ for ([articleIndex, article] of page.entries()) { _%>
                 <div class="article-row">
                     <p><%= pageNumber * draftArticlesPages[0].length + articleIndex + 1 %>.</p>
                     <div>
@@ -133,29 +133,29 @@
                         <input type="submit" onclick="return confirm(`Sigur vrei să ștergi articolul?`)" value="Mută în coșul de gunoi"></input>
                     </form>
                 </div>
-                <% } %>
+                <%_ } _%>
             </div>
-            <% } %>
+            <%_ } _%>
             <div class="page-selector">
                 <h5>Pagina:</h5>
-                <% for (let i = 0; i < draftArticlesPages.length; i++) { %>
-                <button id="inputButton-articlesDrafts-page<%= i %>" <% if (i == 0) { %>class="active-page-button"<% }%>><%= i  + 1 %></button>
-                <% } %>
+                <%_ for (let i = 0; i < draftArticlesPages.length; i++) { _%>
+                <button id="inputButton-articlesDrafts-page<%= i %>" <%_ if (i == 0) { _%>class="active-page-button"<%_ }%>><%= i  + 1 %></button>
+                <%_ } _%>
             </div>
-            <% } else { %>
+            <%_ } else { _%>
             <p>(nimic)</p>
-            <% } %>
+            <%_ } _%>
         </div>
         <div id="tab-articlesTrash" class="article-list">
             <h1>Articole în coșul de gunoi</h1>
-            <% if (trashArticlesPages.length) { %>
-            <% for ([pageNumber, page] of trashArticlesPages.entries()) { %>
-            <div id="tab-articlesTrash-page<%= pageNumber %>" class="article-page<% if (pageNumber == 0) { %> active-page<% } %>">
-                <% for ([articleIndex, article] of page.entries()) { %>
+            <%_ if (trashArticlesPages.length) { _%>
+            <%_ for ([pageNumber, page] of trashArticlesPages.entries()) { _%>
+            <div id="tab-articlesTrash-page<%= pageNumber %>" class="article-page<%_ if (pageNumber == 0) { _%> active-page<%_ } _%>">
+                <%_ for ([articleIndex, article] of page.entries()) { _%>
                 <div class="article-row">
                     <p><%= pageNumber * trashArticlesPages[0].length + articleIndex + 1 %>.</p>
                     <div>
-                        <a href="/articles/<%= article.id %>">«<i><%= article.title %></i>»</a>
+                        <a href="/articles/<%= article.id _%>">«<i><%= article.title %></i>»</a>
                     </div>
                     <p><%= article.date %></p>
                     <form action="/admin/articles/<%= article.id %>" method="GET">
@@ -169,29 +169,29 @@
                         <input type="submit" onclick="return confirm(`Sigur vrei să restaurezi articolul?`)" value="Mută în schițe"></input>
                     </form>
                 </div>
-                <% } %>
+                <%_ } _%>
             </div>
-            <% } %>
+            <%_ } _%>
             <div class="page-selector">
                 <h5>Pagina:</h5>
-                <% for (let i = 0; i < trashArticlesPages.length; i++) { %>
-                <button id="inputButton-articlesTrash-page<%= i %>" <% if (i == 0) { %>class="active-page-button"<% }%>><%= i  + 1 %></button>
-                <% } %>
+                <%_ for (let i = 0; i < trashArticlesPages.length; i++) { _%>
+                <button id="inputButton-articlesTrash-page<%= i %>" <%_ if (i == 0) { _%>class="active-page-button"<%_ }%>><%= i  + 1 %></button>
+                <%_ } _%>
             </div>
-            <% } else { %>
+            <%_ } else { _%>
             <p>(nimic)</p>
-            <% } %>
+            <%_ } _%>
         </div>
         <div id="tab-pdfprints" class="article-list">
             <h1>Ediții ale revistei publicate pe site</h1>
-            <% if (pdfprints.length) { %>
-            <% for ([pageNumber, page] of pdfprints.entries()) { %>
-            <div id="tab-pdfprints-page<%= pageNumber %>" class="article-page<% if (pageNumber == 0) { %> active-page<% } %>">
-                <% for ([pdfprintIndex, pdfprint] of page.entries()) { %>
+            <%_ if (pdfprints.length) { _%>
+            <%_ for ([pageNumber, page] of pdfprints.entries()) { _%>
+            <div id="tab-pdfprints-page<%= pageNumber %>" class="article-page<%_ if (pageNumber == 0) { _%> active-page<%_ } _%>">
+                <%_ for ([pdfprintIndex, pdfprint] of page.entries()) { _%>
                 <div class="article-row pdfprint-row">
                     <p><%= pageNumber * pdfprints[0].length + pdfprintIndex + 1 %>.</p>
                     <div>
-                        <a href="/pdfprints/<%= pdfprint.filename %>"><%= pdfprint.description %></a>
+                        <a href="/pdfprints/<%= pdfprint.filename _%>"><%= pdfprint.description %></a>
                     </div>
                     <p><%= pdfprint.date %> </p>
                     <form action="/admin/pdfprints/remove" method="POST">
@@ -199,18 +199,18 @@
                         <input type="submit" value="ȘTERGE">
                     </form>
                 </div>
-                <% } %>
+                <%_ } _%>
             </div>
             <div class="page-selector">
                 <h5>Pagina:</h5>
-                <% for (let i = 0; i < pdfprints.length; i++) { %>
-                <button id="inputButton-pdfprints-page<%= i %>" <% if (i == 0) { %>class="active-page-button"<% }%>><%= i  + 1 %></button>
-                <% } %>
+                <%_ for (let i = 0; i < pdfprints.length; i++) { _%>
+                <button id="inputButton-pdfprints-page<%= i %>" <%_ if (i == 0) { _%>class="active-page-button"<%_ }%>><%= i  + 1 %></button>
+                <%_ } _%>
             </div>
-            <% } %>
-            <% } else { %>
+            <%_ } _%>
+            <%_ } else { _%>
             <p>(nimic)</p>
-            <% } %>
+            <%_ } _%>
         </div>
         <div id="tab-addpdfprint">
             <h1>Adaugă ediție tipărită</h1>
