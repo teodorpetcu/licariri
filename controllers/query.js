@@ -1,14 +1,22 @@
+const ejs = require("ejs");
+const fs = require("fs");
+
 const { queryDatabase } = require("../models/query.js");
 const { articleDatabase } = require("../models/articles.js");
+const { QUERY_PRERENDERS } = require("../config.js");
 
-const get_queryPage = async (req, res) => {
+/**
+ * @param {Obj} query
+ * @returns {Promise<string>}
+ */
+const renderQueryPage = async (query) => {
     let articleIDs = [];
     let searchResults = [];
 
-    let any = req.query.any;
-    let author = req.query.author;
-    let tag = req.query.tag;
-    let text = req.query.text;
+    let any = query.any;
+    let author = query.author;
+    let tag = query.tag;
+    let text = query.text;
     let exactMatch = true;
     let successMessage = "Rezultatele căutării:";
     let failureMessage = "Ne pare rău, nu am putut găsi nimic!";
@@ -81,7 +89,46 @@ const get_queryPage = async (req, res) => {
     }
     searchResults.sort((a,b) => b.timestamp - a.timestamp);
 
-    res.render("query", {articles: searchResults, searchPageTitle, successMessage, failureMessage});
+    return new Promise((resolve) => {
+        ejs.renderFile(__dirname + "/../views/query.ejs",
+                {articles: searchResults, searchPageTitle, successMessage, failureMessage},
+                (err, res) => {
+                    if (err) {
+                        logger.error(err);
+                        resolve("");
+                } else {
+                    resolve(res);
+                }
+                }
+            )
+    })
+}
+
+const get_queryPage = async (req, res) => {
+    if (req.query.author && !req.query.tag && !req.query.any && !req.query.text) {
+        // TODO: pre-render query pages more wisely
+        await prerenderQueryAsFile(req.query);
+        res.sendFile(QUERY_PRERENDERS + `/author=${req.query.author}.html`);
+    } else if (req.query.tag && !req.query.author && !req.query.any && !req.query.text) {
+        await prerenderQueryAsFile(req.query);
+        res.sendFile(QUERY_PRERENDERS + `/tag=${req.query.tag}.html`);
+    } else {
+        const queryPage = await renderQueryPage(req.query);
+        res.send(queryPage);
+    }
+}
+
+const prerenderQueryAsFile = async (query) => {
+    let filename = "";
+    if (query.author && !query.tag && !query.any && !query.text) {
+        filename = QUERY_PRERENDERS + `/author=${query.author}.html`;
+    } if (query.tag && !query.author && !query.any && !query.text) {
+        filename = QUERY_PRERENDERS + `/tag=${query.tag}.html`
+    }
+    if (filename) {
+        const queryPage = await renderQueryPage(query);
+        fs.writeFileSync(filename, queryPage);
+    }
 }
 
 module.exports = {

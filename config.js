@@ -22,6 +22,7 @@ const CONFIG = {
     TRASH_ARTICLE_IMAGES_PATH: ARTICLES_DIRECTORY + "/trash/images",
     PDFPRINT_CONTENTS_PATH: APPDATA_DIR + "/pdfprints/public",
     PDFPRINT_THUMBNAILS_PATH: APPDATA_DIR + "/pdfprints/public",
+    QUERY_PRERENDERS: APPDATA_DIR + "/query",
     USER_PRIVILEGES: {
         SUPERUSER: 100,
         COORDONATOR: 50,
@@ -56,5 +57,6 @@ mkdir_if_not_exists(CONFIG.DRAFT_ARTICLE_IMAGES_PATH);
 mkdir_if_not_exists(CONFIG.TRASH_ARTICLE_IMAGES_PATH);
 mkdir_if_not_exists(CONFIG.PDFPRINT_CONTENTS_PATH);
 mkdir_if_not_exists(CONFIG.PDFPRINT_THUMBNAILS_PATH);
+mkdir_if_not_exists(CONFIG.QUERY_PRERENDERS);
 
 module.exports = CONFIG;
