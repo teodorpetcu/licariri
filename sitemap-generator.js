@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const { WEBSITE_URL } = require("./config.js");
+const { WEBSITE_URL, APPDATA_DIR } = require("./config.js");
 const { articleDatabase } = require("./models/articles.js");
 const { formatDate } = require("./models/types.js");
 
@@ -47,7 +47,7 @@ const generateSitemapFile = async () => {
     })
     sitemapXML += `\n</urlset>`
 
-    fs.writeFileSync(__dirname + "/sitemap.xml", sitemapXML, { encoding: "utf-8" });
+    fs.writeFileSync(APPDATA_DIR + "/sitemap.xml", sitemapXML, { encoding: "utf-8" });
     return;
 }
 
