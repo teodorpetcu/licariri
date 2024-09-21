@@ -84,23 +84,22 @@
             <input id="input-title-thumbnail-font-size"
                 name="title_fontsize_thumbnail"
                 value="<%= defaults.style.title_fontsize_thumbnail %>"
-                type="range" min="1.5" max="2.5" value = "2" step="0.1" >
+                type="range" min="1.5" max="2.5" step="0.1" >
 
             <label>Mărimea fontului titlului din articol:</label>
             <input id="input-title-article-font-size"
                 name="title_fontsize_article"
                 value="<%= defaults.style.title_fontsize_article %>"
-                type="range" min="2" max="5" value = "3.5" step="0.1" >
+                type="range" min="2" max="5" step="0.1" >
 
             <label>Grosimea fontului titlului:</label>
             <input id="input-title-fontweight"
                 name="title_fontweight"
                 value="<%= defaults.style.title_fontweight %>"
-                type="range" min="400" max="800" value = "600" step="50">
-            </select>
+                type="range" min="400" max="800" step="50">
 
-            <label>Titlul contrastează cu fundalul (ignoră culoarea):</label>
             <!--TITLE FILL STYLE == <select>-->
+            <label>Titlul contrastează cu fundalul (ignoră culoarea):</label>
             <input id="input-title-contrast-background"
                 type="checkbox" name="title_fill_style"
                 <% if (defaults.style.title_fill_style) { %>
@@ -110,7 +109,7 @@
             <label>Culoarea titlului:</label>
             <input id="input-title-color" name="title_color"
                 value="<%= defaults.style.title_color %>"
-                type="color" value="#ffffff">
+                type="color">
 
             <label>Poziția titlului în articol:</label>
             <select id="input-title-position" name="title_position">
@@ -128,18 +127,17 @@
             <label>Mărimea fontului subtitlului din articol:</label>
             <input id="input-subtitle-font-size" name="subtitle_fontsize"
                 value="<%= defaults.style.subtitle_fontsize %>"
-                type="range" min="1" max="2" value = "1.5" step="0.1" >
+                type="range" min="1" max="2" step="0.1" >
 
             <label>Grosimea fontului subtitlului:</label>
             <input id="input-subtitle-fontweight" name="subtitle_fontweight"
                 value="<%= defaults.style.subtitle_fontweight %>"
-                type="range" min="400" max="800" value = "600" step="50">
-            </select>
+                type="range" min="400" max="800" step="50">
 
             <label>Culoarea subtitlului:</label>
             <input id="input-subtitle-color"
                 value="<%= defaults.style.subtitle_color %>"
-                type="color" name="subtitle_color" value="#ffffff">
+                type="color" name="subtitle_color">
 
             <label>Poziția subtitlului în articol:</label>
             <select id="input-subtitle-position" name="subtitle_position">
@@ -168,19 +166,19 @@
         </div>
         <div id="article-info">
             <div id="article-alternate-title-position"></div>
-            <div id="article-authors-list">
-                <!--todo: dynamically replace with °autor/i°-->
-            </div>
+            <h3 id="article-authors-title"></h3>
+            <ul class="article-authors" id="article-authors-list">
+            </ul>
             <b id="article-date"><%= defaults.date %></b>
-            <div id="article-tags-list">
-            </div>
+            <ul class="article-tags" id="article-tags-list">
+            </ul>
         </div>
-        <hr style="width: 18%"></hr>
+        <hr style="width: 18%">
         <div id="article-contents"></div>
     </div>
 </body>
 
-<script>
+<script type="text/javascript">
     const authorsAddButton = document.getElementById("authors-add-button");
     const tagsAddButton = document.getElementById("tags-add-button");
 
@@ -225,7 +223,7 @@
     tagsAddButton.addEventListener("click", () => addField("tag", ""));
 </script>
 
-<script>
+<script type="text/javascript">
     const contentPage = document.getElementById("edit-article-content");
     const dtpPage = document.getElementById("edit-article-dtp");
     const previewPage = document.getElementById("preview-page");
@@ -266,6 +264,7 @@
     const previewArticleSubtitle = document.getElementById("article-subtitle");
     const previewArticleContents = document.getElementById("article-contents");
     const previewArticleAuthors = document.getElementById("article-authors-list");
+    const previewArticleAuthorsTitle = document.getElementById("article-authors-title");
     const previewArticleTags = document.getElementById("article-tags-list");
 
     const previewArticleDefaultTitlePosition = document.getElementById("article-headline");
@@ -371,32 +370,21 @@
         authors.sort();
 
         if (authors.length >= 1) {
-            let authorDivIntroduction = document.createElement("h3");
-            previewArticleAuthors.append(authorDivIntroduction);
-            authorDivIntroduction.textContent = "Autor";
+            previewArticleAuthorsTitle.textContent = "Autor";
             if (authors.length > 1) {
-                authorDivIntroduction.textContent += "i";
+                previewArticleAuthorsTitle.textContent += "i";
             }
-            authorDivIntroduction.textContent += ":";
+            previewArticleAuthorsTitle.textContent += ":";
         }
 
         for (author of authors) {
-            let authorDiv = document.createElement("div");
-            authorDiv.classList.add("author");
-            let span1 = document.createElement("span");
-            span1.style.opacity = "0.5";
-            span1.textContent = "—";
-            let span2 = document.createElement("span");
-            span2.style.opacity = "0.5";
-            span2.textContent = "—";
+            let authorDiv = document.createElement("li");
             let authorLink = document.createElement("a");
             authorLink.href = "#";
             authorLink.style.display = "inline-block";
             authorLink.textContent = author;
 
-            authorDiv.appendChild(span1);
             authorDiv.appendChild(authorLink);
-            authorDiv.appendChild(span2);
             previewArticleAuthors.append(authorDiv);
         }
 
@@ -405,7 +393,9 @@
             let tagLink= document.createElement("a");
             tagLink.href = "#";
             tagLink.textContent = "#" + inputTag.value.trim();
-            previewArticleTags.append(tagLink);
+            let tagDiv = document.createElement("li");
+            tagDiv.append(tagLink)
+            previewArticleTags.append(tagDiv);
         }
 
         updateThumbnail(previewArticleThumbnail);
