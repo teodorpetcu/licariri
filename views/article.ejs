@@ -7,6 +7,7 @@
 </head>
 
 <body>
+<%- include("main-nav"); _%>
     <div id="article-headline">
         <img id="article-thumbnail" src="/articles/images/<%= article.id %>.png" class="no-select">
         <%_ if (articleStyle.title_position == "thumbnail") { _%>

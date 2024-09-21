@@ -1,0 +1,55 @@
+    <div id="cover"></div>
+    <div id="main-nav">
+        <div id="main-nav-button">
+            <input type="checkbox" id="main-nav-button-checkbox">
+            <span></span><span></span><span></span>
+        </div>
+        <div id="hamburger-menu">
+            <h1 class="colour-complement-background" id="website-logo"><a href="/">Licăriri</a></h1>
+            <hr>
+            <form class="searchbar" action="/query" method="GET">
+                <input required name="any" type="text" placeholder="Caută...">
+                <button type="submit"><i class="fa fa-search"></i></button>
+            </form>
+            <ul id="links">
+                <li><a href="https://www.instagram.com/c.n.mesota" target="_blank"><i class="fa fa-instagram"></i></a></li>
+                <li><a href="https://www.facebook.com/cn.mesota.bv" target="_blank"><i class="fa fa-facebook"></i></a></li>
+                <li><a href="mailto:licariri@mesota.ro"><i class="fa fa-envelope-o"></i></a></li>
+            </ul>
+        </div>
+        <script>
+            const menuCheckbox = document.getElementById("main-nav-button-checkbox");
+            const mainNav = document.getElementById("hamburger-menu");
+            const websiteLogo = document.getElementById("website-logo");
+            menuCheckbox.checked = false;
+            window.addEventListener("click", (evt) => {
+                if(mainNav.classList.contains("open") && !document.getElementById("hamburger-menu").contains(evt.target)) {
+                    menuCheckbox.checked = false;
+                    mainNav.classList.remove("open");
+                    websiteLogo.classList.remove("open");
+                    document.body.classList.remove("open");
+                }
+            })
+            menuCheckbox.addEventListener("change", function() {
+                if (this.checked) {
+                    mainNav.classList.add("open");
+                    websiteLogo.classList.add("open");
+                    document.body.classList.add("open");
+                } else {
+                    mainNav.classList.remove("open");
+                    websiteLogo.classList.remove("open");
+                    document.body.classList.remove("open");
+                }
+            })
+            const oneREM = parseFloat(getComputedStyle(document.documentElement).fontSize);
+            const mediaQueryPX = 800 + 4 * oneREM;
+            window.addEventListener("resize", (evt) => {
+                if (window.innerWidth <= mediaQueryPX) {
+                    websiteLogo.classList.remove("colour-complement-background");
+                } else {
+                    websiteLogo.classList.add("colour-complement-background");
+                }
+            })
+            window.dispatchEvent(new Event('resize'));
+        </script>
+    </div>
