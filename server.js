@@ -63,6 +63,7 @@ app.use(bodyParser.urlencoded({ extended: true, }));
 app.use(cookieParser());
 
 app.get("/css/licariri.css", requestLogger, (_, res) => res.sendFile(__dirname + "/views/css/licariri.css"));
+app.get("/mesotalogo.png", requestLogger, (_, res) => res.sendFile(__dirname + "/mesotalogo.png"));
 app.get("/css/admin.css", requestLogger, identifyAuthorisedUser, forbidUnauthorised, (_, res) => res.sendFile(__dirname + "/views/css/admin.css"));
 app.get("/admin/user.png", requestLogger, identifyAuthorisedUser, forbidUnauthorised, (_, res) => res.sendFile(__dirname + "/appdata/user.png"));
 app.use("/articles/images", requestLogger, express.static(PUBLIC_ARTICLE_IMAGES_PATH));

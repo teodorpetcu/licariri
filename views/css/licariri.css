@@ -7,9 +7,12 @@
 
 html,
 body {
+    position: absolute;
     margin: 0;
     padding: 0;
     width: 100%;
+    min-height: 100%;
+    height: auto;
 }
 
 #cover {
@@ -103,6 +106,16 @@ body.open *:not(#main-nav) {
     }
 }
 
+#hamburger-menu-logo {
+    a {
+        color: black;
+        transition: color 0.1s ease-in-out;
+    }
+    a:hover {
+        color: #c05050;
+    }
+}
+
 #main-nav {
     #main-nav-button {
         z-index: 10;
@@ -184,25 +197,52 @@ body.open *:not(#main-nav) {
     }
 
     #hamburger-menu {
+        overflow: auto !important;
         font-size: 1.2rem;
         hr {
             margin: 12px;
         }
         #links {
             font-size: 1.5rem;
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
             margin: 0;
             padding: 0;
-            transform: translateX(-50%);
             li {
+                display: inline-block;
+                padding: 7px;
+                height: 1.5rem;
+                vertical-align: middle;
                 a {
+                    display: inline-block;
                     color: black;
+                    height: 1.5rem;
+                    img {
+                        height: 100%;
+                        margin: 0;
+                        padding: 0;
+                    }
                 }
-                display: inline;
-                padding: 5px;
             }
+        }
+        #links a:hover {
+            color: #c05050;
+        }
+
+        .menu-link {
+            max-width: 500px;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: #eaeaea;
+            background-color: #c05050;
+            font-size: 1.7rem;
+            padding: 20px;
+            margin: 1.5rem auto 1.5rem auto;
+            border: 1px solid black;
+            border-radius: 16px;
+            display: block;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .menu-link:hover {
+            background-color: #ff9040;
         }
     }
 }
@@ -709,10 +749,19 @@ hr {
         font-size: 1.1rem;
     }
     button {
+        outline: none;
         cursor: pointer;
         transition: background-color 0.2s;
         border: 1px solid black;
     }
+}
+
+#copyright {
+    text-align: center;
+    width: 100%;
+    background-color: #ffffff;
+    margin: 1rem 0 0 0;
+    margin-inline: auto;
 }
 
 /************ MEDIA QUERIES ************/
@@ -737,6 +786,9 @@ hr {
 }
 
 @media(max-width: calc(800px + 4rem)) {
+    #hamburger-menu-logo {
+        display: none;
+    }
     #website-logo {
         position: absolute !important;
         top: 10px !important;
