@@ -193,6 +193,8 @@ body.open *:not(#main-nav) {
             position: absolute;
             bottom: 10px;
             left: 50%;
+            margin: 0;
+            padding: 0;
             transform: translateX(-50%);
             li {
                 a {
