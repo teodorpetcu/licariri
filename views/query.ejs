@@ -15,8 +15,8 @@
         </div>
     </div>
     <div id="query-page-body">
+    <h1><%= message _%></h1>
     <%_ if (articles.length > 0) { _%>
-    <h1><%= successMessage _%></h1>
     <div id="query-results-grid" style="text-align: center">
         <%_ for (article of articles) { _%>
         <div class="article-queried">
@@ -47,7 +47,6 @@
         <%_ } _%>
     </div>
     <%_ } else { _%>
-    <h1><%= failureMessage _%></h1>
     <div id="searchbar-container">
     <h2>Poți încerca să efectuezi o căutare nouă:</h2>
     <form class="searchbar" action="/query" method="GET">

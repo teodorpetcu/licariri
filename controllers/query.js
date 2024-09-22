@@ -18,12 +18,15 @@ const renderQueryPage = async (query) => {
     let tag = query.tag;
     let text = query.text;
     let exactMatch = true;
-    let successMessage = "Rezultatele căutării:";
-    let failureMessage = "Ne pare rău, nu am putut găsi nimic!";
+    let message = "";
+    let successMessage = "";
+    let failureMessage = "";
     let searchPageTitle = "Căutare - Revista Licăriri";
 
     if (any) {
-        failureMessage = `Ne pare rău, nu am putut găsi nimic pentru: ${any}`;
+        failureMessage = `Ne pare rău, nu am putut găsi nimic pentru «${any}»:`;
+        successMessage = `Rezultatele căutării pentru «${any}»:`;
+        searchPageTitle = `Căutare: ${any} - Revista Licăriri`
         author = any;
         tag = any;
         text = any;
@@ -78,6 +81,7 @@ const renderQueryPage = async (query) => {
         if (!author && !tag) {
             successMessage = `Articole ce conțin «${text}»`;
             failureMessage = `Ne pare rău, nu am putut găsi nici un articol care să conțină «${text}»`;
+            searchPageTitle = `Căutare: ${text} - Revista Licăriri`
         }
     }
 
@@ -89,9 +93,15 @@ const renderQueryPage = async (query) => {
     }
     searchResults.sort((a,b) => b.timestamp - a.timestamp);
 
+    if (searchResults.length) {
+        message = successMessage;
+    } else {
+        message = failureMessage;
+    }
+
     return new Promise((resolve) => {
         ejs.renderFile(__dirname + "/../views/query.ejs",
-                {articles: searchResults, searchPageTitle, successMessage, failureMessage},
+                {articles: searchResults, searchPageTitle, message},
                 (err, res) => {
                     if (err) {
                         logger.error(err);
