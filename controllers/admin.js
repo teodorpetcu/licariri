@@ -51,11 +51,15 @@ const paginate = (arr, pageSize) => {
 
 const get_adminPannelPage = async (req, res) => {
     if (req.user) {
+        let usersPages = []
+        if (req.user.privilege >= USER_PRIVILEGES["SUPERUSER"]) {
+            usersPages = paginate(await usersDatabase.getAllUsers(), 12);
+        }
         let draftArticlesPages = paginate(await articleDatabase.searchArticles("stage", "draft"), 12);
         let publicArticlesPages = paginate(await articleDatabase.searchArticles("stage", "public"), 12);
         let trashArticlesPages = paginate(await articleDatabase.searchArticles("stage", "trash"), 12);
         let pdfprints = paginate(await articleDatabase.getAllPDFPrintsSorted(), 12);
-        res.render("admin", {publicArticlesPages, draftArticlesPages, trashArticlesPages, pdfprints, user: req.user, canManageUsers: req.user.privilege == USER_PRIVILEGES["SUPERUSER"]});
+        res.render("admin", {publicArticlesPages, draftArticlesPages, trashArticlesPages, pdfprints, user: req.user, usersPages});
     } else {
         res.render("login", {});
     }

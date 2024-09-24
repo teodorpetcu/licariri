@@ -15,7 +15,7 @@
 
         <hr>
         <button id="inputButton-tab-changePassword">Schimbă-ți parola</button>
-        <%_ if (canManageUsers) { _%>
+        <%_ if (usersPages) { _%>
         <button id="inputButton-tab-manageUsers">Gestionare utilizatori</button>
         <%_ } _%>
         <button id="inputButton-tab-userActivity">Activitate utilizatori</button>
@@ -57,16 +57,36 @@
                 </div>
             </form>
         </div>
-        <!-- todo: hide on regular users -->
-        <div id="tab-manageUsers">
+        <%_ if (usersPages) { _%>
+        <div id="tab-manageUsers" class="article-list">
+            <h1>Gestionare utilizatori</h1>
+            <%_ for ([pageNumber, page] of usersPages.entries()) { _%>
+            <div id="tab-manageUsers-page<%= pageNumber %>" class="article-page<% if (pageNumber == 0) { %> active-page<%_ } _%>">
+                <%_ for ([userIndex, user] of page.entries()) { _%>
+                <div class="article-row">
+                    <span><%= pageNumber * usersPages[0].length + userIndex + 1 %>.</span>
+                    <span><%= user.id %></span>
+                    <span><%= user.name %></span>
+                    <span><%= user.privilege%></span>
+                </div>
+                <%_ } _%>
+            </div>
+            <%_ } _%>
+            <div class="page-selector">
+                <h5>Pagina:</h5>
+                <%_ for (let i = 0; i < usersPages.length; i++) { _%>
+                <button id="inputButton-manageUsers-page<%= i %>" <%_ if (i == 0) { _%>class="active-page-button"<%_ }%>><%= i  + 1 %></button>
+                <%_ } _%>
+            </div>
         </div>
+        <%_ } _%>
         <div id="tab-userActivity">
         </div>
         <div id="tab-articlesPublished" class="article-list">
             <h1>Articole publicate</h1>
             <%_ if (publicArticlesPages.length) { _%>
             <%_ for ([pageNumber, page] of publicArticlesPages.entries()) { _%>
-            <div id="tab-articlesPublished-page<%= pageNumber %>" class="article-page<%_ if (pageNumber == 0) { _%> active-page<%_ } _%>">
+            <div id="tab-articlesPublished-page<%= pageNumber %>" class="article-page<% if (pageNumber == 0) { %> active-page<%_ } _%>">
                 <%_ for ([articleIndex, article] of page.entries()) { _%>
                 <div class="article-row">
                     <p><%= pageNumber * publicArticlesPages[0].length + articleIndex + 1 %>.</p>
@@ -107,7 +127,7 @@
             </div>
             <%_ if (draftArticlesPages.length) { _%>
             <%_ for ([pageNumber, page] of draftArticlesPages.entries()) { _%>
-            <div id="tab-articlesDrafts-page<%= pageNumber %>" class="article-page<%_ if (pageNumber == 0) { _%> active-page<%_ } _%>">
+            <div id="tab-articlesDrafts-page<%= pageNumber %>" class="article-page<% if (pageNumber == 0) { %> active-page<%_ } _%>">
                 <%_ for ([articleIndex, article] of page.entries()) { _%>
                 <div class="article-row">
                     <p><%= pageNumber * draftArticlesPages[0].length + articleIndex + 1 %>.</p>
@@ -149,7 +169,7 @@
             <h1>Articole în coșul de gunoi</h1>
             <%_ if (trashArticlesPages.length) { _%>
             <%_ for ([pageNumber, page] of trashArticlesPages.entries()) { _%>
-            <div id="tab-articlesTrash-page<%= pageNumber %>" class="article-page<%_ if (pageNumber == 0) { _%> active-page<%_ } _%>">
+            <div id="tab-articlesTrash-page<%= pageNumber %>" class="article-page<% if (pageNumber == 0) { %> active-page<%_ } _%>">
                 <%_ for ([articleIndex, article] of page.entries()) { _%>
                 <div class="article-row">
                     <p><%= pageNumber * trashArticlesPages[0].length + articleIndex + 1 %>.</p>
@@ -185,7 +205,7 @@
             <h1>Ediții ale revistei publicate pe site</h1>
             <%_ if (pdfprints.length) { _%>
             <%_ for ([pageNumber, page] of pdfprints.entries()) { _%>
-            <div id="tab-pdfprints-page<%= pageNumber %>" class="article-page<%_ if (pageNumber == 0) { _%> active-page<%_ } _%>">
+            <div id="tab-pdfprints-page<%= pageNumber %>" class="article-page<% if (pageNumber == 0) { %> active-page<%_ } _%>">
                 <%_ for ([pdfprintIndex, pdfprint] of page.entries()) { _%>
                 <div class="article-row pdfprint-row">
                     <p><%= pageNumber * pdfprints[0].length + pdfprintIndex + 1 %>.</p>
@@ -242,7 +262,9 @@
     let activeTab = "articlesDrafts";
     const tabs = [
         "changePassword",
-        "manageUsers", // might want to hide this
+        <%_ if (usersPages) { _%>
+        "manageUsers",
+        <%_ } _%>
         "userActivity",
         "articlesPublished",
         "articlesDrafts",
@@ -265,19 +287,23 @@
 
     const refreshPage = (tab, page) => {
         document.getElementsByClassName("active-tab")[0].getElementsByClassName("active-page")[0].classList.remove("active-page");
-        document.getElementById(`tab-articles${tab}-page${page}`).classList.add("active-page");
+        document.getElementById(`tab-${tab}-page${page}`).classList.add("active-page");
         document.getElementsByClassName("active-tab")[0].getElementsByClassName("active-page-button")[0].classList.remove("active-page-button");
-        document.getElementById(`inputButton-articles${tab}-page${page}`).classList.add("active-page-button");
+        document.getElementById(`inputButton-${tab}-page${page}`).classList.add("active-page-button");
     }
 
-    for (let [j, k] of [["Drafts", <%= draftArticlesPages.length %>],
-                        ["Published", <%= publicArticlesPages.length %>],
-                        ["Trash", <%= trashArticlesPages.length %>]]) {
+    for (let [j, k] of [["articlesDrafts", <%= draftArticlesPages.length %>],
+                        ["articlesPublished", <%= publicArticlesPages.length %>],
+                        ["articlesTrash", <%= trashArticlesPages.length %>]]) {
         for (let i = 0; i < k; i++) {
-            document.getElementById(`inputButton-articles${j}-page${i}`)
-                .addEventListener("click", () => {refreshPage(j, i)});
+            document.getElementById(`inputButton-${j}-page${i}`).addEventListener("click", () => {refreshPage(j, i)});
         }
     }
+    <%_ if (usersPages) { _%>
+    for (let i = 0; i < <%= usersPages.length %>; i++) {
+        document.getElementById(`inputButton-manageUsers-page${i}`).addEventListener("click", () => {refreshPage("manageUsers", i)});
+    }
+    <%_ } _%>
 
 </script>
 

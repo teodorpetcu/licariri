@@ -214,6 +214,27 @@ class UsersDatabase extends Database {
             this.errorLogger
         );
     }
+
+    /**
+     * Return all users in the database, sorted from highest to lowest privilege
+     * @param {string} token - Token of the session
+     * @returns {Promise<User|undefined>}
+     */
+    getAllUsers = async () => {
+        return new Promise((resolve)=> {
+            this.db.all('SELECT * FROM users ORDER BY privilege DESC', [], (err, rows) => {
+                if (err) {
+                    logger.error(`database '${this.path}': ${err}`);
+                    return resolve(undefined);
+                } else if (rows === undefined) {
+                    logger.error(`database '${this.path}': getAllUsers() rows undefined`);
+                    return resolve(undefined);
+                } else {
+                    return resolve(rows.map((row) => new User(row.id, row.name, row.privilege)));
+                }
+            })
+        });
+    }
 }
 
 const usersDatabase = new UsersDatabase(USERS_DATABASE_PATH);
