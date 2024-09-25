@@ -29,7 +29,12 @@ const identifyAuthorisedUser = async (req, _, next) => {
  */
 const forbidUnauthorised = async (req, res, next) => {
     if (req.user) {
-        next();
+        if (req.user.suspended) {
+            res.status(401).send("Ne pare rău, contul tău a fost suspendat.");
+            usersDatabase.removeSession(req.cookies.session);
+        } else {
+            next();
+        }
     } else {
         res.status(404).render("404");
     }
