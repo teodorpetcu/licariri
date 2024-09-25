@@ -116,7 +116,7 @@ const post_adminAddUser = async (req, res) => {
         res.sendStatus(401);
     } else {
         let privilege = USER_PRIVILEGES[req.body.privilege];
-        let user = new User(req.body.id, req.body.name, privilege);
+        let user = new User(req.body.id, privilege);
         await usersDatabase.addUser(user, req.body.password);
         await usersDatabase.addActivity(req.user, "adduser", user.id); // NOTE: req.user =/= user
         res.sendStatus(200);
@@ -133,6 +133,26 @@ const post_adminChangeUserPassword = async (req, res) => {
     }
 }
 
+const post_adminSuspendUser = async (req, res) => {
+    let userID = req.body.id;
+    let suspend = req.body.suspend;
+    // TODO: check server-side if the user requesting suspension's privilege is
+    // less than or equal to the user to be suspended, and abort if that's the
+    // case
+    if (req.user.privilege < USER_PRIVILEGES["SUPERUSER"]) {
+        res.status(404).render("404");
+    } else {
+        if (suspend == 1) {
+            await usersDatabase.addActivity(req.user, "suspendUser", userID);
+            usersDatabase.suspendUser(userID);
+        } else {
+            await usersDatabase.addActivity(req.user, "unSuspendUser", userID);
+            usersDatabase.unSuspendUser(userID);
+        }
+        res.sendStatus(200);
+    }
+}
+
 module.exports = {
     identifyAuthorisedUser,
     forbidUnauthorised,
@@ -143,4 +163,5 @@ module.exports = {
     post_adminLogout,
     post_adminAddUser,
     post_adminChangeUserPassword,
+    post_adminSuspendUser,
 }

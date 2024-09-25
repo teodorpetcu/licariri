@@ -63,11 +63,23 @@
             <h1>Gestionare utilizatori</h1>
             <%_ for ([pageNumber, page] of usersPages.entries()) { _%>
             <div id="tab-manageUsers-page<%= pageNumber %>" class="article-page<% if (pageNumber == 0) { %> active-page<%_ } _%>">
-                <%_ for ([userIndex, user] of page.entries()) { _%>
-                <div class="article-row">
+                <%_ for ([userIndex, o_user] of page.entries()) { _%>
+                <div class="article-row pdfprint-row">
                     <span><%= pageNumber * usersPages[0].length + userIndex + 1 %>.</span>
-                    <span><%= user.id %></span>
-                    <span><%= user.privilege%></span>
+                    <span><%= o_user.id %></span>
+                    <span><%= o_user.privilege%></span>
+                    <%_ if (o_user.id != user.id && o_user.privilege != user.privilege) { _%>
+                    <form action="/admin/user/suspend" method="POST">
+                        <input type="hidden" name="id" value="<%= o_user.id %>">
+                        <%_ if (o_user.suspended == 1) { _%>
+                        <input type="hidden" name="suspend" value="0">
+                        <input type="submit" value="Anulează suspendarea">
+                        <%_ } else { _%>
+                        <input type="hidden" name="suspend" value="1">
+                        <input type="submit" value="Suspendează">
+                        <%_ } _%>
+                    </form>
+                        <%_ } _%>
                 </div>
                 <%_ } _%>
             </div>
@@ -84,7 +96,7 @@
             <form action="/admin/user/add" method="post" autocomplete="off">
                 <div>
                     <label>Nume și prenume:</label>
-                    <input required type="text" name="name" placeholder="Ion Popescu">
+                    <input required type="text" name="id" placeholder="Ion Popescu">
                 </div>
                 <div>
                     <label>Privilegiu:</label>

@@ -33,6 +33,7 @@ const {
     post_adminLoginCheck,
     post_adminLogout,
     post_adminChangeUserPassword,
+    post_adminSuspendUser,
 } = require("./controllers/admin.js")
 
 const {
@@ -89,6 +90,7 @@ app.post("/admin/articles/:articleID", requestLogger, identifyAuthorisedUser, fo
 app.post("/admin/articles/stage", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_updateArticleStage);
 //app.post("/admin/articles/remove", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminRemoveArticle);
 app.post("/admin/user/add", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddUser);
+app.post("/admin/user/suspend", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminSuspendUser);
 app.post("/admin/user/password", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminChangeUserPassword);
 app.post("/admin/pdfprints/add", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddPDFprint);
 app.post("/admin/pdfprints/remove", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminRemovePDFprint);

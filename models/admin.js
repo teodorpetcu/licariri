@@ -235,6 +235,14 @@ class UsersDatabase extends Database {
             })
         });
     }
+
+    suspendUser = async (userID) => {
+        this.db.run(`UPDATE users SET suspended = 1 WHERE id = ?`, [userID], this.errorLogger);
+    }
+
+    unSuspendUser = async (userID) => {
+        this.db.run(`UPDATE users SET suspended = 0 WHERE id = ?`, [userID], this.errorLogger);
+    }
 }
 
 const usersDatabase = new UsersDatabase(USERS_DATABASE_PATH);
