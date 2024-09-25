@@ -126,7 +126,7 @@
                 }
             }
         }
-        #tab-changePassword, #tab-addpdfprint {
+        #tab-changePassword, #tab-addpdfprint, #tab-addUser {
             text-align: center;
             border-radius: 10px;
             padding: 15px;

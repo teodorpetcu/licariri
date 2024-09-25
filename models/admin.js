@@ -28,13 +28,13 @@ const validatePassword = async (password, hash) => {
 class User {
     /**
      * @param {string} id
-     * @param {string} name
      * @param {number} privilege
+     * @param {bool} suspended
      */
-    constructor(id, name, privilege) {
+    constructor(id, privilege, suspended = 0) {
         this.id = id;
-        this.name = name;
         this.privilege = privilege;
+        this.suspended = suspended;
     }
 }
 
@@ -70,8 +70,8 @@ class UsersDatabase extends Database {
         this.db.exec(`CREATE TABLE IF NOT EXISTS users
             (
                 id          TEXT NOT NULL,
-                name        TEXT NOT NULL,
                 privilege   INT,
+                suspended   INT,
                 password    TEXT NOT NULL,
                 UNIQUE (id)
             );
@@ -114,7 +114,7 @@ class UsersDatabase extends Database {
     addUser = async (user, pass) => {
         let hash = await hashPassword(pass);
         this.db.run('INSERT INTO users VALUES(?, ?, ?, ?)',
-            [user.id, user.name, user.privilege, hash],
+            [user.id, user.privilege, user.suspended, hash],
             this.errorLogger
         );
     }
@@ -187,7 +187,7 @@ class UsersDatabase extends Database {
                 } else if (row === undefined) {
                     return resolve(undefined);
                 } else {
-                    return resolve(new User(row.id, row.name, row.privilege));
+                    return resolve(new User(row.id, row.privilege, row.suspended));
                 }
             })
         });
@@ -230,7 +230,7 @@ class UsersDatabase extends Database {
                     logger.error(`database '${this.path}': getAllUsers() rows undefined`);
                     return resolve(undefined);
                 } else {
-                    return resolve(rows.map((row) => new User(row.id, row.name, row.privilege)));
+                    return resolve(rows.map((row) => new User(row.id, row.privilege, row.suspended)));
                 }
             })
         });

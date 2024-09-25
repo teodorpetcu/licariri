@@ -9,7 +9,6 @@ const serverPrivateIP = ip.address();
 const {
     get_mainPage,
     get_articlePage,
-    get_adminPDFprintPage,
 
     post_adminAddArticle,
     //post_adminRemoveArticle,
@@ -26,10 +25,9 @@ const {
     identifyAuthorisedUser,
     forbidUnauthorised,
 
+    get_adminLoginPage,
     get_adminPannelPage,
     get_adminAddArticle,
-    get_adminAddUserPage,
-    get_adminChangeUserPassword,
 
     post_adminAddUser,
     post_adminLoginCheck,
@@ -78,19 +76,18 @@ app.get("/query", requestLogger, get_queryPage);
 app.get("/articles/:articleID", get_articlePage);
 
 // TODO: limit the amount of login attempts
-app.get("/admin", requestLogger, identifyAuthorisedUser, get_adminPannelPage);
+app.get("/login", requestLogger, identifyAuthorisedUser, get_adminLoginPage);
+
+app.get("/admin", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminPannelPage);
 
 app.get("/admin/articles/new", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminAddArticle);
 app.get("/admin/articles/:articleID", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminAddArticle);
-app.get("/admin/user/add", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminAddUserPage);
-app.get("/admin/user/password", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminChangeUserPassword);
-app.get("/admin/pdfprints", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminPDFprintPage);
 
 app.post("/admin", requestLogger, post_adminLoginCheck);
 app.post("/admin/logout", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminLogout);
 app.post("/admin/articles/:articleID", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddArticle);
-app.post("/admin/stage", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_updateArticleStage);
-//app.post("/admin/remove", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminRemoveArticle);
+app.post("/admin/articles/stage", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_updateArticleStage);
+//app.post("/admin/articles/remove", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminRemoveArticle);
 app.post("/admin/user/add", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddUser);
 app.post("/admin/user/password", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminChangeUserPassword);
 app.post("/admin/pdfprints/add", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddPDFprint);

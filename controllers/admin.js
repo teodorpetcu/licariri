@@ -49,6 +49,14 @@ const paginate = (arr, pageSize) => {
     )
 }
 
+const get_adminLoginPage = async (req, res) => {
+    if (req.user) {
+        res.redirect("/admin");
+    } else {
+        res.render("login", {});
+    }
+}
+
 const get_adminPannelPage = async (req, res) => {
     if (req.user) {
         let usersPages = []
@@ -61,7 +69,7 @@ const get_adminPannelPage = async (req, res) => {
         let pdfprints = paginate(await articleDatabase.getAllPDFPrintsSorted(), 12);
         res.render("admin", {publicArticlesPages, draftArticlesPages, trashArticlesPages, pdfprints, user: req.user, usersPages});
     } else {
-        res.render("login", {});
+        res.redirect("login", {});
     }
 }
 
@@ -103,14 +111,6 @@ const get_adminAddArticle = async (req, res) => {
     res.render("edit-article-contents", {defaults: article});
 }
 
-const get_adminAddUserPage = async (req, res) => {
-    if (req.user.privilege < USER_PRIVILEGES["SUPERUSER"]) {
-        res.sendStatus(401);
-    } else {
-        res.render("add-user", {});
-    }
-}
-
 const post_adminAddUser = async (req, res) => {
     if (req.user.privilege < USER_PRIVILEGES["SUPERUSER"]) {
         res.sendStatus(401);
@@ -121,10 +121,6 @@ const post_adminAddUser = async (req, res) => {
         await usersDatabase.addActivity(req.user, "adduser", user.id); // NOTE: req.user =/= user
         res.sendStatus(200);
     }
-}
-
-const get_adminChangeUserPassword = async (_, res) => {
-    res.render("change-password");
 }
 
 const post_adminChangeUserPassword = async (req, res) => {
@@ -141,11 +137,10 @@ module.exports = {
     identifyAuthorisedUser,
     forbidUnauthorised,
     get_adminPannelPage,
+    get_adminLoginPage,
     get_adminAddArticle,
     post_adminLoginCheck,
     post_adminLogout,
-    get_adminAddUserPage,
     post_adminAddUser,
-    get_adminChangeUserPassword,
     post_adminChangeUserPassword,
 }

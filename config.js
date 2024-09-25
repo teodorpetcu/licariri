@@ -25,7 +25,7 @@ const CONFIG = {
     QUERY_PRERENDERS: APPDATA_DIR + "/query",
     USER_PRIVILEGES: {
         SUPERUSER: 100,
-        COORDONATOR: 50,
+        COORDINATOR: 50,
         USER: 10,
     },
     MAIN_PAGE_HTML_FILE_PATH: APPDATA_DIR + "/main.html",

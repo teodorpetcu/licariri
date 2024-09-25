@@ -10,13 +10,14 @@
 <body id="admin-page">
     <div id="panels">
         <div id="userinfo">
-            <img src="/admin/user.png"><p><%= user.name %></p>
+            <img src="/admin/user.png"><p><%= user.id %></p>
         </div>
 
         <hr>
         <button id="inputButton-tab-changePassword">Schimbă-ți parola</button>
         <%_ if (usersPages) { _%>
         <button id="inputButton-tab-manageUsers">Gestionare utilizatori</button>
+        <button id="inputButton-tab-addUser">Adaugă utilizator</button>
         <%_ } _%>
         <button id="inputButton-tab-userActivity">Activitate utilizatori</button>
 
@@ -38,7 +39,7 @@
     </div>
     <div id="content">
         <div id="tab-changePassword">
-            <h2>Autentificat ca: <%= user.name %></h2>
+            <h2>Autentificat ca: <%= user.id %></h2>
             <form action="/admin/user/password" method="post" autocomplete="off">
                 <div>
                     <label for="original-password">Parola originală:</label>
@@ -66,7 +67,6 @@
                 <div class="article-row">
                     <span><%= pageNumber * usersPages[0].length + userIndex + 1 %>.</span>
                     <span><%= user.id %></span>
-                    <span><%= user.name %></span>
                     <span><%= user.privilege%></span>
                 </div>
                 <%_ } _%>
@@ -78,6 +78,31 @@
                 <button id="inputButton-manageUsers-page<%= i %>" <%_ if (i == 0) { _%>class="active-page-button"<%_ }%>><%= i  + 1 %></button>
                 <%_ } _%>
             </div>
+        </div>
+        <div id="tab-addUser">
+            <h1>Adaugă utilizator</h1>
+            <form action="/admin/user/add" method="post" autocomplete="off">
+                <div>
+                    <label>Nume și prenume:</label>
+                    <input required type="text" name="name" placeholder="Ion Popescu">
+                </div>
+                <div>
+                    <label>Privilegiu:</label>
+                    <select required name="privilege">
+                        <option value="SUPERUSER">Superutilizator</option>
+                        <option value="COORDINATOR">Coordonator</option>
+                        <option value="USER">muritor de rând</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Parolă:</label>
+                    <input required type="password"
+                        name="password" placeholder="">
+                </div>
+                <div>
+                    <input type="submit" value="Adaugă">
+                </div>
+            </form>
         </div>
         <%_ } _%>
         <div id="tab-userActivity">
@@ -97,7 +122,7 @@
                     <form action="/admin/articles/<%= article.id %>" method="GET">
                         <button type="submit">Modifică</button>
                     </form>
-                    <form action="/admin/stage" method="post">
+                    <form action="/admin/articles/stage" method="post">
                         <input type="hidden" name="id"
                             value="<%= article.id %>">
                         <input type="hidden" name="stage"
@@ -139,12 +164,12 @@
                         <button type="submit">Modifică</button>
                     </form>
 
-                    <form action="/admin/stage" method="post">
+                    <form action="/admin/articles/stage" method="post">
                         <input type="hidden" name="id" value="<%= article.id %>">
                         <input type="hidden" name="stage" value="public">
                         <input type="submit" onclick="return confirm(`Sigur vrei să publici articolul?`)" value="Publică articolul"></input>
                     </form>
-                    <form action="/admin/stage" method="post">
+                    <form action="/admin/articles/stage" method="post">
                         <input type="hidden" name="id"
                             value="<%= article.id %>">
                         <input type="hidden" name="stage"
@@ -180,7 +205,7 @@
                     <form action="/admin/articles/<%= article.id %>" method="GET">
                         <button type="submit">Modifică</button>
                     </form>
-                    <form action="/admin/stage" method="post">
+                    <form action="/admin/articles/stage" method="post">
                         <input type="hidden" name="id"
                             value="<%= article.id %>">
                         <input type="hidden" name="stage"
@@ -264,6 +289,7 @@
         "changePassword",
         <%_ if (usersPages) { _%>
         "manageUsers",
+        "addUser",
         <%_ } _%>
         "userActivity",
         "articlesPublished",

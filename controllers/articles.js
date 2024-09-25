@@ -175,11 +175,6 @@ const post_adminRemoveArticle = async (req, res) => {
     res.redirect("/admin");
 }
 
-const get_adminPDFprintPage = async (_, res) => {
-    const pdfprints = await articleDatabase.getAllPDFPrintsSorted();
-    res.render("pdfprints", { pdfprints });
-}
-
 const post_adminAddPDFprint = async (req, res) => {
     let timestamp = new Date(req.body.date).getTime();
     let description = req.body.description;
@@ -215,7 +210,6 @@ const post_adminRemovePDFprint = async (req, res) => {
 module.exports = {
     get_mainPage,
     get_articlePage,
-    get_adminPDFprintPage,
     post_adminAddArticle,
     post_adminRemoveArticle,
     post_adminAddPDFprint,
