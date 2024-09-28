@@ -52,20 +52,23 @@
 <%- include("copyright") _%>
 </body>
 
-<%_ if (articleStyle.subtitle_position == "thumbnail") { _%>
+<%_ if (article.subtitle && articleStyle.subtitle_position == "thumbnail") { _%>
 <script>
     articleTitle = document.getElementById("article-title");
     articleSubtitle = document.getElementById("article-subtitle");
     articleSubtitle.style.marginTop =
         (articleTitle.offsetHeight +
         articleSubtitle.offsetHeight) + "px";
-    <%_ if (articleStyle.dropcap == "dropcap") { _%>
+</script>
+<%_ } _%>
+
+<%_ if (articleStyle.dropcap == "dropcap") { _%>
+<script>
     articleContents = document.getElementById("article-contents");
     while(articleContents.firstChild.nodeName == "#text") {
         articleContents.removeChild(articleContents.firstChild);
     }
     articleContents.firstChild.classList.add("dropcap");
-    <%_ } _%>
 </script>
 <%_ } _%>
 
