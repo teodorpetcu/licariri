@@ -177,24 +177,6 @@ body.open *:not(#main-nav) {
     #hamburger-menu.open {
         right: 0;
     }
-    #hamburger-menu .searchbar {
-        border-radius: 20px;
-        overflow: hidden;
-        padding: 0px;
-        width: 90%;
-        grid-template-columns: 1fr 50px;
-        * {
-            border: none;
-        }
-        input {
-            padding: 10px;
-            margin: -2px;
-        }
-        button {
-            border-left: 1px solid black;
-            margin: -2px;
-        }
-    }
 
     #hamburger-menu {
         overflow: auto !important;
@@ -733,26 +715,30 @@ hr {
 }
 
 .searchbar {
-    max-width: 400px;
-    margin: 0 auto;
-    text-align: center;
     display: grid;
-    grid-template-columns: 1fr 32px;
-    width: 95%;
+    grid-template-columns: 1fr 50px;
+    border-radius: 20px;
+    overflow: hidden;
+    max-width: 400px;
+    width: 90%;
     height: 60px;;
+    padding: 0px;
+    margin: 0 auto;
     border: 1px solid black;
-    background-color: #ffffff90;
-    padding: 10px;
-    border-radius: 5px;
     * {
         font-family: "Hind";
         font-size: 1.1rem;
+        border: none;
+    }
+    input {
+        padding: 10px;
+        margin: -2px;
     }
     button {
+        border-left: 1px solid black !important;
         outline: none;
         cursor: pointer;
         transition: background-color 0.2s;
-        border: 1px solid black;
     }
 }
 
