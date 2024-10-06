@@ -26,8 +26,9 @@ const {
  * @param {ArticleStyle} articleStyle
  * @returns {Promise<boolean>} `true` if the function succeeds, `false` if it doesn't
  */
-const renderArticlePage = async (article, articleStyle) => {
+const renderArticlePage = async (article, plainTextContent, articleStyle) => {
     return new Promise((resolve) => {
+        article.contents = marked.parse(plainTextContent).trim();
         ejs.renderFile(__dirname + "/../views/article.ejs", {article, articleStyle}, async (err, res) => {
             if (err) {
                 logger.error(err);
@@ -37,7 +38,7 @@ const renderArticlePage = async (article, articleStyle) => {
                 // the article a lot easier later; same as with those "articleStyle"
                 // options
                 fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`, res);
-                fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, article.contents);
+                fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, plainTextContent);
                 return resolve(true);
             }
         });
@@ -135,9 +136,8 @@ const post_adminAddArticle = async (req, res) => {
         viewsDatabase.renameArticle(originalArticle.id, article.id);
     }
 
-    article.contents = marked.parse(content).trim();
-    let renderStatus = await renderArticlePage(article, articleStyle);
-    if (! renderStatus) {
+    let renderStatus = await renderArticlePage(article, content, articleStyle);
+    if (renderStatus) {
         // if the article happens to be renamed, then its ID changes, and
         // its leftover files which won't be used anymore must be destroyed
         if (originalArticle.id && originalArticle.id != article.id) {
@@ -152,7 +152,7 @@ const post_adminAddArticle = async (req, res) => {
             if (originalArticle.id && originalArticle.id != article.id) {
                 fs.unlinkSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.png`)
             }
-            // it's not actually a png image, but who cares
+            // it's not actually a guaranteed PNG image, but who cares
             fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.png`, thumbnail.data);
         }
         await queryDatabase.unindexArticle(originalArticle.id);
