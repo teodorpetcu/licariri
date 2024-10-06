@@ -154,6 +154,11 @@ const post_adminAddArticle = async (req, res) => {
             }
             // it's not actually a guaranteed PNG image, but who cares
             fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.png`, thumbnail.data);
+        } else if (originalArticle.id && originalArticle.id != article.id) {
+            if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.png`)) {
+                fs.renameSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.png`,
+                                `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.png`);
+            }
         }
         await queryDatabase.unindexArticle(originalArticle.id);
         await queryDatabase.indexArticle(article.id, content);
