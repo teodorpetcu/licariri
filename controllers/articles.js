@@ -20,6 +20,47 @@ const {
     PDFPRINT_THUMBNAILS_PATH,
 } = require("../config.js");
 
+/**
+ * @param {Article} article
+ * @param {string} content
+ * @param {ArticleStyle} articleStyle
+ * @returns {Promise<boolean>} `true` if the function succeeds, `false` if it doesn't
+ */
+const renderArticlePage = async (article, articleStyle) => {
+    return new Promise((resolve) => {
+        ejs.renderFile(__dirname + "/../views/article.ejs", {article, articleStyle}, async (err, res) => {
+            if (err) {
+                logger.error(err);
+                return resolve(false);
+            } else {
+                // the contents are also saved in markdown since it makes editing
+                // the article a lot easier later; same as with those "articleStyle"
+                // options
+                fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`, res);
+                fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, article.contents);
+                return resolve(true);
+            }
+        });
+    })
+}
+
+/**
+ * Take all articles in the database and re-render their HTML file
+ */
+const updateAllArticles = async () => {
+    const articles = await articleDatabase.searchArticles();
+    articles.forEach(async (article) => {
+        article.contents = fs.readFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, {encoding: "utf-8"});
+        let articleStyle = await articleDatabase.getArticleStyle(article.id);
+        let status = await renderArticlePage(article, articleStyle);
+        if (status) {
+            logger.info(`re-rendered article "${article.id}"`);
+        } else {
+            logger.error(`failed re-rendering article "${article.id}"`);
+        }
+    });
+}
+
 const updateMainPage = async () => {
     const pdfprints = await articleDatabase.getAllPDFPrintsSorted();
     let articles = await articleDatabase.searchArticles("stage", "public");
@@ -90,40 +131,31 @@ const post_adminAddArticle = async (req, res) => {
     }
 
     article.contents = marked.parse(content).trim();
-    await ejs.renderFile(__dirname + "/../views/article.ejs", {article, articleStyle}, async (err, res) => {
-        if (err) {
-            logger.error(err);
-        } else {
-            // if the article happens to be renamed, then its ID changes, and
-            // its leftover files which won't be used anymore must be destroyed
-            if (originalArticle.id && originalArticle.id != article.id) {
-                if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.html`)) {
-                    fs.unlinkSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.html`)
-                }
-                if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.md`)) {
-                    fs.unlinkSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.md`)
-                }
+    if (! await renderArticlePage(article, articleStyle)) {
+        // if the article happens to be renamed, then its ID changes, and
+        // its leftover files which won't be used anymore must be destroyed
+        if (originalArticle.id && originalArticle.id != article.id) {
+            if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.html`)) {
+                fs.unlinkSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.html`)
             }
-            if (thumbnail && /^image/.test(thumbnail.mimetype)) {
-                if (originalArticle.id && originalArticle.id != article.id) {
-                    fs.unlinkSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.png`)
-                }
-                // it's not actually a png image, but who cares
-                fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.png`, thumbnail.data);
+            if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.md`)) {
+                fs.unlinkSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.md`)
             }
-            // the contents are also saved in markdown since it makes editing
-            // the article a lot easier later; same as with those "articleStyle"
-            // options
-            fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`, res);
-            fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, content);
-            await queryDatabase.unindexArticle(originalArticle.id);
-            await queryDatabase.indexArticle(article.id, content);
-            articleDatabase.updateMetadata(originalArticle.id, article);
-            articleDatabase.updateArticleStyles(originalArticle.id, article, articleStyle);
-            await updateMainPage();
-            usersDatabase.addActivity(req.user, "modify", article.id)
         }
-    });
+        if (thumbnail && /^image/.test(thumbnail.mimetype)) {
+            if (originalArticle.id && originalArticle.id != article.id) {
+                fs.unlinkSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.png`)
+            }
+            // it's not actually a png image, but who cares
+            fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.png`, thumbnail.data);
+        }
+        await queryDatabase.unindexArticle(originalArticle.id);
+        await queryDatabase.indexArticle(article.id, content);
+        articleDatabase.updateMetadata(originalArticle.id, article);
+        articleDatabase.updateArticleStyles(originalArticle.id, article, articleStyle);
+        await updateMainPage();
+        usersDatabase.addActivity(req.user, "modify", article.id)
+    }
 
     if (article.stage == "public") {
         // actually, editing public articles should be restricted to at least
