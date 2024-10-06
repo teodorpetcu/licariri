@@ -130,8 +130,14 @@ const post_adminAddArticle = async (req, res) => {
         article.title = originalArticle.title;
     }
 
+    // rename before rendering, as to keep track of the new view count
+    if (article.id != originalArticle.id) {
+        viewsDatabase.renameArticle(originalArticle.id, article.id);
+    }
+
     article.contents = marked.parse(content).trim();
-    if (! await renderArticlePage(article, articleStyle)) {
+    let renderStatus = await renderArticlePage(article, articleStyle);
+    if (! renderStatus) {
         // if the article happens to be renamed, then its ID changes, and
         // its leftover files which won't be used anymore must be destroyed
         if (originalArticle.id && originalArticle.id != article.id) {

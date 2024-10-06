@@ -68,6 +68,16 @@ class ViewsDatabase extends Database {
             });
         });
     }
+
+    /**
+     * For when the ID of an article changes.
+     * @param {string} originalID
+     * @param {string} newID
+     */
+    renameArticle = async (originalID, newID) => {
+        this.db.run('UPDATE article_views SET article_id = ? WHERE article_id = ?', [newID, originalID], this.errorLogger);
+        this.db.run('UPDATE article_requests SET article_requested = ? WHERE article_requested = ?', [newID, originalID], this.errorLogger);
+    }
 }
 
 const viewsDatabase = new ViewsDatabase(VIEWS_DATABASE_PATH);
