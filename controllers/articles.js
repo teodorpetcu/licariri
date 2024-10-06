@@ -51,9 +51,9 @@ const renderArticlePage = async (article, plainTextContent, articleStyle) => {
 const updateAllArticles = async () => {
     const articles = await articleDatabase.searchArticles();
     articles.forEach(async (article) => {
-        article.contents = fs.readFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, {encoding: "utf-8"});
+        let content = fs.readFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, {encoding: "utf-8"});
         let articleStyle = await articleDatabase.getArticleStyle(article.id);
-        let status = await renderArticlePage(article, articleStyle);
+        let status = await renderArticlePage(article, content, articleStyle);
         if (status) {
             logger.info(`re-rendered article "${article.id}"`);
         } else {
