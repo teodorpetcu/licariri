@@ -2,9 +2,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
-const ip = require("ip");
-
-const serverPrivateIP = ip.address();
 
 const {
     get_mainPage,
@@ -102,5 +99,5 @@ app.get("*", requestLogger, (req, res) => res.status(404).render("404", {url: re
 // TODO: ensure that we first connect to all the databases before starting to
 // listen on the internet
 app.listen(LISTENING_PORT, async () => {
-    logger.info(`web server up (http://${serverPrivateIP}:${LISTENING_PORT})`);
+    logger.info(`web server up`);
 });
