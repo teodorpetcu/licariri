@@ -202,7 +202,7 @@ class ArticleDatabase extends Database {
      *
      * If `key` is `undefined`, then all articles are returned
      *
-     * @param {string|undefined} key - Valid values are
+     * @param {string|undefined} key
      * @param {string} value
      * @returns {Promise<string[]|undefined>}
      */

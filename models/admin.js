@@ -53,6 +53,21 @@ class Session {
     }
 }
 
+class Activity {
+    /**
+     * @param {string} user_id
+     * @param {string} action
+     * @param {string} target
+     * @param {Date} timestamp - Optional
+     */
+    constructor(user_id, action, target, timestamp = new Date()) {
+        this.user_id = user_id;
+        this.action = action;
+        this.target = target;
+        this.timestamp = timestamp.valueOf();
+    }
+}
+
 class UsersDatabase extends Database {
     /**
      * Interface to a database holding authentication information
@@ -221,7 +236,7 @@ class UsersDatabase extends Database {
      * @returns {Promise<User|undefined>}
      */
     getAllUsers = async () => {
-        return new Promise((resolve)=> {
+        return new Promise((resolve) => {
             this.db.all('SELECT * FROM users ORDER BY privilege DESC', [], (err, rows) => {
                 if (err) {
                     logger.error(`database '${this.path}': ${err}`);
@@ -233,6 +248,23 @@ class UsersDatabase extends Database {
                     return resolve(rows.map((row) => new User(row.id, row.privilege, row.suspended)));
                 }
             })
+        });
+    }
+
+    /**
+     * @param {string} articleID
+     * @returns {Promise<Activity[]>}
+     */
+    getArticleModifications = async (articleID) => {
+        return new Promise((resolve) => {
+            this.db.all(`SELECT * FROM activity WHERE action = ? AND target = ? ORDER BY timestamp DESC`,
+                ["modify", articleID], (err, rows) => {
+                    if (err || rows === undefined) {
+                        return resolve([]);
+                    } else {
+                        return resolve(rows.map((row) => new Activity(row.user, row.action, row.target, row.timestamp)));
+                    }
+                });
         });
     }
 
@@ -249,7 +281,8 @@ const usersDatabase = new UsersDatabase(USERS_DATABASE_PATH);
 usersDatabase.init();
 
 module.exports = {
-    User,
     usersDatabase,
+    User,
     Session,
+    Activity,
 };
