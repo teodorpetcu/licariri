@@ -7,7 +7,7 @@ const { usersDatabase } = require("./models/admin.js");
 const { formatDate } = require("./models/types.js");
 
 const generateSitemapFile = async () => {
-    const articles = await articleDatabase.searchArticles();
+    const articles = await articleDatabase.searchArticles("stage", "public");
     const pdfprints = await articleDatabase.getAllPDFPrintsSorted();
 
     const escapeStringForXML = (str) => {
