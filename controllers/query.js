@@ -116,16 +116,18 @@ const renderQueryPage = async (query) => {
 
 const get_queryPage = async (req, res) => {
     if (req.query.author && !req.query.tag && !req.query.any && !req.query.text) {
-        // TODO: pre-render query pages more wisely
-        await prerenderQueryAsFile(req.query);
-        res.sendFile(QUERY_PRERENDERS + `/author=${req.query.author}.html`);
+        if (fs.existsSync(QUERY_PRERENDERS + `/author=${req.query.author}.html`)) {
+            res.sendFile(QUERY_PRERENDERS + `/author=${req.query.author}.html`);
+            return;
+        }
     } else if (req.query.tag && !req.query.author && !req.query.any && !req.query.text) {
-        await prerenderQueryAsFile(req.query);
-        res.sendFile(QUERY_PRERENDERS + `/tag=${req.query.tag}.html`);
-    } else {
-        const queryPage = await renderQueryPage(req.query);
-        res.send(queryPage);
+        if (fs.existsSync(QUERY_PRERENDERS + `/tag=${req.query.tag}.html`)) {
+            res.sendFile(QUERY_PRERENDERS + `/tag=${req.query.tag}.html`);
+            return;
+        }
     }
+    const queryPage = await renderQueryPage(req.query);
+    res.send(queryPage);
 }
 
 const prerenderQueryAsFile = async (query) => {
@@ -143,4 +145,5 @@ const prerenderQueryAsFile = async (query) => {
 
 module.exports = {
     get_queryPage,
+    prerenderQueryAsFile,
 };

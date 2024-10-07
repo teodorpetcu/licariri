@@ -6,6 +6,7 @@ const pdf2img = require("pdf-img-convert")
 const { logger } = require("../logger.js")
 
 const { Author, Article, ArticleStyle } = require("../models/types.js");
+const { prerenderQueryAsFile } = require("./query.js");
 const { PDFPrint } = require("../models/types.js");
 const { articleDatabase } = require("../models/articles.js");
 const { queryDatabase } = require("../models/query.js");
@@ -160,6 +161,12 @@ const post_adminAddArticle = async (req, res) => {
                                 `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.png`);
             }
         }
+        article.authors.forEach((author) =>
+            prerenderQueryAsFile({author: author.name})
+        )
+        article.tags.forEach((tag) =>
+            prerenderQueryAsFile({tag: tag})
+        )
         await queryDatabase.unindexArticle(originalArticle.id);
         await queryDatabase.indexArticle(article.id, content);
         articleDatabase.updateMetadata(originalArticle.id, article);
