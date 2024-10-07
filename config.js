@@ -28,6 +28,7 @@ const CONFIG = {
         COORDINATOR: 50,
         USER: 10,
     },
+    SITEMAP_FILE_PATH: APPDATA_DIR + "/sitemap.xml",
     MAIN_PAGE_HTML_FILE_PATH: APPDATA_DIR + "/main.html",
     MAIN_PAGE_BACKGROUND_IMAGE_PATH: APPDATA_DIR + "/main.png",
     MAIN_PAGE_ARTICLE_COUNT: 12,

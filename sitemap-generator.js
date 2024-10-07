@@ -1,6 +1,7 @@
 const fs = require("fs");
 
-const { WEBSITE_URL, APPDATA_DIR } = require("./config.js");
+const { logger } = require("./logger.js");
+const { WEBSITE_URL, SITEMAP_FILE_PATH } = require("./config.js");
 const { articleDatabase } = require("./models/articles.js");
 const { formatDate } = require("./models/types.js");
 
@@ -13,7 +14,8 @@ const generateSitemapFile = async () => {
                     .replaceAll("<", "&lt;")
                     .replaceAll(">", "&gt;")
                     .replaceAll("'", "&apos;")
-                    .replaceAll("\"", "&quot;");
+                    .replaceAll("\"", "&quot;")
+                    .replaceAll(" ", "%20");
     }
 
     let sitemapXML =
@@ -47,9 +49,12 @@ const generateSitemapFile = async () => {
     })
     sitemapXML += `\n</urlset>`
 
-    fs.writeFileSync(APPDATA_DIR + "/sitemap.xml", sitemapXML, { encoding: "utf-8" });
+    fs.writeFileSync(SITEMAP_FILE_PATH, sitemapXML, { encoding: "utf-8" });
+    logger.info("sitemap updated")
     return;
 }
+
+generateSitemapFile();
 
 module.exports = {
     generateSitemapFile,
