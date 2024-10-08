@@ -137,9 +137,10 @@ const post_adminAddArticle = async (req, res) => {
         article.title = originalArticle.title;
     }
 
-    // rename before rendering, as to keep track of the new view count
+    // to keep consistent with other databases
     if (article.id != originalArticle.id) {
         viewsDatabase.renameArticle(originalArticle.id, article.id);
+        articleDatabase.removeAllCredits(originalArticle.id);
     }
 
     let renderStatus = await renderArticlePage(article, content, articleStyle, credits);
