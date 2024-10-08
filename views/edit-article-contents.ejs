@@ -45,6 +45,15 @@
                     <div id="input-tags"></div>
                     <button class="add-button" type="button" id="tags-add-button">Adaugă</button>
                 </div>
+
+                <label>Redactor(i):</label>
+                <input id="input-article-editorial-credit" type="text" name="credit_editorial">
+
+                <label>Tehnoredactor(i):</label>
+                <input id="input-article-dtp-credit" type="text" name="credit_dtp">
+
+                <label>Realizator(i) grafică/thumbnail:</label>
+                <input id="input-article-thumbnail-credit" type="text" name="credit_thumbnail">
             </div>
             <div id="right">
                 <textarea required id="input-article-contents"
@@ -62,9 +71,6 @@
             <input id="input-article-thumbnail"
                 type="file" accept="image/*" name="thumbnail">
             <button type="button" id="reset-thumbnail-button">RESETARE</button>
-            <label>Persoana care a realizat thumbnail-ul:</label>
-            <input id="input-article-thumbnail-credit"
-                type="text" placeholder="Nume Prenume" name="thumbnail_credit">
 
             <label>Ascunde titlul din thumbnail:</label>
             <input id="input-title-hide-on-thumbnail"
@@ -159,8 +165,8 @@
             <h2 id="article-subtitle"></h2>
         </div>
         <div id="article-contributors">
-            <!--<h5>Redactare:</h5>-->
-            <!--<h5>Tehnoredactare:</h5>-->
+            <h5 id="article-editorial-credit"></h5>
+            <h5 id="article-dtp-credit"></h5>
             <h5 id="article-thumbnail-credit"></h5>
         </div>
         <div id="article-info">
@@ -174,6 +180,7 @@
         </div>
         <hr style="width: 18%">
         <div id="article-contents"></div>
+    <%- include("copyright") _%>
     </div>
 </body>
 
@@ -236,6 +243,8 @@
 
     // on DTP page
     const inputThumbnail = document.getElementById("input-article-thumbnail");
+    const inputEditorialCredits = document.getElementById("input-article-editorial-credit");
+    const inputDTPCredits = document.getElementById("input-article-dtp-credit");
     const inputThumbnailCredits = document.getElementById("input-article-thumbnail-credit");
     const inputThumbnailReset = document.getElementById("reset-thumbnail-button");
     const inputTitleContrastBackground = document.getElementById("input-title-contrast-background");
@@ -258,6 +267,8 @@
 
     // on Preview page
     const previewArticleThumbnail = document.getElementById("article-thumbnail");
+    const previewArticleEditorialCredits = document.getElementById("article-editorial-credit");
+    const previewArticleDTPCredits = document.getElementById("article-dtp-credit");
     const previewArticleThumbnailCredits = document.getElementById("article-thumbnail-credit");
     const previewArticleTitle = document.getElementById("article-title");
     const previewArticleSubtitle = document.getElementById("article-subtitle");
@@ -415,6 +426,16 @@
             previewArticleThumbnailCredits.textContent = "Grafică: " + inputThumbnailCredits.value;
         } else {
             previewArticleThumbnailCredits.textContent = "";
+        }
+        if (inputEditorialCredits.value) {
+            previewArticleEditorialCredits.textContent = "Redactare: " + inputEditorialCredits.value;
+        } else {
+            previewArticleEditorialCredits.textContent = "";
+        }
+        if (inputDTPCredits.value) {
+            previewArticleDTPCredits.textContent = "Tehnoredactare: " + inputDTPCredits.value;
+        } else {
+            previewArticleDTPCredits.textContent = "";
         }
 
         if (inputTitlePosition.value == "article") {
