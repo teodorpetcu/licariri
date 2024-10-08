@@ -46,7 +46,20 @@
             <li><a href="/query/?tag=<%= tag _%>">#<%= tag _%></a></li>
             <%_ } _%>
         </ul>
-    <hr style="width: 60%"></hr>
+        <hr style="width: 60%"></hr>
+        <%_ if (credits) { _%>
+        <div id="article-contributors">
+            <%_ if (credits.editorial.length) { _%>
+            <h5>Redactare: <%= credits.editorial.sort().join(", ") %></h5>
+            <%_ } _%>
+            <%_ if (credits.dtp.length) { _%>
+            <h5>Tehnoredactare: <%= credits.dtp.sort().join(", ") %></h5>
+            <%_ } _%>
+            <%_ if (credits.thumbnail.length) { _%>
+            <h5>Grafică: <%= credits.thumbnail.sort().join(", ") %></h5>
+            <%_ } _%>
+        </div>
+        <%_ } _%>
     </div>
     <div id="article-contents">
 <%- article.contents _%>

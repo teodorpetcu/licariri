@@ -27,10 +27,10 @@ const {
  * @param {ArticleStyle} articleStyle
  * @returns {Promise<boolean>} `true` if the function succeeds, `false` if it doesn't
  */
-const renderArticlePage = async (article, plainTextContent, articleStyle) => {
+const renderArticlePage = async (article, plainTextContent, articleStyle, credits) => {
     return new Promise((resolve) => {
         article.contents = marked.parse(plainTextContent).trim();
-        ejs.renderFile(__dirname + "/../views/article.ejs", {article, articleStyle}, async (err, res) => {
+        ejs.renderFile(__dirname + "/../views/article.ejs", {article, articleStyle, credits}, async (err, res) => {
             if (err) {
                 logger.error(err);
                 return resolve(false);
@@ -117,6 +117,11 @@ const post_adminAddArticle = async (req, res) => {
     const content = req.body.content.replace(/([<>\\])/g, "\\$1");
     const description = content.slice(0, 250);
     // TODO: thumbnail credits (+ don't forget trim)
+    const credits = {
+        editorial: req.body.credit_editorial.split(", ").map((name) => name.trim()).filter((a) => a),
+        dtp: req.body.credit_dtp.split(", ").map((name) => name.trim()).filter((a) => a),
+        thumbnail: req.body.credit_thumbnail.split(", ").map((name) => name.trim()).filter((a) => a),
+    }
 
     let thumbnail = req.files ? req.files.thumbnail : undefined;
 
@@ -137,7 +142,7 @@ const post_adminAddArticle = async (req, res) => {
         viewsDatabase.renameArticle(originalArticle.id, article.id);
     }
 
-    let renderStatus = await renderArticlePage(article, content, articleStyle);
+    let renderStatus = await renderArticlePage(article, content, articleStyle, credits);
     if (renderStatus) {
         // if the article happens to be renamed, then its ID changes, and
         // its leftover files which won't be used anymore must be destroyed
@@ -160,6 +165,16 @@ const post_adminAddArticle = async (req, res) => {
                 fs.renameSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.png`,
                                 `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.png`);
             }
+        }
+        articleDatabase.removeAllCredits(articleID);
+        for (let credit of credits.editorial) {
+            articleDatabase.addArticleCredit(articleID, credit, "editorial");
+        }
+        for (let credit of credits.dtp) {
+            articleDatabase.addArticleCredit(articleID, credit, "dtp");
+        }
+        for (let credit of credits.thumbnail) {
+            articleDatabase.addArticleCredit(articleID, credit, "thumbnail");
         }
         article.authors.forEach((author) =>
             prerenderQueryAsFile({author: author.name})

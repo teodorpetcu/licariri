@@ -67,9 +67,9 @@ class ArticleDatabase extends Database {
             );
             CREATE TABLE IF NOT EXISTS article_credits
             (
-                id      TEXT NOT NULL,
-                person  TEXT NOT NULL,
-                reason  TEXT NOT NULL,
+                id              TEXT NOT NULL,
+                name            TEXT NOT NULL,
+                credited_for    TEXT NOT NULL,
                 FOREIGN KEY (id) REFERENCES articles (id)
             );
             CREATE TABLE IF NOT EXISTS pdfprints
@@ -191,6 +191,7 @@ class ArticleDatabase extends Database {
             this.db.run('DELETE FROM articles WHERE id = ?', [id], this.errorLogger);
             this.db.run('DELETE FROM article_authors WHERE id = ?', [id], this.errorLogger);
             this.db.run('DELETE FROM article_tags WHERE id = ?', [id], this.errorLogger);
+            this.db.run('DELETE FROM article_credits WHERE id = ?', [id], this.errorLogger);
             return resolve();
         });
     }
@@ -371,6 +372,54 @@ class ArticleDatabase extends Database {
                 }
             )
         });
+    }
+
+    /**
+     * @param {string} articleID
+     * @param {string} name
+     * @param {string} credited_for
+     */
+    addArticleCredit = async (articleID, name, credited_for) => {
+        if (name) {
+            this.db.run('INSERT OR REPLACE INTO article_credits VALUES (?, ?, ?)',
+                [articleID, name, credited_for],
+                this.errorLogger
+            );
+        }
+    }
+
+    /**
+     * @param {string} articleID
+     */
+    removeAllCredits = async (articleID) => {
+        this.db.run('DELETE FROM article_credits WHERE id = ?',
+            [articleID],
+            this.errorLogger
+        );
+    }
+
+    /**
+     * @param {string} articleID
+     * @returns {Promise<Object[]>}
+     */
+    getArticleCredits = async (articleID) => {
+        return new Promise((resolve) => {
+            this.db.all('SELECT * FROM article_credits WHERE id = ?', [articleID], (err, rows) => {
+                if(err) {
+                    this.errorLogger(err);
+                    return resolve([]);
+                } else if (rows === undefined){
+                    return resolve([]);
+                } else {
+                    let raw = rows.map((row) => {return {name: row.name, credit: row.credited_for}});
+                    return resolve({
+                        editorial: raw.filter((x) => x.credit == "editorial").map((x) => x.name),
+                        dtp: raw.filter((x) => x.credit == "dtp").map((x) => x.name),
+                        thumbnail: raw.filter((x) => x.credit == "thumbnail").map((x) => x.name),
+                    })
+                }
+            })
+        })
     }
 }
 
