@@ -218,6 +218,25 @@ class UsersDatabase extends Database {
     }
 
     /**
+     * Return all sessions in the database, regardless of user or timestamp
+     * @return {Promise<Session[]|undefined>}
+     */
+    getAllSessions = async () => {
+        return new Promise((resolve) => {
+            this.db.all('SELECT * FROM sessions', [], (err, rows) => {
+                if (err) {
+                    logger.error(`database '${this.path}': ${err}`);
+                    return resolve(undefined);
+                } else if (rows === undefined) {
+                    return resolve(undefined);
+                } else {
+                    return resolve(rows.map((row) => new Session(row.user_id, row.token, new Date(row.timestamp))));
+                }
+            });
+        })
+    }
+
+    /**
      * Add a record to the `activity` table
      * @param {User} user
      * @param {string} action
