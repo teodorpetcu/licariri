@@ -115,13 +115,13 @@ const post_adminAddArticle = async (req, res) => {
                         ? [req.body["tags[]"].trim()]
                         : []);
     const content = req.body.content.replace(/([<>\\])/g, "\\$1");
-    const description = content.slice(0, 250);
-    // TODO: thumbnail credits (+ don't forget trim)
     const credits = {
         editorial: req.body.credit_editorial.split(", ").map((name) => name.trim()).filter((a) => a),
         dtp: req.body.credit_dtp.split(", ").map((name) => name.trim()).filter((a) => a),
         thumbnail: req.body.credit_thumbnail.split(", ").map((name) => name.trim()).filter((a) => a),
     }
+    // TODO: improve description selection
+    const description = content.slice(0, 250);
 
     let thumbnail = req.files ? req.files.thumbnail : undefined;
 
