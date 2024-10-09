@@ -3,9 +3,9 @@ const {
     USER_PRIVILEGES,
     ARTICLES_DIRECTORY,
 } = require("../config.js");
-const { usersDatabase, User, Session } = require("../models/admin.js");
+const { usersDatabase, User, Session, Activity } = require("../models/admin.js");
 const { articleDatabase } = require("../models/articles.js");
-const { Article } = require("../models/types.js");
+const { Article, formatDate } = require("../models/types.js");
 const { logger } = require("../logger.js");
 
 const fs = require("fs");
@@ -190,12 +190,47 @@ const post_adminSuspendUser = async (req, res) => {
     }
 }
 
+const activityToHumanReadable = (activity) => {
+    if (activity.action == "modify")  {
+        activity.action = `a modificat articolul`;
+    } else if (activity.action == "rename") {
+        let [oldName, newName] = activity.target.split("::");
+        activity.action = `a schimbat numele articolului`;
+        activity.target = `${oldName} ÎN ${newName}`
+    } else if (activity.action == "publish") {
+        activity.action = `a publicat articolul`;
+    } else if (activity.action == "draft") {
+        activity.action = `a pus articolul în SCHIȚE`;
+    } else if (activity.action == "trash") {
+        activity.action = `a pus articolul în COȘUL DE GUNOI`;
+    } else if (activity.action == "adduser") {
+        activity.action = `a adăugat utilizatorul`;
+    } else if (activity.action == "suspendUser") {
+        activity.action = `a suspendat utilizatorul`;
+    } else if (activity.action == "unsuspendUser") {
+        activity.action = `a eliminat suspendarea utilizatorului`;
+    } else if (activity.action == "addpdfprint") {
+        activity.action = `a adăugat ediția print a revistei`;
+    } else if (activity.action == "rmpdfprint") {
+        activity.action = `a șters ediția print a revistei`;
+    }
+    let t = new Date(activity.timestamp);
+    activity.timestamp = `${formatDate(t)} ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}`;
+    return activity;
+}
+
+const get_adminActivitiesPage = async (_, res) => {
+    const activities = (await usersDatabase.getAllActivities()).map((activity) => activityToHumanReadable(activity));
+    res.render("activities", {activities});
+}
+
 module.exports = {
     identifyAuthorisedUser,
     forbidUnauthorised,
     get_adminPannelPage,
     get_adminLoginPage,
     get_adminAddArticle,
+    get_adminActivitiesPage,
     post_adminLoginCheck,
     post_adminLogout,
     post_adminAddUser,

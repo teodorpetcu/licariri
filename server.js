@@ -25,6 +25,7 @@ const {
     get_adminLoginPage,
     get_adminPannelPage,
     get_adminAddArticle,
+    get_adminActivitiesPage,
 
     post_adminAddUser,
     post_adminLoginCheck,
@@ -79,6 +80,8 @@ app.get("/articles/:articleID", get_articlePage);
 app.get("/login", requestLogger, identifyAuthorisedUser, get_adminLoginPage);
 
 app.get("/admin", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminPannelPage);
+
+app.get("/admin/activity", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminActivitiesPage);
 
 app.get("/admin/articles/new", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminAddArticle);
 app.get("/admin/articles/:articleID", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminAddArticle);

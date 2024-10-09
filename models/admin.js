@@ -264,6 +264,22 @@ class UsersDatabase extends Database {
         );
     }
 
+    getAllActivities = async () => {
+        return new Promise((resolve) => {
+            this.db.all('SELECT * FROM activity ORDER BY timestamp DESC', [], (err, rows) => {
+                if (err) {
+                    logger.error(`database '${this.path}': ${err}`);
+                    return resolve(undefined);
+                } else if (rows === undefined) {
+                    logger.error(`database '${this.path}': getAllUsers() rows undefined`);
+                    return resolve(undefined);
+                } else {
+                    return resolve(rows.map((row) => new Activity(row.user, row.action, row.target, new Date(row.timestamp))));
+                }
+            })
+        })
+    }
+
     /**
      * Return all users in the database, sorted from highest to lowest privilege
      * @param {string} token - Token of the session

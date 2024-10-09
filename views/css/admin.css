@@ -279,3 +279,22 @@ input {
         background-color: #DD2222;
     }
 }
+
+#user-activity-grid {
+    width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+.user-activity-grid-row {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 2fr 2fr 3fr;
+    border: 1px solid black;
+    align-items: center;
+    p {
+        margin: 0;
+        padding: 10px;
+    }
+}
