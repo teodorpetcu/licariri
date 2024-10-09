@@ -43,7 +43,7 @@ body.open *:not(#main-nav) {
 #main-page {
     color: var(--font-color);
     background-size: cover;
-    background-image: url(/main.png);
+    background-image: url(/main.webp);
     background-attachment: fixed;
     background-position: center top;
 }

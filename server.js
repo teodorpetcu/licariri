@@ -62,15 +62,15 @@ app.use(bodyParser.urlencoded({ extended: true, }));
 app.use(cookieParser());
 
 app.get("/css/licariri.css", requestLogger, (_, res) => res.sendFile(__dirname + "/views/css/licariri.css"));
-app.get("/mesotalogo.png", requestLogger, (_, res) => res.sendFile(__dirname + "/mesotalogo.png"));
+app.get("/mesotalogo.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/mesotalogo.webp"));
 app.get("/css/admin.css", requestLogger, identifyAuthorisedUser, forbidUnauthorised, (_, res) => res.sendFile(__dirname + "/views/css/admin.css"));
-app.get("/admin/user.png", requestLogger, identifyAuthorisedUser, forbidUnauthorised, (_, res) => res.sendFile(__dirname + "/appdata/user.png"));
+app.get("/admin/user.webp", requestLogger, identifyAuthorisedUser, forbidUnauthorised, (_, res) => res.sendFile(__dirname + "/appdata/user.webp"));
 app.use("/articles/images", requestLogger, express.static(PUBLIC_ARTICLE_IMAGES_PATH));
 app.use("/pdfprints", requestLogger, express.static(PDFPRINT_CONTENTS_PATH));
 app.use("/pdfprints/thumbnails", requestLogger, express.static(PDFPRINT_THUMBNAILS_PATH));
 app.use("/admin/articles/images", requestLogger, identifyAuthorisedUser, forbidUnauthorised);
 app.use("/admin/articles/images", express.static(PUBLIC_ARTICLE_IMAGES_PATH), express.static(DRAFT_ARTICLE_IMAGES_PATH), express.static(TRASH_ARTICLE_IMAGES_PATH));
-app.get("/main.png", requestLogger, (_, res) => res.sendFile(MAIN_PAGE_BACKGROUND_IMAGE_PATH));
+app.get("/main.webp", requestLogger, (_, res) => res.sendFile(MAIN_PAGE_BACKGROUND_IMAGE_PATH));
 
 app.get("/", requestLogger, get_mainPage);
 app.get("/query", requestLogger, get_queryPage);

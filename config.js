@@ -30,7 +30,7 @@ const CONFIG = {
     },
     SITEMAP_FILE_PATH: APPDATA_DIR + "/sitemap.xml",
     MAIN_PAGE_HTML_FILE_PATH: APPDATA_DIR + "/main.html",
-    MAIN_PAGE_BACKGROUND_IMAGE_PATH: APPDATA_DIR + "/main.png",
+    MAIN_PAGE_BACKGROUND_IMAGE_PATH: APPDATA_DIR + "/main.webp",
     MAIN_PAGE_ARTICLE_COUNT: 12,
     COOKIE_OPTIONS: {
         httpOnly: true,
@@ -40,6 +40,7 @@ const CONFIG = {
     },
     SESSION_TOKEN_LENGTH: 64,
     HASH_COST: 15,
+    WEBP_COMPRESSION_QUALITY: 90, // percent
 };
 
 const mkdir_if_not_exists = (dir) => {

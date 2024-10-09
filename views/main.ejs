@@ -101,7 +101,7 @@
                     <%_ if (article.style.hide_title_in_thumbnail !== 'on') { _%>
                     <h1 style="font-family: <%= article.style.title_font %>; font-size: <%= article.style.title_fontsize_thumbnail %>rem; font-weight: <%= article.style.title_fontweight %>; color: <%= article.style.title_color %>" class="center<% if (article.style.title_fill_style === 'on') { %> colour-complement-background<%_ } _%>"><%= article.title %></h1>
                     <%_ } _%>
-                    <img src="/articles/images/<%= article.id %>.png">
+                    <img src="/articles/images/<%= article.id %>.webp">
                 </div>
             </a>
         <%_ } _%>
@@ -113,7 +113,7 @@
         <div id="pdfprint-thumbnail-grid">
         <%_ for (pdfprint of pdfprints) { _%>
             <div class="pdfprint-thumbnail">
-                <a href="/pdfprints/<%= pdfprint.description %>.pdf"><img src="/pdfprints/thumbnails/<%= pdfprint.description %>.png"></a>
+                <a href="/pdfprints/<%= pdfprint.description %>.pdf"><img src="/pdfprints/thumbnails/<%= pdfprint.description %>.webp"></a>
                 <br>
                 <a class="pdfprint-description" href="/pdfprints/<%= pdfprint.description %>.pdf"><%= pdfprint.description %></a>
             </div>

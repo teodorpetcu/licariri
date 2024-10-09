@@ -10,7 +10,7 @@
 <body>
 <%- include("main-nav"); _%>
     <div id="article-headline">
-        <img id="article-thumbnail" src="/articles/images/<%= article.id %>.png" class="no-select">
+        <img id="article-thumbnail" src="/articles/images/<%= article.id %>.webp" class="no-select">
         <%_ if (articleStyle.title_position == "thumbnail") { _%>
         <h1 id="article-title" style="font-family: <%= articleStyle.title_font %>; font-size: <%= articleStyle.title_fontsize_article %>rem; font-weight: <%= articleStyle.title_fontweight %>; color: <%= articleStyle.title_color %>" class="center<% if (articleStyle.title_fill_style === 'on') { %> colour-complement-background<%_ } _%>"><%= article.title _%></h1>
         <%_ } _%>

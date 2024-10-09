@@ -2,6 +2,7 @@ const marked = require("marked");
 const ejs = require("ejs");
 const fs = require("fs");
 const pdf2img = require("pdf-img-convert")
+const sharp = require("sharp");
 
 const { logger } = require("../logger.js")
 
@@ -19,6 +20,7 @@ const {
     PUBLIC_ARTICLE_CONTENTS_PATH,
     PDFPRINT_CONTENTS_PATH,
     PDFPRINT_THUMBNAILS_PATH,
+    WEBP_COMPRESSION_QUALITY,
 } = require("../config.js");
 
 /**
@@ -157,14 +159,16 @@ const post_adminAddArticle = async (req, res) => {
         }
         if (thumbnail && /^image/.test(thumbnail.mimetype)) {
             if (originalArticle.id && originalArticle.id != article.id) {
-                fs.unlinkSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.png`)
+                fs.unlinkSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.webp`)
             }
-            // it's not actually a guaranteed PNG image, but who cares
-            fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.png`, thumbnail.data);
+            sharp(thumbnail.data)
+                .webp({quality: WEBP_COMPRESSION_QUALITY})
+                .toFile(`${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.webp`)
+                .catch(err => logger.error(err));
         } else if (originalArticle.id && originalArticle.id != article.id) {
-            if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.png`)) {
-                fs.renameSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.png`,
-                                `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.png`);
+            if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.webp`)) {
+                fs.renameSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.webp`,
+                                `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.webp`);
             }
         }
         articleDatabase.removeAllCredits(articleID);
@@ -219,9 +223,9 @@ const post_updateArticleStage = async (req, res) => {
             fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.md`,
                            `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`)
         }
-        if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalStage}/images/${article.id}.png`)) {
-            fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/images/${article.id}.png`,
-                           `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.png`)
+        if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalStage}/images/${article.id}.webp`)) {
+            fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/images/${article.id}.webp`,
+                           `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.webp`)
         }
         articleDatabase.updateArticleStage(article);
         await updateMainPage();
@@ -260,7 +264,10 @@ const post_adminAddPDFprint = async (req, res) => {
                 height: 750,
                 page_numbers: [1],
             }))[0];
-        fs.writeFileSync(`${PDFPRINT_THUMBNAILS_PATH}/${pdfprint.description}.png`, thumbnail);
+        sharp(thumbnail.data)
+            .webp({quality: WEBP_COMPRESSION_QUALITY})
+            .toFile(`${PDFPRINT_THUMBNAILS_PATH}/${pdfprint.description}.webp`)
+            .catch(err => logger.error(err));
         await usersDatabase.addActivity(req.user, "addpdfprint", description)
         await updateMainPage();
         res.status(200).redirect("/admin/pdfprints");
