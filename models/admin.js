@@ -114,9 +114,9 @@ class UsersDatabase extends Database {
             }
         );
         // `activity` table action types:
-        //      ["modify", "publish", "draft", "trash"] articles
-        //      ["adduser", "suspenduser", "activateuser"] user
-        //      ["addpdfprint"] pdfprint
+        //      ["modify", "rename", "publish", "draft", "trash"] articles
+        //      ["adduser", "suspenduser", "unsuspenduser"] user
+        //      ["addpdfprint", "rmpdfprint"] pdfprint
     }
 
     /**
@@ -245,6 +245,21 @@ class UsersDatabase extends Database {
     addActivity = async (user, action, target) => {
         this.db.run('INSERT INTO activity VALUES (?, ?, ?, ?)',
             [Date.now(), user.id, action, target],
+            this.errorLogger
+        );
+    }
+
+    /**
+     * For every activity of type `action`, replace `oldTarget` with
+     * `newTarget`. Particularly useful for keeping proper references to article
+     * IDs when they get renamed.
+     * @param {string} action
+     * @param {string} oldTarget
+     * @param {string} newTarget
+     */
+    changeActivityTarget = async (action, oldTarget, newTarget) => {
+        this.db.run('UPDATE activity SET target = ? WHERE action = ? AND target = ?',
+            [newTarget, action, oldTarget],
             this.errorLogger
         );
     }

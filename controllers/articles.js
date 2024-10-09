@@ -188,6 +188,10 @@ const post_adminAddArticle = async (req, res) => {
         articleDatabase.updateMetadata(originalArticle.id, article);
         articleDatabase.updateArticleStyles(originalArticle.id, article, articleStyle);
         await updateMainPage();
+        if (article.id != originalArticle.id) {
+            usersDatabase.changeActivityTarget("modify", originalArticle.id, article.id);
+            usersDatabase.addActivity(req.user, "rename", originalArticle.id + "::" + article.id)
+        }
         usersDatabase.addActivity(req.user, "modify", article.id)
     }
 
