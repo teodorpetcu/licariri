@@ -122,13 +122,15 @@ const post_adminLoginCheck = async (req, res) => {
             cookieOptions.maxAge = 28 * MILISECONDS_IN_A_DAY; // 4 weeks
         }
         res.cookie("session", session.token, cookieOptions);
+        res.redirect("/admin");
+    } else {
+        res.redirect("/login");
     }
-    res.redirect("/admin");
 }
 
 const post_adminLogout = async(req, res) => {
     usersDatabase.removeSession(req.cookies.session);
-    res.redirect("/admin")
+    res.redirect("/login")
 }
 
 const get_adminAddArticle = async (req, res) => {

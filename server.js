@@ -78,6 +78,7 @@ app.get("/articles/:articleID", get_articlePage);
 
 // TODO: limit the amount of login attempts
 app.get("/login", requestLogger, identifyAuthorisedUser, get_adminLoginPage);
+app.post("/login", requestLogger, post_adminLoginCheck);
 
 app.get("/admin", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminPannelPage);
 
@@ -86,7 +87,6 @@ app.get("/admin/activity", requestLogger, identifyAuthorisedUser, forbidUnauthor
 app.get("/admin/articles/new", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminAddArticle);
 app.get("/admin/articles/:articleID", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminAddArticle);
 
-app.post("/admin", requestLogger, post_adminLoginCheck);
 app.post("/admin/logout", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminLogout);
 app.post("/admin/articles/:articleID", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddArticle);
 app.post("/admin/articles/stage", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_updateArticleStage);
