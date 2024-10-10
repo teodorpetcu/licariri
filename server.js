@@ -62,40 +62,43 @@ app.use(bodyParser.urlencoded({ extended: true, }));
 app.use(cookieParser());
 
 app.get("/css/licariri.css", requestLogger, (_, res) => res.sendFile(__dirname + "/views/css/licariri.css"));
+app.get("/main.webp", requestLogger, (_, res) => res.sendFile(MAIN_PAGE_BACKGROUND_IMAGE_PATH));
 app.get("/mesotalogo.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/mesotalogo.webp"));
-app.get("/css/admin.css", requestLogger, identifyAuthorisedUser, forbidUnauthorised, (_, res) => res.sendFile(__dirname + "/views/css/admin.css"));
-app.get("/admin/user.webp", requestLogger, identifyAuthorisedUser, forbidUnauthorised, (_, res) => res.sendFile(__dirname + "/appdata/user.webp"));
 app.use("/articles/images", requestLogger, express.static(PUBLIC_ARTICLE_IMAGES_PATH));
 app.use("/pdfprints", requestLogger, express.static(PDFPRINT_CONTENTS_PATH));
 app.use("/pdfprints/thumbnails", requestLogger, express.static(PDFPRINT_THUMBNAILS_PATH));
-app.use("/admin/articles/images", requestLogger, identifyAuthorisedUser, forbidUnauthorised);
-app.use("/admin/articles/images", express.static(PUBLIC_ARTICLE_IMAGES_PATH), express.static(DRAFT_ARTICLE_IMAGES_PATH), express.static(TRASH_ARTICLE_IMAGES_PATH));
-app.get("/main.webp", requestLogger, (_, res) => res.sendFile(MAIN_PAGE_BACKGROUND_IMAGE_PATH));
 
 app.get("/", requestLogger, get_mainPage);
 app.get("/query", requestLogger, get_queryPage);
 app.get("/articles/:articleID", get_articlePage);
 
 // TODO: limit the amount of login attempts
-app.get("/login", requestLogger, identifyAuthorisedUser, get_adminLoginPage);
+app.get("/login", requestLogger, get_adminLoginPage);
 app.post("/login", requestLogger, post_adminLoginCheck);
 
-app.get("/admin", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminPannelPage);
+app.use(["/admin", "/admin/*", "/css/admin.css"], identifyAuthorisedUser, forbidUnauthorised);
 
-app.get("/admin/activity", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminActivitiesPage);
+app.get("/css/admin.css", requestLogger, (_, res) => res.sendFile(__dirname + "/views/css/admin.css"));
+app.get("/admin", requestLogger, get_adminPannelPage);
 
-app.get("/admin/articles/new", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminAddArticle);
-app.get("/admin/articles/:articleID", requestLogger, identifyAuthorisedUser, forbidUnauthorised, get_adminAddArticle);
+app.get("/admin/activity", requestLogger, get_adminActivitiesPage);
 
-app.post("/admin/logout", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminLogout);
-app.post("/admin/articles/:articleID", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddArticle);
-app.post("/admin/articles/stage", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_updateArticleStage);
-//app.post("/admin/articles/remove", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminRemoveArticle);
-app.post("/admin/user/add", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddUser);
-app.post("/admin/user/suspend", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminSuspendUser);
-app.post("/admin/user/password", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminChangeUserPassword);
-app.post("/admin/pdfprints/add", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminAddPDFprint);
-app.post("/admin/pdfprints/remove", requestLogger, identifyAuthorisedUser, forbidUnauthorised, post_adminRemovePDFprint);
+app.get("/admin/articles/new", requestLogger, get_adminAddArticle);
+app.get("/admin/articles/:articleID", requestLogger, get_adminAddArticle);
+
+app.post("/admin/logout", requestLogger, post_adminLogout);
+app.post("/admin/articles/:articleID", requestLogger, post_adminAddArticle);
+app.post("/admin/articles/stage", requestLogger, post_updateArticleStage);
+//app.post("/admin/articles/remove", requestLogger, post_adminRemoveArticle);
+app.post("/admin/user/add", requestLogger, post_adminAddUser);
+app.post("/admin/user/suspend", requestLogger, post_adminSuspendUser);
+app.post("/admin/user/password", requestLogger, post_adminChangeUserPassword);
+app.post("/admin/pdfprints/add", requestLogger, post_adminAddPDFprint);
+app.post("/admin/pdfprints/remove", requestLogger, post_adminRemovePDFprint);
+
+app.get("/admin/user.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/appdata/user.webp"));
+app.use("/admin/articles/images", requestLogger);
+app.use("/admin/articles/images", express.static(PUBLIC_ARTICLE_IMAGES_PATH), express.static(DRAFT_ARTICLE_IMAGES_PATH), express.static(TRASH_ARTICLE_IMAGES_PATH));
 
 app.get("*", requestLogger, (req, res) => res.status(404).render("404", {url: req.url}));
 

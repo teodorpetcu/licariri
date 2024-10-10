@@ -106,7 +106,7 @@ const get_adminPannelPage = async (req, res) => {
         let pdfprints = paginate(await articleDatabase.getAllPDFPrintsSorted(), 12);
         res.render("admin", {publicArticlesPages, draftArticlesPages, trashArticlesPages, pdfprints, user: req.user, usersPages});
     } else {
-        res.redirect("login", {});
+        res.redirect("login");
     }
 }
 
