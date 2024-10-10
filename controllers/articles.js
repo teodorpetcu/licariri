@@ -101,7 +101,7 @@ const post_adminAddArticle = async (req, res) => {
 
     const stage = originalArticle.stage;
     const timestamp = new Date(originalArticle.timestamp);
-    const title = req.body.title.trim();
+    const title = req.body.title.replace(/\//g, "").trim();
     const subtitle = req.body.subtitle.trim();
     const language = req.body.language;
     const category = req.body.category;
@@ -251,7 +251,7 @@ const post_adminRemoveArticle = async (req, res) => {
 
 const post_adminAddPDFprint = async (req, res) => {
     let timestamp = new Date(req.body.date).getTime();
-    let description = req.body.description;
+    let description = req.body.description.replace(/\//g, "").trim();
     let pdffile = req.files ? req.files.pdffile : undefined;
     const pdfprint = new PDFPrint(timestamp, description);
 
