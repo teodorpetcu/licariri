@@ -1,4 +1,5 @@
 #!/usr/bin/bash
 
 cp $(dirname "$0")/licariri.config /etc/nginx/sites-available/licariri.config \
-    && systemctl restart nginx.service
+    && systemctl restart nginx.service \
+    && echo "successfully deployed nginx config"
