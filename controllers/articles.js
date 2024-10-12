@@ -171,15 +171,17 @@ const post_adminAddArticle = async (req, res) => {
         for (let credit of credits.thumbnail) {
             articleDatabase.addArticleCredit(articleID, credit, "thumbnail");
         }
-        article.authors.forEach((author) =>
-            prerenderQueryAsFile({author: author.name})
-        )
-        article.tags.forEach((tag) =>
-            prerenderQueryAsFile({tag: tag})
-        )
         queryDatabase.unindexArticle(originalArticle.id)
             .finally(() => queryDatabase.indexArticle(article.id, content));
-        articleDatabase.updateMetadata(originalArticle.id, article);
+        articleDatabase.updateMetadata(originalArticle.id, article)
+            .finally(() => Promise.all(
+                    article.authors.map((author) =>
+                        prerenderQueryAsFile({author: author.name})
+                    ).concat(article.tags.map((tag) =>
+                        prerenderQueryAsFile({tag: tag})
+                    ))
+                )
+            );
         articleDatabase.updateArticleStyles(originalArticle.id, article, articleStyle);
         updateMainPage();
         if (article.id != originalArticle.id) {

@@ -25,6 +25,11 @@ const renderQueryPage = async (query) => {
     let failureMessage = "";
     let searchPageTitle = "Căutare - Revista Licăriri";
 
+    let titlePromise = Promise.resolve([]);
+    let authorPromise = Promise.resolve([]);
+    let tagPromise = Promise.resolve([]);
+    let textPromise = Promise.resolve([]);
+
     if (any) {
         failureMessage = `Ne pare rău, nu am putut găsi nimic pentru «${any}»:`;
         successMessage = `Rezultatele căutării pentru «${any}»:`;
@@ -33,7 +38,7 @@ const renderQueryPage = async (query) => {
         tag = any;
         text = any;
         exactMatch = false;
-        articleIDs = articleIDs.concat(await articleDatabase.searchArticleIDs("title", any, exactMatch));
+        titlePromise = articleDatabase.searchArticleIDs("title", any, exactMatch);
     }
 
     // NOTE: if the `any` flag is NOT specified, then we return the articles
@@ -48,12 +53,7 @@ const renderQueryPage = async (query) => {
     // handle this it would be ideal if the page wouldn't refresh every time.
 
     if (author) {
-        let foundArticleIDs = await articleDatabase.searchArticleIDs("author", author, exactMatch);
-        if (any || !articleIDs.length) {
-            articleIDs = articleIDs.concat(foundArticleIDs);
-        } else {
-            articleIDs = articleIDs.filter((id) => foundArticleIDs.includes(id));
-        }
+        authorPromise = articleDatabase.searchArticleIDs("author", author, exactMatch);
         if (!tag && !text) {
             successMessage = `Articole scrise de ${author}:`;
             failureMessage = `Ne pare rău, nu am putut găsi nici un articol scris de ${author}`;
@@ -61,12 +61,7 @@ const renderQueryPage = async (query) => {
         }
     }
     if (tag) {
-        let foundArticleIDs = await articleDatabase.searchArticleIDs("tag", tag, exactMatch);
-        if (any || !articleIDs.length) {
-            articleIDs = articleIDs.concat(foundArticleIDs);
-        } else {
-            articleIDs = articleIDs.filter((id) => foundArticleIDs.includes(id));
-        }
+        tagPromise = articleDatabase.searchArticleIDs("tag", tag, exactMatch);
         if (!author && !text) {
             successMessage = `Articole cu tag-ul #${tag}:`;
             failureMessage = `Ne pare rău, nu am putut găsi nici un articol cu tag-ul #${tag}`;
@@ -74,12 +69,7 @@ const renderQueryPage = async (query) => {
         }
     }
     if (text) {
-        let foundArticleIDs = await queryDatabase.findArticles(text);
-        if (any || !articleIDs.length) {
-            articleIDs = articleIDs.concat(foundArticleIDs);
-        } else {
-            articleIDs = articleIDs.filter((id) => foundArticleIDs.includes(id));
-        }
+        textPromise = queryDatabase.findArticles(text);
         if (!author && !tag) {
             successMessage = `Articole ce conțin «${text}»`;
             failureMessage = `Ne pare rău, nu am putut găsi nici un articol care să conțină «${text}»`;
@@ -87,11 +77,30 @@ const renderQueryPage = async (query) => {
         }
     }
 
-    articleIDs = [... new Set(articleIDs)];
+    // using Promise.all() is potentially much faster than using `await` on each
+    // of them individually
+    let subqueries = await Promise.all([
+        titlePromise,
+        authorPromise,
+        tagPromise,
+        textPromise,
+    ]);
+    articleIDs = [... new Set(subqueries.flat(1))];
 
-    searchResults = await Promise.all(articleIDs.map(async (id) => articleDatabase.getArticle(id)))
+    if (! any) {
+        for (subquery of subqueries) {
+            if (subquery.length) {
+                articleIDs = articleIDs.filter(id => subquery.includes(id));
+            }
+        }
+    }
+
+    searchResults = await Promise.all(articleIDs.map((id) => articleDatabase.getArticle(id)));
+    searchResults = searchResults.filter(x => x); // in case of any `undefined`
     for (let i = 0; i < searchResults.length; i++) {
-        searchResults[i].style = await articleDatabase.getArticleStyle(searchResults[i].id);
+        if (searchResults[i] != undefined) {
+            searchResults[i].style = await articleDatabase.getArticleStyle(searchResults[i].id);
+        }
     }
     searchResults.sort((a,b) => b.timestamp - a.timestamp);
 
@@ -101,19 +110,10 @@ const renderQueryPage = async (query) => {
         message = failureMessage;
     }
 
-    return new Promise((resolve) => {
-        ejs.renderFile(__dirname + "/../views/query.ejs",
-                {articles: searchResults, searchPageTitle, message},
-                (err, res) => {
-                    if (err) {
-                        logger.error(err);
-                        resolve("");
-                } else {
-                    resolve(res);
-                }
-                }
-            )
-    })
+    return ejs.renderFile(__dirname + "/../views/query.ejs",
+        {articles: searchResults, searchPageTitle, message},
+        {async: true})
+        .catch(this.errorLogger);
 }
 
 const get_queryPage = async (req, res) => {

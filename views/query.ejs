@@ -4,11 +4,11 @@
 <head>
     <title><%= searchPageTitle _%></title>
     <meta name="description" content="Licăriri, revista atât online cât și tipărită a elevilor Colegiului Național „Dr. Ioan Meșotă”, Brașov">
-<%- include("meta"); _%>
+<%- await include("meta"); _%>
 </head>
 
 <body id="main-page">
-<%- include("main-nav"); _%>
+<%- await include("main-nav"); _%>
     <div id="main-page-header">
         <div id="website-title-container">
             <h1><a href="/">Licăriri</a></h1>
@@ -60,6 +60,6 @@
     </div>
 </body>
 
-<%- include("main-nav-script"); _%>
+<%- await include("main-nav-script"); _%>
 
 </html>
