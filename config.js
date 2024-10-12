@@ -35,13 +35,12 @@ const CONFIG = {
     MAIN_PAGE_ARTICLE_COUNT: 12,
     COOKIE_OPTIONS: {
         httpOnly: true,
-        // TODO: set to true if HTTPS only
-        secure: false,
+        secure: true,
         sameSite: "strict"
     },
     SESSION_TOKEN_LENGTH: 64,
     HASH_COST: 15,
-    WEBP_COMPRESSION_QUALITY: 90, // percent
+    WEBP_COMPRESSION_QUALITY: 70, // percent
 };
 
 const mkdir_if_not_exists = async (dir) => {
