@@ -93,7 +93,7 @@ class ArticleDatabase extends Database {
      * Add only the gievn article's ID, stage and timestamp to the database
      * @param {Article} article
      */
-    saveEmptyArticle = (article) => {
+    saveArticle = async (article) => {
         this.db.run('INSERT INTO articles VALUES(?, ?, ?, ?, ?, ?, ?, ?)',
             [article.id, article.stage, article.timestamp, article.title, article.subtitle, article.language, article.category, article.description],
             this.errorLogger
@@ -105,7 +105,7 @@ class ArticleDatabase extends Database {
      * and timestamp)
      * @param {Article} article
      */
-    updateMetadata = (originalArticleID, article) => {
+    updateMetadata = async (originalArticleID, article) => {
         this.db.run('UPDATE articles SET id = ?, title = ?, subtitle = ?, language = ?, category = ?, description = ? WHERE id = ?',
             [article.id, article.title, article.subtitle, article.language, article.category, article.description, originalArticleID],
             this.errorLogger
@@ -135,7 +135,7 @@ class ArticleDatabase extends Database {
      * invalid values
      * @param {Article} article
      */
-    updateArticleStage = (article) => {
+    updateArticleStage = async (article) => {
         this.db.run('UPDATE articles SET stage = ? WHERE id = ?',
             [article.stage, article.id],
             this.errorLogger
@@ -147,7 +147,7 @@ class ArticleDatabase extends Database {
      * @param {Article}
      * @param {ArticleStyle}
      */
-    updateArticleStyles = (originalArticleID, article, articleStyle) => {
+    updateArticleStyles = async (originalArticleID, article, articleStyle) => {
         this.db.run('DELETE FROM article_styles WHERE id = ?', [originalArticleID], () => {
             this.db.run('INSERT INTO article_styles VALUES (?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 [article.id, articleStyle.hide_title_in_thumbnail, articleStyle.title_font, articleStyle.title_fill_style,
@@ -339,7 +339,7 @@ class ArticleDatabase extends Database {
     /**
      * @param {PDFPrint} pdfprint
      */
-    addPDFPrint = (pdfprint) => {
+    addPDFPrint = async (pdfprint) => {
         this.db.run(`INSERT OR IGNORE into pdfprints VALUES (?, ?)`,
             [pdfprint.timestamp, pdfprint.description],
             this.errorLogger
@@ -349,7 +349,7 @@ class ArticleDatabase extends Database {
     /**
      * @param {PDFPrint} pdfprint
      */
-    removePDFPrint = (pdfprintDescription) => {
+    removePDFPrint = async (pdfprintDescription) => {
         this.db.run(`DELETE FROM pdfprints WHERE description = ?`,
             [pdfprintDescription],
             this.errorLogger

@@ -4,11 +4,11 @@
 <head>
     <title><%= article.title %></title>
     <meta name="description" content="<%= article.description %>">
-<%- include("meta"); _%>
+<%- await include("meta"); _%>
 </head>
 
 <body>
-<%- include("main-nav"); _%>
+<%- await include("main-nav"); _%>
     <div id="article-headline">
         <img id="article-thumbnail" src="/articles/images/<%= article.id %>.webp" class="no-select">
         <%_ if (articleStyle.title_position == "thumbnail") { _%>
@@ -65,7 +65,7 @@
     <div id="article-contents">
 <%- article.contents _%>
     </div>
-<%- include("copyright") _%>
+<%- await include("copyright") _%>
 </body>
 
 <%_ if (article.subtitle && articleStyle.subtitle_position == "thumbnail") { _%>
@@ -86,6 +86,6 @@
 </script>
 <%_ } _%>
 
-<%- include("main-nav-script"); _%>
+<%- await include("main-nav-script"); _%>
 
 </html>

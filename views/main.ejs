@@ -4,12 +4,12 @@
 <head>
     <title>Revista Licăriri</title>
     <meta name="description" content="Licăriri, revista atât online cât și tipărită a elevilor Colegiului Național „Dr. Ioan Meșotă”, Brașov">
-<%- include("meta"); _%>
+<%- await include("meta"); _%>
 </head>
 
 <body id="main-page">
 <%_ if (articles.length) { _%>
-<%- include("main-nav"); _%>
+<%- await include("main-nav"); _%>
 <%_ } _%>
     <div id="main-page-header">
         <div id="website-title-container">
@@ -120,10 +120,10 @@
         <%_ } _%>
         </div>
         <%_ } _%>
-<%- include("copyright") _%>
+<%- await include("copyright") _%>
     </div>
 </body>
 
-<%- include("main-nav-script"); _%>
+<%- await include("main-nav-script"); _%>
 
 </html>

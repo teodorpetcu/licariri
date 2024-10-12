@@ -1,6 +1,7 @@
 const ejs = require("ejs");
 const fs = require("fs");
 
+const { fileExists } = require("../util.js");
 const { queryDatabase } = require("../models/query.js");
 const { articleDatabase } = require("../models/articles.js");
 const { QUERY_PRERENDERS } = require("../config.js");
@@ -116,12 +117,12 @@ const renderQueryPage = async (query) => {
 
 const get_queryPage = async (req, res) => {
     if (req.query.author && !req.query.tag && !req.query.any && !req.query.text) {
-        if (fs.existsSync(QUERY_PRERENDERS + `/author=${req.query.author}.html`)) {
+        if (await fileExists(QUERY_PRERENDERS + `/author=${req.query.author}.html`)) {
             res.sendFile(QUERY_PRERENDERS + `/author=${req.query.author}.html`);
             return;
         }
     } else if (req.query.tag && !req.query.author && !req.query.any && !req.query.text) {
-        if (fs.existsSync(QUERY_PRERENDERS + `/tag=${req.query.tag}.html`)) {
+        if (await fileExists(QUERY_PRERENDERS + `/tag=${req.query.tag}.html`)) {
             res.sendFile(QUERY_PRERENDERS + `/tag=${req.query.tag}.html`);
             return;
         }
@@ -130,6 +131,10 @@ const get_queryPage = async (req, res) => {
     res.send(queryPage);
 }
 
+/**
+ * @param {Object} query
+ * @returns {Promise<boolean>}
+ */
 const prerenderQueryAsFile = async (query) => {
     let filename = "";
     if (query.author && !query.tag && !query.any && !query.text) {
@@ -137,9 +142,14 @@ const prerenderQueryAsFile = async (query) => {
     } if (query.tag && !query.author && !query.any && !query.text) {
         filename = QUERY_PRERENDERS + `/tag=${query.tag}.html`
     }
+
     if (filename) {
         const queryPage = await renderQueryPage(query);
-        fs.writeFileSync(filename, queryPage);
+        return fs.promises.writeFile(filename, queryPage)
+            .then(() => true)
+            .catch(errorLogger);
+    } else {
+        return Promise.resolve(false);
     }
 }
 

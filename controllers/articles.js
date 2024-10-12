@@ -4,7 +4,8 @@ const fs = require("fs");
 const pdf2img = require("pdf-img-convert")
 const sharp = require("sharp");
 
-const { logger } = require("../logger.js")
+const { logger, errorLogger } = require("../logger.js")
+const { fileExists } = require("../util.js");
 
 const { Author, Article, ArticleStyle } = require("../models/types.js");
 const { prerenderQueryAsFile } = require("./query.js");
@@ -27,34 +28,27 @@ const {
  * @param {Article} article
  * @param {string} content
  * @param {ArticleStyle} articleStyle
- * @returns {Promise<boolean>} `true` if the function succeeds, `false` if it doesn't
+ * @returns {Promise<boolean>} `true` if the function succeeds, `false` otherwise
  */
 const renderArticlePage = async (article, plainTextContent, articleStyle, credits) => {
-    return new Promise((resolve) => {
-        article.contents = marked.parse(plainTextContent).trim();
-        ejs.renderFile(__dirname + "/../views/article.ejs", {article, articleStyle, credits}, async (err, res) => {
-            if (err) {
-                logger.error(err);
-                return resolve(false);
-            } else {
-                // the contents are also saved in markdown since it makes editing
-                // the article a lot easier later; same as with those "articleStyle"
-                // options
-                fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`, res);
-                fs.writeFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, plainTextContent);
-                return resolve(true);
-            }
-        });
-    })
+    // TODO: use another function to write markdown contents
+    article.contents = marked.parse(plainTextContent).trim();
+    let renderedPage = await ejs.renderFile(__dirname + "/../views/article.ejs", {article, articleStyle, credits}, {async: true});
+
+    return fs.promises.writeFile(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, plainTextContent)
+        .then(fs.promises.writeFile(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`, renderedPage))
+        .then(() => Promise.resolve(true))
+        .catch((err) => {errorLogger(err); return Promise.resolve(false)});
 }
 
 /**
  * Take all articles in the database and re-render their HTML file
+ * @returns {Promise<undefined>}
  */
 const updateAllArticles = async () => {
     const articles = await articleDatabase.searchArticles();
-    articles.forEach(async (article) => {
-        let content = fs.readFileSync(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, {encoding: "utf-8"});
+    return Promise.all(articles.map(async (article) => {
+        let content = await fs.promises.readFile(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, {encoding: "utf-8"}).catch(errorLogger);
         let articleStyle = await articleDatabase.getArticleStyle(article.id);
         let status = await renderArticlePage(article, content, articleStyle);
         if (status) {
@@ -62,7 +56,7 @@ const updateAllArticles = async () => {
         } else {
             logger.error(`failed re-rendering article "${article.id}"`);
         }
-    });
+    }));
 }
 
 const updateMainPage = async () => {
@@ -71,13 +65,9 @@ const updateMainPage = async () => {
     for (let i = 0; i < articles.length; i++) {
         articles[i].style = await articleDatabase.getArticleStyle(articles[i].id);
     }
-    ejs.renderFile(__dirname + "/../views/main.ejs", {articles, pdfprints}, (err, res) => {
-        if (err) {
-            logger.error(err);
-        } else {
-            fs.writeFileSync(`${MAIN_PAGE_HTML_FILE_PATH}`, res);
-        }
-    });
+    let renderedPage = await ejs.renderFile(__dirname + "/../views/main.ejs", {articles, pdfprints}, {async: true});
+    return fs.promises.writeFile(`${MAIN_PAGE_HTML_FILE_PATH}`, renderedPage)
+        .catch(errorLogger);
 }
 
 const get_mainPage = async (_, res) => {
@@ -88,7 +78,7 @@ const get_mainPage = async (_, res) => {
 const get_articlePage = async (req, res) => {
     const articleID = req.params.articleID;
     viewsDatabase.logRequest(Date.now(), req.ip, articleID);
-    if (fs.existsSync(`${PUBLIC_ARTICLE_CONTENTS_PATH}/${articleID}.html`)) {
+    if (await fileExists(`${PUBLIC_ARTICLE_CONTENTS_PATH}/${articleID}.html`)) {
         res.sendFile(`${PUBLIC_ARTICLE_CONTENTS_PATH}/${articleID}.html`);
     } else {
         res.render("404");
@@ -150,24 +140,24 @@ const post_adminAddArticle = async (req, res) => {
         // if the article happens to be renamed, then its ID changes, and
         // its leftover files which won't be used anymore must be destroyed
         if (originalArticle.id && originalArticle.id != article.id) {
-            if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.html`)) {
-                fs.unlinkSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.html`)
+            if (await fileExists(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.html`)) {
+                fs.promises.unlink(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.html`)
             }
-            if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.md`)) {
-                fs.unlinkSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.md`)
+            if (await fileExists(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.md`)) {
+                fs.promises.unlink(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.md`)
             }
         }
         if (thumbnail && /^image/.test(thumbnail.mimetype)) {
             if (originalArticle.id && originalArticle.id != article.id) {
-                fs.unlinkSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.webp`)
+                fs.promises.unlink(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.webp`)
             }
             sharp(thumbnail.data)
                 .webp({quality: WEBP_COMPRESSION_QUALITY})
                 .toFile(`${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.webp`)
                 .catch(err => logger.error(err));
         } else if (originalArticle.id && originalArticle.id != article.id) {
-            if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.webp`)) {
-                fs.renameSync(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.webp`,
+            if (await fileExists(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.webp`)) {
+                fs.promises.rename(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.webp`,
                                 `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.webp`);
             }
         }
@@ -187,11 +177,11 @@ const post_adminAddArticle = async (req, res) => {
         article.tags.forEach((tag) =>
             prerenderQueryAsFile({tag: tag})
         )
-        await queryDatabase.unindexArticle(originalArticle.id);
-        await queryDatabase.indexArticle(article.id, content);
+        queryDatabase.unindexArticle(originalArticle.id);
+        queryDatabase.indexArticle(article.id, content);
         articleDatabase.updateMetadata(originalArticle.id, article);
         articleDatabase.updateArticleStyles(originalArticle.id, article, articleStyle);
-        await updateMainPage();
+        updateMainPage();
         if (article.id != originalArticle.id) {
             usersDatabase.changeActivityTarget("modify", originalArticle.id, article.id);
             usersDatabase.addActivity(req.user, "rename", originalArticle.id + "::" + article.id)
@@ -215,20 +205,20 @@ const post_updateArticleStage = async (req, res) => {
     article.failsafe_setStage(req.body.stage)
     // TODO: ensure the article has a thumbnail, etc. before publishing
     if (article.stage != originalStage) {
-        if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.html`)) {
-            fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.html`,
+        if (await fileExists(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.html`)) {
+            fs.promises.rename(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.html`,
                            `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`)
         }
-        if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.md`)) {
-            fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.md`,
+        if (await fileExists(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.md`)) {
+            fs.promises.rename(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.md`,
                            `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`)
         }
-        if (fs.existsSync(`${ARTICLES_DIRECTORY}/${originalStage}/images/${article.id}.webp`)) {
-            fs.renameSync(`${ARTICLES_DIRECTORY}/${originalStage}/images/${article.id}.webp`,
+        if (await fileExists(`${ARTICLES_DIRECTORY}/${originalStage}/images/${article.id}.webp`)) {
+            fs.promises.rename(`${ARTICLES_DIRECTORY}/${originalStage}/images/${article.id}.webp`,
                            `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.webp`)
         }
         articleDatabase.updateArticleStage(article);
-        await updateMainPage();
+        updateMainPage();
 
         let actionType = "publish";
         if (article.stage == "draft" || article.stage == "trash") {
@@ -258,18 +248,21 @@ const post_adminAddPDFprint = async (req, res) => {
     if (pdffile && /pdf$/.test(pdffile.mimetype)) {
         articleDatabase.addPDFPrint(pdfprint);
         const pdffilepath = `${PDFPRINT_CONTENTS_PATH}/${pdfprint.filename}`;
-        fs.writeFileSync(pdffilepath, pdffile.data);
+        fs.promises.writeFile(pdffilepath, pdffile.data);
+
         const thumbnail = (await pdf2img.convert(pdffile.data,
             conversion_config = {
                 height: 750,
                 page_numbers: [1],
-            }))[0];
+            }
+        ))[0];
         sharp(thumbnail.data)
             .webp({quality: WEBP_COMPRESSION_QUALITY})
             .toFile(`${PDFPRINT_THUMBNAILS_PATH}/${pdfprint.description}.webp`)
             .catch(err => logger.error(err));
-        await usersDatabase.addActivity(req.user, "addpdfprint", description)
-        await updateMainPage();
+
+        usersDatabase.addActivity(req.user, "addpdfprint", description)
+        updateMainPage();
         res.status(200).redirect("/admin/pdfprints");
     } else {
         res.status(500).redirect("/admin/pdfprints");
@@ -279,8 +272,8 @@ const post_adminAddPDFprint = async (req, res) => {
 const post_adminRemovePDFprint = async (req, res) => {
     let pdfprintDescription = req.body.description;
     articleDatabase.removePDFPrint(pdfprintDescription);
-    await usersDatabase.addActivity(req.user, "rmpdfprint", pdfprintDescription)
-    await updateMainPage();
+    usersDatabase.addActivity(req.user, "rmpdfprint", pdfprintDescription)
+    updateMainPage();
     res.status(200).redirect("/admin/pdfprints");
 }
 

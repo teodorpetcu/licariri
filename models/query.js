@@ -111,9 +111,9 @@ class QueryDatabase extends Database {
      * @param {string} words
      * @returns {Promise<string[]>}
      */
-    findArticles = (words) => {
-        words = words.split(" ").map((word) => `%${word}%`);
+    findArticles = async (words) => {
         return new Promise((resolve) => {
+            words = words.split(" ").map((word) => `%${word}%`);
             let stmt = "";
             for (let i = 0; i < words.length; i++) {
                 if (i != 0) {

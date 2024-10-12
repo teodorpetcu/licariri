@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { fileExists } = require("./util.js");
 
 const APPDATA_DIR = __dirname + "/appdata";
 const DATABASES_DIRECTORY = APPDATA_DIR + "/databases";
@@ -43,9 +44,10 @@ const CONFIG = {
     WEBP_COMPRESSION_QUALITY: 90, // percent
 };
 
-const mkdir_if_not_exists = (dir) => {
-    if(!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, {recursive: true});
+const mkdir_if_not_exists = async (dir) => {
+    if(! await fileExists(dir)) {
+        // todo: log using winston while avoiding module circular dependency
+        await fs.promises.mkdir(dir, {recursive: true});
     }
 }
 

@@ -32,7 +32,18 @@ const requestLogger = async (req, _res, next) => {
     next();
 }
 
+/**
+ * Log the given error if defined
+ * @param {Error} err
+ */
+const errorLogger = async (err) => {
+    if (err) {
+        logger.error(err)
+    }
+}
+
 module.exports = {
     logger,
     requestLogger,
+    errorLogger,
 };

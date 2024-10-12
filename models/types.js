@@ -1,15 +1,4 @@
-const crypto = require("crypto");
-
-/**
- * @param {Date} date - Date to format
- * @returns {string} - Date formatted YYYY-MM-DD
- */
-const formatDate = (date) => {
-    let yyyy = date.getFullYear();
-    let mm = date.getMonth() + 1; if (mm < 10) mm = `0${mm}`;
-    let dd = date.getDate(); if (dd < 10) dd = `0${dd}`;
-    return `${yyyy}-${mm}-${dd}`;
-}
+const { formatDate } = require("../util.js");
 
 class Author {
     /**
@@ -42,7 +31,7 @@ class Article {
         this.id = title.toLowerCase().replaceAll(/[,.?*!]/g, "").replaceAll(/\s/g, "-");
         this.timestamp = timestamp.valueOf();
         this.stage = stage;
-        this.date = formatDate(timestamp);
+        formatDate(timestamp).then((t) => this.date = t);
         this.title = title;
         this.subtitle = subtitle;
         this.language = language;
@@ -106,14 +95,13 @@ class PDFPrint {
      */
     constructor(timestamp, description) {
         this.timestamp = timestamp;
-        this.date = formatDate(timestamp);
+        formatDate(timestamp).then((t) => this.timestamp = t);
         this.description = description;
         this.filename = description + ".pdf";
     }
 }
 
 module.exports = {
-    formatDate,
     Author,
     Article,
     ArticleStyle,

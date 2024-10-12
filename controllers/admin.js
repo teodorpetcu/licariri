@@ -5,8 +5,9 @@ const {
 } = require("../config.js");
 const { usersDatabase, User, Session, Activity } = require("../models/admin.js");
 const { articleDatabase } = require("../models/articles.js");
-const { Article, formatDate } = require("../models/types.js");
+const { Article } = require("../models/types.js");
 const { logger } = require("../logger.js");
+const { fileExists, formatDate } = require("../util.js");
 
 const fs = require("fs");
 
@@ -138,14 +139,14 @@ const get_adminAddArticle = async (req, res) => {
     if (article) {
         article.style = await articleDatabase.getArticleStyle(article.id);
         let contentsPath = `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`;
-        if (fs.existsSync(contentsPath)) {
-            article.content = fs.readFileSync(contentsPath, {encoding: "utf-8"});
+        if (await fileExists(contentsPath)) {
+            article.content = await fs.promises.readFile(contentsPath, {encoding: "utf-8"});
         }
     } else {
         article = new Article(stage="draft", timestamp=undefined,
             title=`Articol fără titlu (${await articleDatabase.getUntitledArticleCount() + 1})`);
         article.style = {};
-        articleDatabase.saveEmptyArticle(article);
+        articleDatabase.saveArticle(article);
     }
     res.render("edit-article-contents", {defaults: article});
 }
@@ -192,7 +193,11 @@ const post_adminSuspendUser = async (req, res) => {
     }
 }
 
-const activityToHumanReadable = (activity) => {
+/**
+ * @param {Activity} activity
+ * @returns {Promise<Activity>}
+ */
+const activityToHumanReadable = async (activity) => {
     if (activity.action == "modify")  {
         activity.action = `a modificat articolul`;
     } else if (activity.action == "rename") {
@@ -217,12 +222,15 @@ const activityToHumanReadable = (activity) => {
         activity.action = `a șters ediția print a revistei`;
     }
     let t = new Date(activity.timestamp);
-    activity.timestamp = `${formatDate(t)} ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}`;
+    activity.timestamp = `${await formatDate(t)} ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}`;
     return activity;
 }
 
 const get_adminActivitiesPage = async (_, res) => {
-    const activities = (await usersDatabase.getAllActivities()).map((activity) => activityToHumanReadable(activity));
+    const activities = await usersDatabase.getAllActivities();
+    for (let i = 0; i < activities.length; i++) {
+        activities[i] = await activityToHumanReadable(activities[i]);
+    }
     res.render("activities", {activities});
 }
 
