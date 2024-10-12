@@ -54,7 +54,8 @@ const { logger, requestLogger } = require("./logger.js");
 
 const app = express();
 
-app.set("trust proxy", true);
+app.set("trust proxy", ["loopback"]);
+app.disable("x-powered-by");
 
 // putting this before other `app.use()` calls makes it not use other middleware
 app.get("/robots.txt", requestLogger, (_, res) => res.sendFile(__dirname + "/robots.txt"));
