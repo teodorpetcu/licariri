@@ -19,7 +19,9 @@ class Database {
     }
 
     errorLogger = async (err) => {
-        logger.error(`database '${this.path}': ${err}`)
+        if (err) {
+            logger.error(`database '${this.path}': ${err}`)
+        }
     }
 
     get = async (stmt, data) => {

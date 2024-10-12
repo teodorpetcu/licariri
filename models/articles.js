@@ -100,23 +100,22 @@ class ArticleDatabase extends Database {
      */
     updateMetadata = async (originalArticleID, article) => {
         return Promise.all([
+            this.run('UPDATE articles SET id = ?, title = ?, subtitle = ?, language = ?, category = ?, description = ? WHERE id = ?',
+                [article.id, article.title, article.subtitle, article.language, article.category, article.description, originalArticleID])
+                .catch(this.errorLogger),
 
-        this.run('UPDATE articles SET id = ?, title = ?, subtitle = ?, language = ?, category = ?, description = ? WHERE id = ?',
-            [article.id, article.title, article.subtitle, article.language, article.category, article.description, originalArticleID])
-            .catch(this.errorLogger),
+            this.run('DELETE from article_authors WHERE id = ?', [originalArticleID])
+                .then(() => Promise.all(article.authors.map((author) => {
+                    return this.run('INSERT INTO article_authors VALUES(?, ?)', [article.id, author.name]);
+                })))
+                .catch(this.errorLogger),
 
-        this.run('DELETE from article_authors WHERE id = ?', [originalArticleID])
-            .then(() => Promise.all(article.authors.map((author) => {
-                return this.run('INSERT INTO article_authors VALUES(?, ?)', [article.id, author.name]);
-            })))
-            .catch(this.errorLogger),
-
-        this.run('DELETE from article_tags WHERE id = ?', [originalArticleID])
-            .then(() => Promise.all(article.tags.map((tag) => {
-                return this.run('INSERT INTO article_tags VALUES(?, ?)', [article.id, tag]);
-            })))
-            .catch(this.errorLogger),
-        ])
+            this.run('DELETE from article_tags WHERE id = ?', [originalArticleID])
+                .then(() => Promise.all(article.tags.map((tag) => {
+                    return this.run('INSERT INTO article_tags VALUES(?, ?)', [article.id, tag]);
+                })))
+                .catch(this.errorLogger),
+        ]);
     }
 
     /**
@@ -143,7 +142,7 @@ class ArticleDatabase extends Database {
                         articleStyle.title_fontweight, articleStyle.title_position, articleStyle.subtitle_font,
                         articleStyle.subtitle_fontsize, articleStyle.subtitle_fontweight, articleStyle.subtitle_color,
                         articleStyle.subtitle_position, articleStyle.dropcap]))
-            .catch(errorLogger);
+            .catch(this.errorLogger);
     }
 
     /**
@@ -240,7 +239,7 @@ class ArticleDatabase extends Database {
     searchArticles = async (key, value, exact = true, pageNumber = 1, pageSize = -1) => {
         let articleIDs = await this.searchArticleIDs(key, value, exact, pageNumber, pageSize);
         if (!articleIDs) return undefined;
-        return Promise.all(articleIDs.map((id) => this.getArticle(id)));
+        return Promise.all(articleIDs.map((id) => this.getArticle(id))).catch(this.errorLogger);
     }
 
     /**
@@ -251,9 +250,13 @@ class ArticleDatabase extends Database {
     getArticle = async (id) => {
         let article = await this.getArticleMeta(id);
         if (! article) return undefined;
-        article.authors = await this.getArticleAuthors(id);
-        article.tags = await this.getArticleTags(id);
-        //article.style = await this.getArticleStyle(id);
+        // todo: maybe also include article style?
+        let [authors, tags] = await Promise.all([
+            this.getArticleAuthors(id),
+            this.getArticleTags(id),
+        ]);
+        article.authors = authors;
+        article.tags = tags;
         return article;
     }
 
@@ -334,6 +337,8 @@ class ArticleDatabase extends Database {
         if (name) {
             return this.run('INSERT OR REPLACE INTO article_credits VALUES (?, ?, ?)', [articleID, name, credited_for])
                 .catch(this.errorLogger);
+        } else {
+            return Promise.resolve(undefined);
         }
     }
 

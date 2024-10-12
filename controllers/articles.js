@@ -177,8 +177,8 @@ const post_adminAddArticle = async (req, res) => {
         article.tags.forEach((tag) =>
             prerenderQueryAsFile({tag: tag})
         )
-        queryDatabase.unindexArticle(originalArticle.id);
-        queryDatabase.indexArticle(article.id, content);
+        queryDatabase.unindexArticle(originalArticle.id)
+            .finally(() => queryDatabase.indexArticle(article.id, content));
         articleDatabase.updateMetadata(originalArticle.id, article);
         articleDatabase.updateArticleStyles(originalArticle.id, article, articleStyle);
         updateMainPage();

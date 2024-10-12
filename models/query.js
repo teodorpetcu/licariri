@@ -50,21 +50,24 @@ class QueryDatabase extends Database {
         let uniqueWords = [... new Set(validWords.filter((word) => word))];
         return this.run("INSERT INTO articles VALUES (?)", [id])
             .then(async () => {
-                let row = await this.get("SELECT rowid as num FROM articles WHERE article_id = ?", [id]).catch(this.errorLogger);
-                let rowid = row.num;
-                let words_stmt = this.db.prepare("INSERT OR IGNORE INTO words VALUES (?)");
-                let stmt = this.db.prepare("INSERT INTO mappings VALUES (?, (SELECT rowid FROM words WHERE word = ?))");
-                for (let word of uniqueWords) {
-                    words_stmt.run([word], this.errorLogger);
-                    stmt.run([rowid, word], this.errorLogger);
-                }
-                words_stmt.finalize((err) => {
-                    if (err) {
-                        logger.error(`database '${this.path}': ${err}`);
-                    } else {
-                        stmt.finalize(this.errorLogger);
-                    }
-                });
+                this.get("SELECT rowid as num FROM articles WHERE article_id = ?", [id])
+                    .then((row) => {
+                        let rowid = row.num;
+                        let words_stmt = this.db.prepare("INSERT OR IGNORE INTO words VALUES (?)");
+                        let stmt = this.db.prepare("INSERT INTO mappings VALUES (?, (SELECT rowid FROM words WHERE word = ?))");
+                        for (let word of uniqueWords) {
+                            words_stmt.run([word], this.errorLogger);
+                            stmt.run([rowid, word], this.errorLogger);
+                        }
+                        words_stmt.finalize((err) => {
+                            if (err) {
+                                logger.error(`database '${this.path}': ${err}`);
+                            } else {
+                                stmt.finalize(this.errorLogger);
+                            }
+                        });
+                    })
+                    .catch(this.errorLogger);
             })
             .catch(this.errorLogger);
     }
