@@ -158,8 +158,10 @@ class UsersDatabase extends Database {
                 // the database, it makes no difference when we're trying to
                 // authenticate. That being said, we're still going to wait, so
                 // as to not make the end-user realise that the ID doesn't exist
-                return setTimeout(() => resolve(false), 2 * 1000); // 2sec
-            });
+                return new Promise((resolve) => {
+                    setTimeout(() => resolve(false), 2 * 1000); // 2sec
+                });
+            })
     }
 
     /**
