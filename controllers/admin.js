@@ -140,6 +140,7 @@ const post_adminLogout = async(req, res) => {
 
 const get_adminAddArticle = async (req, res) => {
     let article = await articleDatabase.getArticle(req.params.articleID);
+    article.credits = { editorial: [], dtp: [], thumbnail: [] };
     if (article) {
         let contentsPath = `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`;
         await Promise.all([
@@ -154,6 +155,8 @@ const get_adminAddArticle = async (req, res) => {
                     }
                 })
                 .then((content) => article.content = content),
+            articleDatabase.getArticleCredits(article.id)
+                .then((credits) => article.credits = credits),
         ])
     } else {
         article = new Article(stage="draft", timestamp=undefined,

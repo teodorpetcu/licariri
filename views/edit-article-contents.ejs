@@ -47,13 +47,13 @@
                 </div>
 
                 <label>Redactor(i):</label>
-                <input id="input-article-editorial-credit" type="text" name="credit_editorial">
+                <input id="input-article-editorial-credit" type="text" name="credit_editorial" value="<%= defaults.credits.editorial.join(', ') %>">
 
                 <label>Tehnoredactor(i):</label>
-                <input id="input-article-dtp-credit" type="text" name="credit_dtp">
+                <input id="input-article-dtp-credit" type="text" name="credit_dtp" value="<%= defaults.credits.dtp.join(', ') %>">
 
                 <label>Realizator(i) grafică/thumbnail:</label>
-                <input id="input-article-thumbnail-credit" type="text" name="credit_thumbnail">
+                <input id="input-article-thumbnail-credit" type="text" name="credit_thumbnail" value="<%= defaults.credits.thumbnail.join(', ') %>">
             </div>
             <div id="right">
                 <textarea required id="input-article-contents"
