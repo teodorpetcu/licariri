@@ -237,7 +237,10 @@ const activityToHumanReadable = async (activity) => {
         activity.action = `a șters ediția print a revistei`;
     }
     let t = new Date(activity.timestamp);
-    activity.timestamp = `${formatDate(t)} ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}`;
+    let hours = t.getHours(); if (hours < 10) hours = `0${hours}`;
+    let min = t.getMinutes(); if (min < 10) min = `0${min}`;
+    let sec = t.getSeconds(); if (sec < 10) sec = `0${sec}`;
+    activity.timestamp = `${formatDate(t)} ${hours}:${min}:${sec}`;
     return activity;
 }
 
