@@ -10,28 +10,36 @@ class ViewsDatabase extends Database {
         super(path);
     }
 
-    init = () => {
-        this.db.exec(`
-            CREATE TABLE IF NOT EXISTS article_requests
-            (
-                timestamp           INT,
-                ip                  TEXT NOT NULL,
-                article_requested   TEXT NOT NULL
-            );
-            CREATE TABLE IF NOT EXISTS article_views
-            (
-                article_id          TEXT NOT NULL,
-                unique_views        INT,
-                UNIQUE (article_id)
-            );
-            `, (err) => {
-                if (err) {
-                    logger.error(`database '${this.path}' tables: ${err}`);
-                } else {
-                    logger.info(`database '${this.path}' tables: ok`);
+    /**
+     * Initialise the database tables if they haven't already been created
+     * @returns {Promise}
+     */
+    init = async () => {
+        return new Promise((resolve, reject) => {
+            this.db.exec(`
+                CREATE TABLE IF NOT EXISTS article_requests
+                (
+                    timestamp           INT,
+                    ip                  TEXT NOT NULL,
+                    article_requested   TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS article_views
+                (
+                    article_id          TEXT NOT NULL,
+                    unique_views        INT,
+                    UNIQUE (article_id)
+                );
+                `, (err) => {
+                    if (err) {
+                        logger.error(`database '${this.path}' tables: ${err}`);
+                        reject(err);
+                    } else {
+                        logger.info(`database '${this.path}' tables: ok`);
+                        resolve(undefined);
+                    }
                 }
-            }
-        )
+            )
+        })
     }
 
     /**
@@ -81,7 +89,6 @@ class ViewsDatabase extends Database {
 }
 
 const viewsDatabase = new ViewsDatabase(VIEWS_DATABASE_PATH);
-viewsDatabase.init();
 
 module.exports = {
     viewsDatabase,

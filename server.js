@@ -3,6 +3,12 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
 
+// for ensuring that the databases are loaded before the server starts listening
+const { usersDatabase } = require("./models/admin.js");
+const { articleDatabase } = require("./models/articles.js");
+const { viewsDatabase } = require("./models/view-count.js");
+const { queryDatabase } = require("./models/query.js");
+
 const {
     get_mainPage,
     get_articlePage,
@@ -102,8 +108,14 @@ app.use("/admin/articles/images", express.static(PUBLIC_ARTICLE_IMAGES_PATH), ex
 
 app.get("*", requestLogger, (req, res) => res.status(404).render("404", {url: req.url}));
 
-// TODO: ensure that we first connect to all the databases before starting to
-// listen on the internet
-app.listen(LISTENING_PORT, async () => {
-    logger.info(`web server up`);
-});
+logger.info("connecting to databases...");
+Promise.all([
+    articleDatabase.init(),
+    usersDatabase.init(),
+    queryDatabase.init(),
+    viewsDatabase.init(),
+])
+    .then(() => app.listen(LISTENING_PORT, () => logger.info(`web server up`)))
+    .catch((_) => {
+        process.exit(1);
+    });

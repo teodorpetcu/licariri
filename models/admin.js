@@ -79,40 +79,44 @@ class UsersDatabase extends Database {
 
     /**
      * Initialise the database tables if they haven't already been created
+     * @returns {Promise<undefined>}
      */
-    // TODO: return status
-    init = () => {
-        this.db.exec(`CREATE TABLE IF NOT EXISTS users
-            (
-                id          TEXT NOT NULL,
-                privilege   INT,
-                suspended   INT,
-                password    TEXT NOT NULL,
-                UNIQUE (id)
-            );
-            CREATE TABLE IF NOT EXISTS sessions
-            (
-                user        TEXT NOT NULL,
-                token       TEXT NOT NULL,
-                timestamp   INT,
-                UNIQUE(token),
-                FOREIGN KEY (user) REFERENCES users (id)
-            );
-            CREATE TABLE IF NOT EXISTS activity
-            (
-                timestamp   INT,
-                user        TEXT NOT NULL,
-                action      TEXT NOT NULL,
-                target      TEXT,
-                FOREIGN KEY (user) REFERENCES users (id)
-            );`, (err) => {
-                if (err) {
-                    logger.error(`database '${this.path}' tables: ${err}`);
-                } else {
-                    logger.info(`database '${this.path}' tables: ok`);
+    init = async () => {
+        return new Promise((resolve, reject) => {
+            this.db.exec(`CREATE TABLE IF NOT EXISTS users
+                (
+                    id          TEXT NOT NULL,
+                    privilege   INT,
+                    suspended   INT,
+                    password    TEXT NOT NULL,
+                    UNIQUE (id)
+                );
+                CREATE TABLE IF NOT EXISTS sessions
+                (
+                    user        TEXT NOT NULL,
+                    token       TEXT NOT NULL,
+                    timestamp   INT,
+                    UNIQUE(token),
+                    FOREIGN KEY (user) REFERENCES users (id)
+                );
+                CREATE TABLE IF NOT EXISTS activity
+                (
+                    timestamp   INT,
+                    user        TEXT NOT NULL,
+                    action      TEXT NOT NULL,
+                    target      TEXT,
+                    FOREIGN KEY (user) REFERENCES users (id)
+                );`, (err) => {
+                    if (err) {
+                        logger.error(`database '${this.path}' tables: ${err}`);
+                        reject(err);
+                    } else {
+                        logger.info(`database '${this.path}' tables: ok`);
+                        resolve(undefined)
+                    }
                 }
-            }
-        );
+            )
+        })
         // `activity` table action types:
         //      ["modify", "rename", "publish", "draft", "trash"] articles
         //      ["adduser", "suspenduser", "unsuspenduser"] user
@@ -328,7 +332,6 @@ class UsersDatabase extends Database {
 }
 
 const usersDatabase = new UsersDatabase(USERS_DATABASE_PATH);
-usersDatabase.init();
 
 module.exports = {
     usersDatabase,

@@ -14,79 +14,81 @@ class ArticleDatabase extends Database {
 
     /**
      * Initialise the database tables if they haven't already been created
+     * @returns {Promise<undefined>}
      */
-    // TODO: return status
-    init = () => {
-        this.db.exec(`
-            CREATE TABLE IF NOT EXISTS articles
-            (
-                id                  TEXT NOT NULL,
-                stage               TEXT NOT NULL,
-                timestamp           INT,
-                title               TEXT,
-                subtitle            TEXT,
-                language            TEXT,
-                category            TEXT,
-                description         TEXT,
-                UNIQUE (id)
-            );
-            CREATE TABLE IF NOT EXISTS article_styles
-            (
-                id                          TEXT NOT NULL,
+    init = async () => {
+        return new Promise((resolve, reject) => {
+            this.db.exec(`
+                CREATE TABLE IF NOT EXISTS articles
+                (
+                    id                  TEXT NOT NULL,
+                    stage               TEXT NOT NULL,
+                    timestamp           INT,
+                    title               TEXT,
+                    subtitle            TEXT,
+                    language            TEXT,
+                    category            TEXT,
+                    description         TEXT,
+                    UNIQUE (id)
+                );
+                CREATE TABLE IF NOT EXISTS article_styles
+                (
+                    id                          TEXT NOT NULL,
 
-                hide_title_in_thumbnail     INT,
-                title_font                  TEXT,
-                title_fill_style            TEXT,
-                title_color                 TEXT,
-                title_fontsize_thumbnail    INT,
-                title_fontsize_article      INT,
-                title_fontweight            INT,
-                title_position              TEXT,
+                    hide_title_in_thumbnail     INT,
+                    title_font                  TEXT,
+                    title_fill_style            TEXT,
+                    title_color                 TEXT,
+                    title_fontsize_thumbnail    INT,
+                    title_fontsize_article      INT,
+                    title_fontweight            INT,
+                    title_position              TEXT,
 
-                subtitle_font               TEXT,
-                subtitle_fontsize           INT,
-                subtitle_fontweight         INT,
-                subtitle_color              TEXT,
-                subtitle_position           TEXT,
+                    subtitle_font               TEXT,
+                    subtitle_fontsize           INT,
+                    subtitle_fontweight         INT,
+                    subtitle_color              TEXT,
+                    subtitle_position           TEXT,
 
-                dropcap                     TEXT,
+                    dropcap                     TEXT,
 
-                FOREIGN KEY (id) REFERENCES articles (id)
-            );
-            CREATE TABLE IF NOT EXISTS article_tags
-            (
-                id      TEXT NOT NULL,
-                tag     TEXT NOT NULL,
-                FOREIGN KEY (id) REFERENCES articles (id)
-            );
-            CREATE TABLE IF NOT EXISTS article_authors
-            (
-                id      TEXT NOT NULL,
-                author  TEXT NOT NULL,
-                FOREIGN KEY (id) REFERENCES articles (id)
-            );
-            CREATE TABLE IF NOT EXISTS article_credits
-            (
-                id              TEXT NOT NULL,
-                name            TEXT NOT NULL,
-                credited_for    TEXT NOT NULL,
-                FOREIGN KEY (id) REFERENCES articles (id)
-            );
-            CREATE TABLE IF NOT EXISTS pdfprints
-            (
-                timestamp           INT,
-                description         TEXT,
-                UNIQUE (description)
-            );
-
-            `, (err) => {
-                if (err) {
-                    logger.error(`database '${this.path}' tables: ${err}`);
-                } else {
-                    logger.info(`database '${this.path}' tables: ok`);
+                    FOREIGN KEY (id) REFERENCES articles (id)
+                );
+                CREATE TABLE IF NOT EXISTS article_tags
+                (
+                    id      TEXT NOT NULL,
+                    tag     TEXT NOT NULL,
+                    FOREIGN KEY (id) REFERENCES articles (id)
+                );
+                CREATE TABLE IF NOT EXISTS article_authors
+                (
+                    id      TEXT NOT NULL,
+                    author  TEXT NOT NULL,
+                    FOREIGN KEY (id) REFERENCES articles (id)
+                );
+                CREATE TABLE IF NOT EXISTS article_credits
+                (
+                    id              TEXT NOT NULL,
+                    name            TEXT NOT NULL,
+                    credited_for    TEXT NOT NULL,
+                    FOREIGN KEY (id) REFERENCES articles (id)
+                );
+                CREATE TABLE IF NOT EXISTS pdfprints
+                (
+                    timestamp           INT,
+                    description         TEXT,
+                    UNIQUE (description)
+                );`, (err) => {
+                    if (err) {
+                        logger.error(`database '${this.path}' tables: ${err}`);
+                        reject(err);
+                    } else {
+                        logger.info(`database '${this.path}' tables: ok`);
+                        resolve(undefined);
+                    }
                 }
-            }
-        );
+            )
+        })
     }
 
     /**
@@ -424,7 +426,6 @@ class ArticleDatabase extends Database {
 }
 
 const articleDatabase = new ArticleDatabase(ARTICLE_DATABASE_PATH);
-articleDatabase.init();
 
 module.exports = {
     articleDatabase,

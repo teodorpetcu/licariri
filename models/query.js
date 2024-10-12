@@ -13,34 +13,37 @@ class QueryDatabase extends Database {
 
     /**
      * Create the database tables if they don't exist already.
+     * @returns {Promise<undefined>}
      */
-    init = () => {
-        // I sure hope this approach is faster than reading all files and
-        // scanning them?
-        this.db.exec(`CREATE TABLE IF NOT EXISTS mappings
-            (
-                article     INT,
-                word        INT,
-                FOREIGN KEY (article) REFERENCES articles (rowid),
-                FOREIGN KEY (word) REFERENCES words (rowid)
-            );
-            CREATE TABLE IF NOT EXISTS words
-            (
-                word            TEXT NOT NULL,
-                UNIQUE (word)
-            );
-            CREATE TABLE IF NOT EXISTS articles
-            (
-                article_id      TEXT NOT NULL,
-                UNIQUE (article_id)
-            );`, (err) => {
-                if (err) {
-                    logger.error(`database '${this.path}' tables: ${err}`);
-                } else {
-                    logger.info(`database '${this.path}' tables: ok`);
+    init = async () => {
+        return new Promise((resolve, reject) => {
+            this.db.exec(`CREATE TABLE IF NOT EXISTS mappings
+                (
+                    article     INT,
+                    word        INT,
+                    FOREIGN KEY (article) REFERENCES articles (rowid),
+                    FOREIGN KEY (word) REFERENCES words (rowid)
+                );
+                CREATE TABLE IF NOT EXISTS words
+                (
+                    word            TEXT NOT NULL,
+                    UNIQUE (word)
+                );
+                CREATE TABLE IF NOT EXISTS articles
+                (
+                    article_id      TEXT NOT NULL,
+                    UNIQUE (article_id)
+                );`, (err) => {
+                    if (err) {
+                        logger.error(`database '${this.path}' tables: ${err}`);
+                        reject(err);
+                    } else {
+                        logger.info(`database '${this.path}' tables: ok`);
+                        resolve(undefined);
+                    }
                 }
-            }
-        );
+            )
+        })
     }
 
     /**
@@ -141,7 +144,6 @@ class QueryDatabase extends Database {
 }
 
 const queryDatabase = new QueryDatabase(QUERY_DATABASE_PATH);
-queryDatabase.init();
 
 module.exports = {
     queryDatabase
