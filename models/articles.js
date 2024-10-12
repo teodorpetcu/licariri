@@ -359,7 +359,7 @@ class ArticleDatabase extends Database {
      * @returns {Promise<Object[]>}
      */
     getArticleCredits = async (articleID) => {
-        return this.all('SELECT * FROM article_credits WHERE id = ?', [articleID])
+        return this.all('SELECT * FROM article_credits WHERE id = ? ORDER BY name', [articleID])
             .then((rows) => {
                 let raw = rows.map((row) => {return {name: row.name, credit: row.credited_for}});
                 return {

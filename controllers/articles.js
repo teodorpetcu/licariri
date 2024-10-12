@@ -112,9 +112,9 @@ const post_adminAddArticle = async (req, res) => {
                         : []);
     const content = req.body.content.replace(/([<>\\])/g, "\\$1");
     const credits = {
-        editorial: req.body.credit_editorial.split(", ").map((name) => name.trim()).filter((a) => a),
-        dtp: req.body.credit_dtp.split(", ").map((name) => name.trim()).filter((a) => a),
-        thumbnail: req.body.credit_thumbnail.split(", ").map((name) => name.trim()).filter((a) => a),
+        editorial: req.body.credit_editorial.split(", ").map((name) => name.trim()).sort().filter((a) => a),
+        dtp: req.body.credit_dtp.split(", ").map((name) => name.trim()).sort().filter((a) => a),
+        thumbnail: req.body.credit_thumbnail.split(", ").map((name) => name.trim()).sort().filter((a) => a),
     }
     // TODO: improve description selection
     const description = content.slice(0, 250);
