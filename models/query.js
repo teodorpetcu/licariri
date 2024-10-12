@@ -16,34 +16,27 @@ class QueryDatabase extends Database {
      * @returns {Promise<undefined>}
      */
     init = async () => {
-        return new Promise((resolve, reject) => {
-            this.db.exec(`CREATE TABLE IF NOT EXISTS mappings
-                (
-                    article     INT,
-                    word        INT,
-                    FOREIGN KEY (article) REFERENCES articles (rowid),
-                    FOREIGN KEY (word) REFERENCES words (rowid)
-                );
-                CREATE TABLE IF NOT EXISTS words
-                (
-                    word            TEXT NOT NULL,
-                    UNIQUE (word)
-                );
-                CREATE TABLE IF NOT EXISTS articles
-                (
-                    article_id      TEXT NOT NULL,
-                    UNIQUE (article_id)
-                );`, (err) => {
-                    if (err) {
-                        logger.error(`database '${this.path}' tables: ${err}`);
-                        reject(err);
-                    } else {
-                        logger.info(`database '${this.path}' tables: ok`);
-                        resolve(undefined);
-                    }
-                }
-            )
-        })
+        return this.exec(
+            `CREATE TABLE IF NOT EXISTS mappings
+            (
+                article     INT,
+                word        INT,
+                FOREIGN KEY (article) REFERENCES articles (rowid),
+                FOREIGN KEY (word) REFERENCES words (rowid)
+            );
+            CREATE TABLE IF NOT EXISTS words
+            (
+                word            TEXT NOT NULL,
+                UNIQUE (word)
+            );
+            CREATE TABLE IF NOT EXISTS articles
+            (
+                article_id      TEXT NOT NULL,
+                UNIQUE (article_id)
+            );`
+        )
+            .then(() => logger.info(`database '${this.path}' tables: ok`))
+            .catch((err) => this.errorLogger(`database '${this.path}' tables: ${err}`));
     }
 
     /**
@@ -55,29 +48,25 @@ class QueryDatabase extends Database {
         let lowercase = contents.toLowerCase();
         let validWords = lowercase.replace(/[^0-9A-z\-'ăîâșțéèÿùüïôœàæêëûîâç]/g, " ").split(/\s+/);
         let uniqueWords = [... new Set(validWords.filter((word) => word))];
-        this.db.serialize(() => {
-            this.db.run("INSERT INTO articles VALUES (?)", [id], this.errorLogger);
-            this.db.get("SELECT rowid as num FROM articles WHERE article_id = ?", [id], (err, row) => {
-                if (err) {
-                    logger.error(`database '${this.path}': ${err}`);
-                } else {
-                    let rowid = row.num;
-                    let words_stmt = this.db.prepare("INSERT OR IGNORE INTO words VALUES (?)");
-                    let stmt = this.db.prepare("INSERT INTO mappings VALUES (?, (SELECT rowid FROM words WHERE word = ?))");
-                    for (let word of uniqueWords) {
-                        words_stmt.run([word], this.errorLogger);
-                        stmt.run([rowid, word], this.errorLogger);
-                    }
-                    words_stmt.finalize((err) => {
-                        if (err) {
-                            logger.error(`database '${this.path}': ${err}`);
-                        } else {
-                            stmt.finalize(this.errorLogger);
-                        }
-                    });
+        return this.run("INSERT INTO articles VALUES (?)", [id])
+            .then(async () => {
+                let row = await this.get("SELECT rowid as num FROM articles WHERE article_id = ?", [id]).catch(this.errorLogger);
+                let rowid = row.num;
+                let words_stmt = this.db.prepare("INSERT OR IGNORE INTO words VALUES (?)");
+                let stmt = this.db.prepare("INSERT INTO mappings VALUES (?, (SELECT rowid FROM words WHERE word = ?))");
+                for (let word of uniqueWords) {
+                    words_stmt.run([word], this.errorLogger);
+                    stmt.run([rowid, word], this.errorLogger);
                 }
-            });
-        });
+                words_stmt.finalize((err) => {
+                    if (err) {
+                        logger.error(`database '${this.path}': ${err}`);
+                    } else {
+                        stmt.finalize(this.errorLogger);
+                    }
+                });
+            })
+            .catch(this.errorLogger);
     }
 
     /**
@@ -89,22 +78,9 @@ class QueryDatabase extends Database {
      * @param {string} article_id
      */
     unindexArticle = async (article_id) => {
-        return new Promise((resolve) => {
-            this.db.run("DELETE FROM mappings WHERE rowid IN (SELECT rowid FROM articles WHERE article_id = ?)",
-                [article_id],
-                (err) => {
-                    if (err) {
-                        this.errorLogger(err);
-                    } else {
-                        this.db.run("DELETE FROM articles WHERE article_id = ?",
-                            [article_id],
-                            this.errorLogger
-                        );
-                    }
-                }
-            );
-            return resolve();
-        })
+        return this.run("DELETE FROM mappings WHERE rowid IN (SELECT rowid FROM articles WHERE article_id = ?)", [article_id])
+            .then(() => this.run("DELETE FROM articles WHERE article_id = ?", [article_id]))
+            .catch(this.errorLogger);
     }
 
     /**
@@ -115,31 +91,22 @@ class QueryDatabase extends Database {
      * @returns {Promise<string[]>}
      */
     findArticles = async (words) => {
-        return new Promise((resolve) => {
-            words = words.split(" ").map((word) => `%${word}%`);
-            let stmt = "";
-            for (let i = 0; i < words.length; i++) {
-                if (i != 0) {
-                    stmt += `INTERSECT\n`;
-                }
-                stmt += `SELECT article_id FROM articles
-                    WHERE rowid IN
-                        (SELECT article FROM mappings
-                            WHERE word IN
-                                (SELECT rowid FROM words WHERE word LIKE ?))\n`;
+        words = words.split(" ").map((word) => `%${word}%`);
+        let stmt = "";
+        for (let i = 0; i < words.length; i++) {
+            if (i != 0) {
+                stmt += `INTERSECT\n`;
             }
-            this.db.all(stmt,
-                words,
-                (err, rows) => {
-                    if (err) {
-                        // TODO: handle
-                        logger.error(`database '${this.path}': ${err}`);
-                    } else {
-                        return resolve(rows.map((row) => row.article_id));
-                    }
-                }
-            );
-        })
+            stmt += `SELECT article_id FROM articles
+                WHERE rowid IN
+                    (SELECT article FROM mappings
+                        WHERE word IN
+                            (SELECT rowid FROM words WHERE word LIKE ?))\n`;
+        }
+
+        return this.all(stmt, words)
+            .then((rows) => rows.map((row) => row.article_id))
+            .catch(this.errorLogger);
     }
 }
 

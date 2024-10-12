@@ -15,31 +15,22 @@ class ViewsDatabase extends Database {
      * @returns {Promise}
      */
     init = async () => {
-        return new Promise((resolve, reject) => {
-            this.db.exec(`
-                CREATE TABLE IF NOT EXISTS article_requests
-                (
-                    timestamp           INT,
-                    ip                  TEXT NOT NULL,
-                    article_requested   TEXT NOT NULL
-                );
-                CREATE TABLE IF NOT EXISTS article_views
-                (
-                    article_id          TEXT NOT NULL,
-                    unique_views        INT,
-                    UNIQUE (article_id)
-                );
-                `, (err) => {
-                    if (err) {
-                        logger.error(`database '${this.path}' tables: ${err}`);
-                        reject(err);
-                    } else {
-                        logger.info(`database '${this.path}' tables: ok`);
-                        resolve(undefined);
-                    }
-                }
-            )
-        })
+        return this.exec(
+            `CREATE TABLE IF NOT EXISTS article_requests
+            (
+                timestamp           INT,
+                ip                  TEXT NOT NULL,
+                article_requested   TEXT NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS article_views
+            (
+                article_id          TEXT NOT NULL,
+                unique_views        INT,
+                UNIQUE (article_id)
+            );`
+        )
+            .then(() => logger.info(`database '${this.path}' tables: ok`))
+            .catch((err) => this.errorLogger(`database '${this.path}' tables: ${err}`));
     }
 
     /**
@@ -48,15 +39,17 @@ class ViewsDatabase extends Database {
      * @param {string}  articleID
      */
     logRequest = async (timestamp, ip, articleID) => {
-        this.db.run("INSERT INTO article_requests VALUES (?, ?, ?)", [timestamp, ip, articleID], this.errorLogger);
+        return this.run("INSERT INTO article_requests VALUES (?, ?, ?)", [timestamp, ip, articleID])
+            .catch(this.errorLogger);
     }
 
     /**
      * Running this operation on every new request would be extremely expensive,
      * so we don't do that.
      */
-    updateArticleViews = () => {
-        this.db.run('INSERT OR REPLACE INTO article_views SELECT article_requested, COUNT(DISTINCT ip) FROM article_requests GROUP BY article_requested', this.errorLogger);
+    updateArticleViews = async () => {
+        return this.run('INSERT OR REPLACE INTO article_views SELECT article_requested, COUNT(DISTINCT ip) FROM article_requests GROUP BY article_requested')
+            .catch(this.errorLogger);
     }
 
     /**
@@ -64,17 +57,14 @@ class ViewsDatabase extends Database {
      * @returns {Promise<int>}
      */
     getArticleViews = async (id) => {
-        return new Promise((resolve, _) => {
-            this.db.all('SELECT unique_views FROM article_views WHERE article_id = ?', [id], (err, rows) => {
-                if (err) {
-                    logger.error(`getting article views: ${err}`);
-                    return resolve(0);
-                } else if (rows === undefined || !rows.length) {
-                    return resolve(0);
-                }
-                return resolve(rows[0].unique_views);
+        return this.all('SELECT unique_views FROM article_views WHERE article_id = ?', [id])
+            .then(() => {
+                return rows[0].unique_views;
+            })
+            .catch((err) => {
+                this.errorLogger(err);
+                return 0;
             });
-        });
     }
 
     /**
@@ -83,8 +73,10 @@ class ViewsDatabase extends Database {
      * @param {string} newID
      */
     renameArticle = async (originalID, newID) => {
-        this.db.run('UPDATE article_views SET article_id = ? WHERE article_id = ?', [newID, originalID], this.errorLogger);
-        this.db.run('UPDATE article_requests SET article_requested = ? WHERE article_requested = ?', [newID, originalID], this.errorLogger);
+        return Promise.all([
+            this.run('UPDATE article_views SET article_id = ? WHERE article_id = ?', [newID, originalID]),
+            this.run('UPDATE article_requests SET article_requested = ? WHERE article_requested = ?', [newID, originalID]),
+        ]).catch(this.errorLogger)
     }
 }
 

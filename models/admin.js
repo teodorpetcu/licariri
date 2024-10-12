@@ -82,41 +82,34 @@ class UsersDatabase extends Database {
      * @returns {Promise<undefined>}
      */
     init = async () => {
-        return new Promise((resolve, reject) => {
-            this.db.exec(`CREATE TABLE IF NOT EXISTS users
-                (
-                    id          TEXT NOT NULL,
-                    privilege   INT,
-                    suspended   INT,
-                    password    TEXT NOT NULL,
-                    UNIQUE (id)
-                );
-                CREATE TABLE IF NOT EXISTS sessions
-                (
-                    user        TEXT NOT NULL,
-                    token       TEXT NOT NULL,
-                    timestamp   INT,
-                    UNIQUE(token),
-                    FOREIGN KEY (user) REFERENCES users (id)
-                );
-                CREATE TABLE IF NOT EXISTS activity
-                (
-                    timestamp   INT,
-                    user        TEXT NOT NULL,
-                    action      TEXT NOT NULL,
-                    target      TEXT,
-                    FOREIGN KEY (user) REFERENCES users (id)
-                );`, (err) => {
-                    if (err) {
-                        logger.error(`database '${this.path}' tables: ${err}`);
-                        reject(err);
-                    } else {
-                        logger.info(`database '${this.path}' tables: ok`);
-                        resolve(undefined)
-                    }
-                }
-            )
-        })
+        return this.exec(
+            `CREATE TABLE IF NOT EXISTS users
+            (
+                id          TEXT NOT NULL,
+                privilege   INT,
+                suspended   INT,
+                password    TEXT NOT NULL,
+                UNIQUE (id)
+            );
+            CREATE TABLE IF NOT EXISTS sessions
+            (
+                user        TEXT NOT NULL,
+                token       TEXT NOT NULL,
+                timestamp   INT,
+                UNIQUE(token),
+                FOREIGN KEY (user) REFERENCES users (id)
+            );
+            CREATE TABLE IF NOT EXISTS activity
+            (
+                timestamp   INT,
+                user        TEXT NOT NULL,
+                action      TEXT NOT NULL,
+                target      TEXT,
+                FOREIGN KEY (user) REFERENCES users (id)
+            );`
+        )
+            .then(() => logger.info(`database '${this.path}' tables: ok`))
+            .catch((err) => this.errorLogger(`database '${this.path}' tables: ${err}`));
         // `activity` table action types:
         //      ["modify", "rename", "publish", "draft", "trash"] articles
         //      ["adduser", "suspenduser", "unsuspenduser"] user
@@ -132,10 +125,8 @@ class UsersDatabase extends Database {
     //TODO: handle eventual errors
     addUser = async (user, pass) => {
         let hash = await hashPassword(pass);
-        this.db.run('INSERT INTO users VALUES(?, ?, ?, ?)',
-            [user.id, user.privilege, user.suspended, hash],
-            this.errorLogger
-        );
+        return this.run('INSERT INTO users VALUES(?, ?, ?, ?)', [user.id, user.privilege, user.suspended, hash])
+            .catch(this.errorLogger);
     }
 
     /**
@@ -145,10 +136,8 @@ class UsersDatabase extends Database {
      */
     changePassword = async (user, pass) => {
         let hash = await hashPassword(pass);
-        this.db.run('UPDATE users SET password = ? WHERE id = ?',
-            [hash, user.id],
-            this.errorLogger
-        );
+        return this.run('UPDATE users SET password = ? WHERE id = ?', [hash, user.id])
+            .catch(this.errorLogger);
     }
 
     /**
@@ -159,35 +148,27 @@ class UsersDatabase extends Database {
      * @returns {Promise<boolean>}
      */
     isCorrectLoginCombo = async (id, pass) => {
-        return new Promise((resolve) => {
-            return this.db.get('SELECT * FROM users WHERE id = ?', [id], (err, row) => {
-                if (err) {
-                    // TODO: handle
-                    logger.error(`database '${this.path}': ${err}`);
-                } else if (row == undefined) {
-                    // ID does not exist in the database, but it makes no
-                    // difference when we're trying to authenticate
-                    //
-                    // That being said, we're still going to wait, so as to not
-                    // make the end-user realise that the ID doesn't exist
-                    return setTimeout(() => resolve(false), 2 * 1000); // 2sec
-                } else {
-                    return resolve(validatePassword(pass, row.password));
-                }
+        return this.get('SELECT * FROM users WHERE id = ?', [id])
+            .then((row) => {
+                return validatePassword(pass, row.password);
+            })
+            .catch((err) => {
+                this.errorLogger(err);
+                // Whether there was an actual error or the ID does not exist in
+                // the database, it makes no difference when we're trying to
+                // authenticate. That being said, we're still going to wait, so
+                // as to not make the end-user realise that the ID doesn't exist
+                return setTimeout(() => resolve(false), 2 * 1000); // 2sec
             });
-        })
     }
 
     /**
      * Save the given session in the database
      * @param session {Session}
      */
-    // TODO: return status
     addSession = async (session) => {
-        this.db.run('INSERT INTO sessions VALUES (?, ?, ?)',
-            [session.user_id, session.token, session.timestamp],
-            this.errorLogger
-        );
+        return this.run('INSERT INTO sessions VALUES (?, ?, ?)', [session.user_id, session.token, session.timestamp])
+            .catch(this.errorLogger);
     }
 
     /**
@@ -198,18 +179,14 @@ class UsersDatabase extends Database {
      */
     // Hopefully this does not take too much time to do for every request?
     getSessionUser = async (token) => {
-        return new Promise((resolve)=> {
-            this.db.get('SELECT * FROM users WHERE id IN (SELECT user FROM sessions WHERE token = ?)', [token], (err, row) => {
-                if (err) {
-                    logger.error(`database '${this.path}': ${err}`);
-                    return resolve(undefined);
-                } else if (row === undefined) {
-                    return resolve(undefined);
-                } else {
-                    return resolve(new User(row.id, row.privilege, row.suspended));
-                }
+        return this.get('SELECT * FROM users WHERE id IN (SELECT user FROM sessions WHERE token = ?)', [token])
+            .then((row) => {
+                return new User(row.id, row.privilege, row.suspended);
             })
-        });
+            .catch((err) => {
+                this.errorLogger(err);
+                return undefined;
+            });
     }
 
     /**
@@ -218,7 +195,8 @@ class UsersDatabase extends Database {
      * @param {string} token
      */
     removeSession = async (token) => {
-        this.db.run(`DELETE FROM sessions WHERE token = ?`, [token], this.errorLogger);
+        return this.run(`DELETE FROM sessions WHERE token = ?`, [token])
+            .catch(this.errorLogger);
     }
 
     /**
@@ -226,18 +204,14 @@ class UsersDatabase extends Database {
      * @return {Promise<Session[]|undefined>}
      */
     getAllSessions = async () => {
-        return new Promise((resolve) => {
-            this.db.all('SELECT * FROM sessions', [], (err, rows) => {
-                if (err) {
-                    logger.error(`database '${this.path}': ${err}`);
-                    return resolve(undefined);
-                } else if (rows === undefined) {
-                    return resolve(undefined);
-                } else {
-                    return resolve(rows.map((row) => new Session(row.user_id, row.token, new Date(row.timestamp))));
-                }
-            });
-        })
+        return this.all('SELECT * FROM sessions', [])
+            .then((rows) => {
+                return rows.map((row) => new Session(row.user_id, row.token, new Date(row.timestamp)));
+            })
+            .catch((err) => {
+                this.errorLogger(err);
+                return undefined;
+            })
     }
 
     /**
@@ -247,10 +221,8 @@ class UsersDatabase extends Database {
      * @param {string} target
      */
     addActivity = async (user, action, target) => {
-        this.db.run('INSERT INTO activity VALUES (?, ?, ?, ?)',
-            [Date.now(), user.id, action, target],
-            this.errorLogger
-        );
+        return this.run('INSERT INTO activity VALUES (?, ?, ?, ?)', [Date.now(), user.id, action, target])
+            .catch(this.errorLogger);
     }
 
     /**
@@ -262,26 +234,22 @@ class UsersDatabase extends Database {
      * @param {string} newTarget
      */
     changeActivityTarget = async (action, oldTarget, newTarget) => {
-        this.db.run('UPDATE activity SET target = ? WHERE action = ? AND target = ?',
-            [newTarget, action, oldTarget],
-            this.errorLogger
-        );
+        return this.run('UPDATE activity SET target = ? WHERE action = ? AND target = ?', [newTarget, action, oldTarget])
+            .catch(this.errorLogger);
     }
 
+    /**
+     * @returns {Promise<Activity[]>}
+     */
     getAllActivities = async () => {
-        return new Promise((resolve) => {
-            this.db.all('SELECT * FROM activity ORDER BY timestamp DESC', [], (err, rows) => {
-                if (err) {
-                    logger.error(`database '${this.path}': ${err}`);
-                    return resolve(undefined);
-                } else if (rows === undefined) {
-                    logger.error(`database '${this.path}': getAllUsers() rows undefined`);
-                    return resolve(undefined);
-                } else {
-                    return resolve(rows.map((row) => new Activity(row.user, row.action, row.target, new Date(row.timestamp))));
-                }
+        return this.all('SELECT * FROM activity ORDER BY timestamp DESC', [])
+            .then((rows)  => {
+                return rows.map((row) => new Activity(row.user, row.action, row.target, new Date(row.timestamp)));
             })
-        })
+            .catch((err) => {
+                errorLogger(err);
+                return [];
+            });
     }
 
     /**
@@ -290,19 +258,18 @@ class UsersDatabase extends Database {
      * @returns {Promise<User|undefined>}
      */
     getAllUsers = async () => {
-        return new Promise((resolve) => {
-            this.db.all('SELECT * FROM users ORDER BY privilege DESC', [], (err, rows) => {
-                if (err) {
-                    logger.error(`database '${this.path}': ${err}`);
-                    return resolve(undefined);
-                } else if (rows === undefined) {
-                    logger.error(`database '${this.path}': getAllUsers() rows undefined`);
-                    return resolve(undefined);
-                } else {
-                    return resolve(rows.map((row) => new User(row.id, row.privilege, row.suspended)));
-                }
+        return this.all('SELECT * FROM users ORDER BY privilege DESC', [])
+            .then((rows)  => {
+                return rows.map((row) => new User(row.id, row.privilege, row.suspended));
             })
-        });
+            .catch((err) => {
+                if (err === undefined) {
+                    this.errorLogger("getAllUsers() rows undefined");
+                } else {
+                    this.errorLogger(err);
+                }
+                return undefined;
+            });
     }
 
     /**
@@ -310,24 +277,22 @@ class UsersDatabase extends Database {
      * @returns {Promise<Activity[]>}
      */
     getArticleModifications = async (articleID) => {
-        return new Promise((resolve) => {
-            this.db.all(`SELECT * FROM activity WHERE action = ? AND target = ? ORDER BY timestamp DESC`,
-                ["modify", articleID], (err, rows) => {
-                    if (err || rows === undefined) {
-                        return resolve([]);
-                    } else {
-                        return resolve(rows.map((row) => new Activity(row.user, row.action, row.target, row.timestamp)));
-                    }
-                });
-        });
+        return this.all(`SELECT * FROM activity WHERE action = ? AND target = ? ORDER BY timestamp DESC`,
+                                                        ["modify", articleID])
+            .then((rows) => {
+                return rows.map((row) => new Activity(row.user, row.action, row.target, row.timestamp));
+            })
+            .catch((err) => {this.errorLogger(err); return []});
     }
 
     suspendUser = async (userID) => {
-        this.db.run(`UPDATE users SET suspended = 1 WHERE id = ?`, [userID], this.errorLogger);
+        return this.run(`UPDATE users SET suspended = 1 WHERE id = ?`, [userID])
+            .catch(this.errorLogger);
     }
 
     unSuspendUser = async (userID) => {
-        this.db.run(`UPDATE users SET suspended = 0 WHERE id = ?`, [userID], this.errorLogger);
+        return this.run(`UPDATE users SET suspended = 0 WHERE id = ?`, [userID])
+            .catch(this.errorLogger);
     }
 }
 
