@@ -6,18 +6,20 @@ const { WEBSITE_URL, SITEMAP_FILE_PATH } = require("./config.js");
 const { articleDatabase } = require("./models/articles.js");
 const { usersDatabase } = require("./models/admin.js");
 
-const generateSitemapFile = async () => {
-    const articles = await articleDatabase.searchArticles("stage", "public");
-    const pdfprints = await articleDatabase.getAllPDFPrintsSorted();
+const escapeStringForXML = (str) => {
+    return str.replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll("'", "&apos;")
+                .replaceAll("\"", "&quot;")
+                .replaceAll(" ", "%20");
+}
 
-    const escapeStringForXML = (str) => {
-        return str.replaceAll("&", "&amp;")
-                    .replaceAll("<", "&lt;")
-                    .replaceAll(">", "&gt;")
-                    .replaceAll("'", "&apos;")
-                    .replaceAll("\"", "&quot;")
-                    .replaceAll(" ", "%20");
-    }
+const generateSitemapFile = async () => {
+    let [articles, pdfprints] = await Promise.all([
+        articleDatabase.searchArticles("stage", "public"),
+        articleDatabase.getAllPDFPrintsSorted(),
+    ])
 
     let sitemapXML =
 `<?xml version="1.0" encoding="UTF-8"?>
@@ -30,15 +32,23 @@ const generateSitemapFile = async () => {
 
     // TODO: add other main pages here when the time comes
 
+    // populate every article with a `lastmod` property
+    await Promise.all(articles.map(async (article) => {
+        article.lastmod = article.timestamp;
+        return usersDatabase.getArticleModifications(article.id)
+            .then((activities) => {
+                if (activities.length) {
+                    article.lastmod = activities[0].timestamp;
+                }
+            })
+            .catch((_) => {});
+    }))
+
     for (let article of articles) {
-        // the article may have been edited after it had been published
-        let lastmod = article.timestamp;
-        let activities = await usersDatabase.getArticleModifications(article.id);
-        if (activities.length) lastmod = activities[0].timestamp;
     sitemapXML += `
     <url>
         <loc>${WEBSITE_URL}/articles/${escapeStringForXML(article.id)}</loc>
-        <lastmod>${await formatDate(new Date(lastmod))}</lastmod>
+        <lastmod>${formatDate(new Date(article.lastmod))}</lastmod>
         <priority>0.7</priority>
         <changefreq>yearly</changefreq>
     </url>`
@@ -48,7 +58,7 @@ const generateSitemapFile = async () => {
     sitemapXML += `
     <url>
         <loc>${WEBSITE_URL}/pdfprints/${escapeStringForXML(pdfprint.filename)}</loc>
-        <lastmod>${await formatDate(new Date(pdfprint.timestamp))}</lastmod>
+        <lastmod>${formatDate(new Date(pdfprint.timestamp))}</lastmod>
         <changefreq>never</changefreq>
     </url>`
     }

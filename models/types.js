@@ -31,7 +31,7 @@ class Article {
         this.id = title.toLowerCase().replaceAll(/[,.?*!]/g, "").replaceAll(/\s/g, "-");
         this.timestamp = timestamp.valueOf();
         this.stage = stage;
-        formatDate(timestamp).then((t) => this.date = t);
+        this.date = formatDate(timestamp);
         this.title = title;
         this.subtitle = subtitle;
         this.language = language;
@@ -95,7 +95,7 @@ class PDFPrint {
      */
     constructor(timestamp, description) {
         this.timestamp = timestamp;
-        formatDate(timestamp).then((t) => this.timestamp = t);
+        this.date = formatDate(timestamp);
         this.description = description;
         this.filename = description + ".pdf";
     }

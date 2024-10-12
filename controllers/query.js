@@ -145,8 +145,8 @@ const prerenderQueryAsFile = async (query) => {
     }
 
     if (filename) {
-        const queryPage = await renderQueryPage(query);
-        return fs.promises.writeFile(filename, queryPage)
+        return renderQueryPage(query)
+            .then((queryPage) => fs.promises.writeFile(filename, queryPage))
             .then(() => true)
             .catch(errorLogger);
     } else {

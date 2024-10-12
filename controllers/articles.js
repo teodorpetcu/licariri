@@ -48,26 +48,26 @@ const renderArticlePage = async (article, plainTextContent, articleStyle, credit
 const updateAllArticles = async () => {
     const articles = await articleDatabase.searchArticles();
     return Promise.all(articles.map(async (article) => {
-        let content = await fs.promises.readFile(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, {encoding: "utf-8"}).catch(errorLogger);
-        let articleStyle = await articleDatabase.getArticleStyle(article.id);
-        let status = await renderArticlePage(article, content, articleStyle);
-        if (status) {
-            logger.info(`re-rendered article "${article.id}"`);
-        } else {
-            logger.error(`failed re-rendering article "${article.id}"`);
-        }
+        return Promise.all([
+            fs.promises.readFile(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, {encoding: "utf-8"}),
+            articleDatabase.getArticleStyle(article.id),
+        ])
+            .then(([content, articleStyle]) => renderArticlePage(article, content, articleStyle))
+            .then((_status) => logger.info(`re-rendered article "${article.id}"`))
+            .catch((_err) => logger.error(`failed re-rendering article "${article.id}"`));
     }));
 }
 
 const updateMainPage = async () => {
-    const pdfprints = await articleDatabase.getAllPDFPrintsSorted();
-    let articles = await articleDatabase.searchArticles("stage", "public");
-    for (let i = 0; i < articles.length; i++) {
-        articles[i].style = await articleDatabase.getArticleStyle(articles[i].id);
-    }
+    let [articles, pdfprints] = await Promise.all([
+        articleDatabase.searchArticles("stage", "public"),
+        articleDatabase.getAllPDFPrintsSorted(),
+    ]).catch(this.errorLogger);
+    await Promise.all(articles.map(async (article) => {
+        return articleDatabase.getArticleStyle(article.id).then((style) => article.style = style);
+    })).catch(this.errorLogger);
     let renderedPage = await ejs.renderFile(__dirname + "/../views/main.ejs", {articles, pdfprints}, {async: true});
-    return fs.promises.writeFile(`${MAIN_PAGE_HTML_FILE_PATH}`, renderedPage)
-        .catch(errorLogger);
+    return fs.promises.writeFile(`${MAIN_PAGE_HTML_FILE_PATH}`, renderedPage).catch(errorLogger);
 }
 
 const get_mainPage = async (_, res) => {
@@ -87,7 +87,11 @@ const get_articlePage = async (req, res) => {
 
 const post_adminAddArticle = async (req, res) => {
     const articleID = req.params.articleID;
-    const originalArticle = await articleDatabase.getArticleMeta(articleID);
+
+    const [articleWithSameTitle, originalArticle] = await Promise.all([
+        articleDatabase.getArticleMeta(req.body.id),
+        articleDatabase.getArticleMeta(articleID),
+    ])
 
     const stage = originalArticle.stage;
     const timestamp = new Date(originalArticle.timestamp);
@@ -120,7 +124,7 @@ const post_adminAddArticle = async (req, res) => {
     const article = new Article(stage, timestamp, title, subtitle, language, category, description, authors, tags);
     const articleStyle = new ArticleStyle(req.body.hide_title_in_thumbnail, req.body.title_font, req.body.title_fill_style, req.body.title_color, req.body.title_fontsize_thumbnail, req.body.title_fontsize_article, req.body.title_fontweight, req.body.title_position, req.body.subtitle_font, req.body.subtitle_fontsize, req.body.subtitle_fontweight, req.body.subtitle_color, req.body.subtitle_position, req.body.dropcap)
 
-    if ((article.id != originalArticle.id && await articleDatabase.getArticleMeta(article.id))
+    if ((article.id != originalArticle.id && articleWithSameTitle)
         || !article.id) {
         // if there's already an article with the same ID, or the wanted ID is
         // empty, then don't change the title from the original, but otherwise
@@ -140,12 +144,20 @@ const post_adminAddArticle = async (req, res) => {
         // if the article happens to be renamed, then its ID changes, and
         // its leftover files which won't be used anymore must be destroyed
         if (originalArticle.id && originalArticle.id != article.id) {
-            if (await fileExists(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.html`)) {
-                fs.promises.unlink(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.html`)
-            }
-            if (await fileExists(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.md`)) {
-                fs.promises.unlink(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.md`)
-            }
+            Promise.all([
+                fileExists(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.html`)
+                    .then((st) => {
+                        if (st) {
+                            return fs.promises.unlink(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.html`);
+                        }
+                    }),
+                fileExists(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.md`)
+                    .then((st) => {
+                        if (st) {
+                            return fs.promises.unlink(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.md`)
+                        }
+                    })
+            ]).catch(errorLogger);
         }
         if (thumbnail && /^image/.test(thumbnail.mimetype)) {
             if (originalArticle.id && originalArticle.id != article.id) {
@@ -156,11 +168,16 @@ const post_adminAddArticle = async (req, res) => {
                 .toFile(`${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.webp`)
                 .catch(err => logger.error(err));
         } else if (originalArticle.id && originalArticle.id != article.id) {
-            if (await fileExists(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.webp`)) {
-                fs.promises.rename(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.webp`,
-                                `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.webp`);
-            }
+            fileExists(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.webp`)
+                .then((st) => {
+                    if (st) {
+                        return fs.promises.rename(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.webp`,
+                            `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.webp`);
+                    }
+                })
+                .catch(errorLogger);
         }
+
         articleDatabase.removeAllCredits(articleID);
         for (let credit of credits.editorial) {
             articleDatabase.addArticleCredit(articleID, credit, "editorial");
@@ -207,18 +224,31 @@ const post_updateArticleStage = async (req, res) => {
     article.failsafe_setStage(req.body.stage)
     // TODO: ensure the article has a thumbnail, etc. before publishing
     if (article.stage != originalStage) {
-        if (await fileExists(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.html`)) {
-            fs.promises.rename(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.html`,
-                           `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`)
-        }
-        if (await fileExists(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.md`)) {
-            fs.promises.rename(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.md`,
-                           `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`)
-        }
-        if (await fileExists(`${ARTICLES_DIRECTORY}/${originalStage}/images/${article.id}.webp`)) {
-            fs.promises.rename(`${ARTICLES_DIRECTORY}/${originalStage}/images/${article.id}.webp`,
-                           `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.webp`)
-        }
+        Promises.all([
+            fileExists(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.html`)
+                .then((st) => {
+                    if (st) {
+                        return fs.promises.rename(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.html`,
+                            `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`);
+                    }
+                }),
+
+            fileExists(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.md`)
+                .then((st) => {
+                    if (st) {
+                        return fs.promises.rename(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.md`,
+                            `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`)
+                    }
+                }),
+
+            fileExists(`${ARTICLES_DIRECTORY}/${originalStage}/images/${article.id}.webp`)
+                .then((st) => {
+                    if (st) {
+                        return fs.promises.rename(`${ARTICLES_DIRECTORY}/${originalStage}/images/${article.id}.webp`,
+                            `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.webp`)
+                    }
+                }),
+        ]).catch(errorLogger);
         articleDatabase.updateArticleStage(article);
         updateMainPage();
 
@@ -234,10 +264,10 @@ const post_updateArticleStage = async (req, res) => {
 
 const post_adminRemoveArticle = async (req, res) => {
     let articleID = req.body.id;
-    //(articlePublisher == req.user.id) {
-        await articleDatabase.removeArticle(articleID)
-        await queryDatabase.unindexArticle(articleID);
-    //}
+    await Promise.all([
+        articleDatabase.removeArticle(articleID),
+        queryDatabase.unindexArticle(articleID),
+    ]);
     res.redirect("/admin");
 }
 
@@ -252,16 +282,19 @@ const post_adminAddPDFprint = async (req, res) => {
         const pdffilepath = `${PDFPRINT_CONTENTS_PATH}/${pdfprint.filename}`;
         fs.promises.writeFile(pdffilepath, pdffile.data);
 
-        const thumbnail = (await pdf2img.convert(pdffile.data,
+        pdf2img.convert(pdffile.data,
             conversion_config = {
                 height: 750,
                 page_numbers: [1],
             }
-        ))[0];
-        sharp(thumbnail.data)
-            .webp({quality: WEBP_COMPRESSION_QUALITY})
-            .toFile(`${PDFPRINT_THUMBNAILS_PATH}/${pdfprint.description}.webp`)
-            .catch(err => logger.error(err));
+        )
+            .then((img) =>
+                sharp(img[0].data)
+                    .webp({quality: WEBP_COMPRESSION_QUALITY})
+                    .toFile(`${PDFPRINT_THUMBNAILS_PATH}/${pdfprint.description}.webp`)
+                    .catch(err => {Promise.reject(err)})
+            )
+            .catch(errorLogger);
 
         usersDatabase.addActivity(req.user, "addpdfprint", description)
         updateMainPage();

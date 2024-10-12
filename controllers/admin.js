@@ -6,7 +6,7 @@ const {
 const { usersDatabase, User, Session, Activity } = require("../models/admin.js");
 const { articleDatabase } = require("../models/articles.js");
 const { Article } = require("../models/types.js");
-const { logger } = require("../logger.js");
+const { logger, errorLogger } = require("../logger.js");
 const { fileExists, formatDate } = require("../util.js");
 
 const fs = require("fs");
@@ -54,6 +54,7 @@ const removeOldSessionsFromDatabase = async () => {
     let sessions = await usersDatabase.getAllSessions();
     let today = new Date();
     let numberRemoved = 0;
+    // TODO: remove `await` from loop
     for (let session of sessions) {
         let timestamp = new Date(session.timestamp);
         let daysDifference = Math.floor((today - timestamp) / MILISECONDS_IN_A_DAY);
@@ -97,14 +98,17 @@ const get_adminLoginPage = async (req, res) => {
 
 const get_adminPannelPage = async (req, res) => {
     if (req.user) {
-        let usersPages = []
+        let usersPagesPromise = Promise.resolve([[]]);
         if (req.user.privilege >= USER_PRIVILEGES["SUPERUSER"]) {
-            usersPages = paginate(await usersDatabase.getAllUsers(), 12);
+            usersPagesPromise = usersDatabase.getAllUsers().then((users) => paginate(users, 12));
         }
-        let draftArticlesPages = paginate(await articleDatabase.searchArticles("stage", "draft"), 12);
-        let publicArticlesPages = paginate(await articleDatabase.searchArticles("stage", "public"), 12);
-        let trashArticlesPages = paginate(await articleDatabase.searchArticles("stage", "trash"), 12);
-        let pdfprints = paginate(await articleDatabase.getAllPDFPrintsSorted(), 12);
+        const [publicArticlesPages, draftArticlesPages, trashArticlesPages, pdfprints, usersPages] = await Promise.all([
+            articleDatabase.searchArticles("stage", "public").then((articles) => paginate(articles, 12)),
+            articleDatabase.searchArticles("stage", "draft").then((articles) => paginate(articles, 12)),
+            articleDatabase.searchArticles("stage", "trash").then((articles) => paginate(articles, 12)),
+            articleDatabase.getAllPDFPrintsSorted().then((pdfprints) => paginate(pdfprints, 12)),
+            usersPagesPromise,
+        ]).catch(errorLogger);
         res.render("admin", {publicArticlesPages, draftArticlesPages, trashArticlesPages, pdfprints, user: req.user, usersPages});
     } else {
         res.redirect("login");
@@ -137,16 +141,25 @@ const post_adminLogout = async(req, res) => {
 const get_adminAddArticle = async (req, res) => {
     let article = await articleDatabase.getArticle(req.params.articleID);
     if (article) {
-        article.style = await articleDatabase.getArticleStyle(article.id);
         let contentsPath = `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`;
-        if (await fileExists(contentsPath)) {
-            article.content = await fs.promises.readFile(contentsPath, {encoding: "utf-8"});
-        }
+        await Promise.all([
+            articleDatabase.getArticleStyle(article.id)
+                .then((style) => article.style = style),
+            fileExists(contentsPath)
+                .then((st) => {
+                    if (st) {
+                        return fs.promises.readFile(contentsPath, {encoding: "utf-8"});
+                    } else {
+                        return Promise.resolve("");
+                    }
+                })
+                .then((content) => article.content = content),
+        ])
     } else {
         article = new Article(stage="draft", timestamp=undefined,
             title=`Articol fără titlu (${await articleDatabase.getUntitledArticleCount() + 1})`);
         article.style = {};
-        articleDatabase.saveArticle(article);
+        await articleDatabase.saveArticle(article);
     }
     res.render("edit-article-contents", {defaults: article});
 }
@@ -157,17 +170,19 @@ const post_adminAddUser = async (req, res) => {
     } else {
         let privilege = USER_PRIVILEGES[req.body.privilege];
         let user = new User(req.body.id, privilege);
-        await usersDatabase.addUser(user, req.body.password);
-        await usersDatabase.addActivity(req.user, "adduser", user.id); // NOTE: req.user =/= user
+        usersDatabase.addUser(user, req.body.password);
+        usersDatabase.addActivity(req.user, "adduser", user.id); // NOTE: req.user =/= user
         res.sendStatus(200);
     }
 }
 
 const post_adminChangeUserPassword = async (req, res) => {
     if (await usersDatabase.isCorrectLoginCombo(req.user.id, req.body.original)) {
-        await usersDatabase.changePassword(req.user, req.body.password);
-        await usersDatabase.addActivity(req.user, "changepassword", "self");
-        res.sendStatus(200);
+        await Promise.all([
+            usersDatabase.changePassword(req.user, req.body.password),
+            usersDatabase.addActivity(req.user, "changepassword", "self"),
+        ]).catch(errorLogger)
+            .finally(() => res.sendStatus(200))
     } else {
         res.sendStatus(401);
     }
@@ -183,10 +198,10 @@ const post_adminSuspendUser = async (req, res) => {
         res.status(404).render("404");
     } else {
         if (suspend == 1) {
-            await usersDatabase.addActivity(req.user, "suspendUser", userID);
+            usersDatabase.addActivity(req.user, "suspendUser", userID);
             usersDatabase.suspendUser(userID);
         } else {
-            await usersDatabase.addActivity(req.user, "unSuspendUser", userID);
+            usersDatabase.addActivity(req.user, "unSuspendUser", userID);
             usersDatabase.unSuspendUser(userID);
         }
         res.sendStatus(200);
@@ -222,15 +237,13 @@ const activityToHumanReadable = async (activity) => {
         activity.action = `a șters ediția print a revistei`;
     }
     let t = new Date(activity.timestamp);
-    activity.timestamp = `${await formatDate(t)} ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}`;
+    activity.timestamp = `${formatDate(t)} ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}`;
     return activity;
 }
 
 const get_adminActivitiesPage = async (_, res) => {
-    const activities = await usersDatabase.getAllActivities();
-    for (let i = 0; i < activities.length; i++) {
-        activities[i] = await activityToHumanReadable(activities[i]);
-    }
+    let activities = await usersDatabase.getAllActivities();
+    activities = await Promise.all(activities.map((activity) => activityToHumanReadable(activity)));
     res.render("activities", {activities});
 }
 

@@ -222,7 +222,7 @@ class ArticleDatabase extends Database {
 
         return this.all(stmt, [value])
             .then((rows) => rows.map((row) => row.id))
-            .catch((err) => {errorLogger(err); return []});
+            .catch((err) => {this.errorLogger(err); return []});
     }
 
     /**
@@ -245,19 +245,23 @@ class ArticleDatabase extends Database {
     /**
      * Return all of the metadata associated with the ID of the given article
      * @param {string} id
-     * @returns {Article|undefined}
+     * @returns {Promise<Article>}
      */
     getArticle = async (id) => {
-        let article = await this.getArticleMeta(id);
-        if (! article) return undefined;
-        // todo: maybe also include article style?
-        let [authors, tags] = await Promise.all([
-            this.getArticleAuthors(id),
-            this.getArticleTags(id),
-        ]);
-        article.authors = authors;
-        article.tags = tags;
-        return article;
+        return this.getArticleMeta(id)
+            .then((article) => Promise.all([
+                Promise.resolve(article),
+                this.getArticleAuthors(id),
+                this.getArticleTags(id),
+            ]))
+            .then(([article, authors, tags]) => {
+                if (article != undefined) {
+                    article.authors = authors;
+                    article.tags = tags;
+                }
+                return article;
+            })
+            .catch(this.errorLogger);
     }
 
     /**
@@ -267,7 +271,7 @@ class ArticleDatabase extends Database {
     getArticleMeta = async (id) => {
         return this.get('SELECT * FROM articles WHERE id = ?', [id])
             .then((row) => new Article(row.stage, new Date(row.timestamp), row.title, row.subtitle, row.language, row.category, row.description))
-            .catch((err) => {errorLogger(err); return undefined});
+            .catch((err) => {this.errorLogger(err); return undefined});
     }
 
     /**
@@ -279,7 +283,7 @@ class ArticleDatabase extends Database {
     getArticleAuthors = async (id) => {
         return this.all('SELECT author FROM article_authors WHERE id = ? ORDER BY author ASC', [id])
             .then((rows) => rows.map((row) => new Author(row.author)))
-            .catch((err) => {errorLogger(err); return []});
+            .catch((err) => {this.errorLogger(err); return []});
     }
 
     /**
@@ -291,7 +295,7 @@ class ArticleDatabase extends Database {
     getArticleTags = async (id) => {
         return this.all('SELECT tag FROM article_tags WHERE id = ? ORDER BY tag ASC', [id])
             .then((rows) => rows.map((row) => row.tag))
-            .catch((err) => {errorLogger(err); return []});
+            .catch((err) => {this.errorLogger(err); return []});
     }
 
     /**
