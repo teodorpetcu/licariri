@@ -1,0 +1,76 @@
+const fs = require("fs");
+
+const { articleDatabase } = require("./models/articles.js");
+const { usersDatabase } = require("./models/admin.js");
+const { viewsDatabase } = require("./models/view-count.js");
+const { renderArticlePage } = require("./controllers/articles.js");
+const { logger } = require("./logger.js");
+const { ARTICLES_DIRECTORY } = require("./config.js");
+
+const MILISECONDS_IN_A_DAY = 24 * 60 * 60 * 1000;
+
+/**
+ * Take all articles in the database and re-render their HTML file
+ * @returns {Promise<undefined>}
+ */
+const updateAllArticles = async () => {
+    const articles = await articleDatabase.searchArticles();
+    return Promise.all(articles.map(async (article) => {
+        return Promise.all([
+            fs.promises.readFile(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, {encoding: "utf-8"}),
+            articleDatabase.getArticleStyle(article.id),
+        ])
+            .then(([content, articleStyle]) => renderArticlePage(article, content, articleStyle))
+            .then((_status) => logger.info(`re-rendered article "${article.id}"`))
+            .catch((err) => logger.error(`failed re-rendering article "${article.id}": ${err}`));
+    }));
+}
+
+/**
+ * Even if login cookies expire after 28 days, they'd also need to be
+ * deleted from the database, to minimise the risk of an expired login token
+ * being reused.
+ *
+ * The most convenient solution is to prune the database every 24 hours, at
+ * midnight.
+ */
+const removeOldSessionsFromDatabase = async () => {
+    let sessions = await usersDatabase.getAllSessions();
+    let today = new Date();
+    let numberRemoved = 0;
+    // TODO: remove `await` from loop
+    for (let session of sessions) {
+        let timestamp = new Date(session.timestamp);
+        let daysDifference = Math.floor((today - timestamp) / MILISECONDS_IN_A_DAY);
+        if (daysDifference > 28) {
+            await usersDatabase.removeSession(session.token);
+            numberRemoved += 1;
+        }
+    }
+    logger.info(`removed ${numberRemoved} user session(s) from the database older than 28 days`);
+}
+
+const dailyUpdateJob = async () => {
+    return Promise.all([
+        removeOldSessionsFromDatabase(),
+        viewsDatabase.updateArticleViews()
+            .then(() => updateAllArticles()),
+    ])
+        .then(() => logger.info("successfully ran daily update job"))
+        .catch((err) => errorLogger(`failed running daily update job: ${err}`))
+}
+
+const dailyUpdateJobTimer = () => {
+    let milisecondsToNextMidnight = new Date();
+    milisecondsToNextMidnight.setHours(24, 0, 0, 0);
+    milisecondsToNextMidnight = milisecondsToNextMidnight.getTime() - Date.now();
+    logger.info(`started daily job timer, next ETA: ${Math.floor(milisecondsToNextMidnight / 1000)}sec`)
+    return setTimeout(() => {
+        dailyUpdateJob();
+        return setInterval(() => dailyUpdateJob, MILISECONDS_IN_A_DAY);
+    }, milisecondsToNextMidnight);
+}
+
+module.exports = {
+    dailyUpdateJobTimer,
+}

@@ -43,38 +43,6 @@ const forbidUnauthorised = async (req, res, next) => {
 }
 
 /**
- * Even if login cookies expire after 28 days, they'd also need to be
- * deleted from the database, to minimise the risk of an expired login token
- * being reused.
- *
- * The most convenient solution is to prune the database every 24 hours, at
- * midnight.
- */
-const removeOldSessionsFromDatabase = async () => {
-    let sessions = await usersDatabase.getAllSessions();
-    let today = new Date();
-    let numberRemoved = 0;
-    // TODO: remove `await` from loop
-    for (let session of sessions) {
-        let timestamp = new Date(session.timestamp);
-        let daysDifference = Math.floor((today - timestamp) / MILISECONDS_IN_A_DAY);
-        if (daysDifference > 28) {
-            await usersDatabase.removeSession(session.token);
-            numberRemoved += 1;
-        }
-    }
-    logger.info(`removed ${numberRemoved} user session(s) from the database older than 28 days`);
-}
-
-let milisecondsToNextMidnight = new Date();
-milisecondsToNextMidnight.setHours(24, 0, 0, 0);
-milisecondsToNextMidnight = milisecondsToNextMidnight.getTime() - Date.now();
-setTimeout(() => {
-    removeOldSessionsFromDatabase();
-    setInterval(removeOldSessionsFromDatabase, MILISECONDS_IN_A_DAY)
-}, milisecondsToNextMidnight)
-
-/**
  * Split the given array into multiple arrays of length equal to `pageSize`; if
  * the array's length isn't divisible by `pageSize`, then the last array
  * contains all the remainder elements.

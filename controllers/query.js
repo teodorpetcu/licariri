@@ -113,7 +113,7 @@ const renderQueryPage = async (query) => {
     return ejs.renderFile(__dirname + "/../views/query.ejs",
         {articles: searchResults, searchPageTitle, message},
         {async: true})
-        .catch(this.errorLogger);
+        .catch(errorLogger);
 }
 
 const get_queryPage = async (req, res) => {

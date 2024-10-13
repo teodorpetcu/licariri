@@ -41,31 +41,14 @@ const renderArticlePage = async (article, plainTextContent, articleStyle, credit
         .catch((err) => {errorLogger(err); return Promise.resolve(false)});
 }
 
-/**
- * Take all articles in the database and re-render their HTML file
- * @returns {Promise<undefined>}
- */
-const updateAllArticles = async () => {
-    const articles = await articleDatabase.searchArticles();
-    return Promise.all(articles.map(async (article) => {
-        return Promise.all([
-            fs.promises.readFile(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, {encoding: "utf-8"}),
-            articleDatabase.getArticleStyle(article.id),
-        ])
-            .then(([content, articleStyle]) => renderArticlePage(article, content, articleStyle))
-            .then((_status) => logger.info(`re-rendered article "${article.id}"`))
-            .catch((_err) => logger.error(`failed re-rendering article "${article.id}"`));
-    }));
-}
-
 const updateMainPage = async () => {
     let [articles, pdfprints] = await Promise.all([
         articleDatabase.searchArticles("stage", "public"),
         articleDatabase.getAllPDFPrintsSorted(),
-    ]).catch(this.errorLogger);
+    ]).catch(errorLogger);
     await Promise.all(articles.map(async (article) => {
         return articleDatabase.getArticleStyle(article.id).then((style) => article.style = style);
-    })).catch(this.errorLogger);
+    })).catch(errorLogger);
     let renderedPage = await ejs.renderFile(__dirname + "/../views/main.ejs", {articles, pdfprints}, {async: true});
     return fs.promises.writeFile(`${MAIN_PAGE_HTML_FILE_PATH}`, renderedPage).catch(errorLogger);
 }
@@ -320,4 +303,5 @@ module.exports = {
     post_adminAddPDFprint,
     post_adminRemovePDFprint,
     post_updateArticleStage,
+    renderArticlePage,
 };

@@ -51,6 +51,7 @@ const {
 } = require("./config.js");
 
 const { logger, requestLogger } = require("./logger.js");
+const { dailyUpdateJobTimer } = require("./cron.js");
 
 const app = express();
 
@@ -116,7 +117,11 @@ Promise.all([
     queryDatabase.init(),
     viewsDatabase.init(),
 ])
-    .then(() => app.listen(LISTENING_PORT, () => logger.info(`web server up`)))
-    .catch((_) => {
+    .then(() => {
+        app.listen(LISTENING_PORT, () => logger.info(`web server up`));
+        dailyUpdateJobTimer();
+    })
+    .catch((err) => {
+        logger.err(`failed starting up server: ${err}`);
         process.exit(1);
     });
