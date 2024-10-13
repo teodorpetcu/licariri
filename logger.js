@@ -51,9 +51,13 @@ if (process.env.NODE_ENV !== 'production') {
 const logger = {
     info: async (msg) => infoLogger.info(msg),
     security: async (msg) => securityLogger.info(msg),
-    error: async (msg) => {
-        if (msg) {
-            errorLogger.error(msg);
+    // having a context makes it easier to locate the whereabouts of the error,
+    // as well as not logging false positives (after a promise, the error itself
+    // may be undefined, even if it is caught; if simply appending the error to
+    // the context, an undefined error may get printed out)
+    error: async (context, err) => {
+        if (err) {
+            errorLogger.error(`${context}: ${err}`);
         }
     },
 }

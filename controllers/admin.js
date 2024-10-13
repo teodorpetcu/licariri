@@ -76,7 +76,7 @@ const get_adminPannelPage = async (req, res) => {
             articleDatabase.searchArticles("stage", "trash").then((articles) => paginate(articles, 12)),
             articleDatabase.getAllPDFPrintsSorted().then((pdfprints) => paginate(pdfprints, 12)),
             usersPagesPromise,
-        ]).catch((err) => logger.error(`fetching pages for admin pannel: ${err}`));
+        ]).catch((err) => logger.error(`fetching pages for admin pannel`, err));
         res.render("admin", {publicArticlesPages, draftArticlesPages, trashArticlesPages, pdfprints, user: req.user, usersPages});
     } else {
         res.redirect("login");

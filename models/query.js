@@ -36,8 +36,8 @@ class QueryDatabase extends Database {
                 UNIQUE (article_id)
             );`
         )
-            .then(() => logger.info(`database '${this.path}' tables: ok`))
-            .catch((err) => this.errorLogger(`database '${this.path}' tables: ${err}`));
+            .then(() => this.dbLogger.info("tables ok"))
+            .catch((err) => this.dbLogger.error("initialising tables", err));
     }
 
     /**
@@ -57,20 +57,20 @@ class QueryDatabase extends Database {
                         let words_stmt = this.db.prepare("INSERT OR IGNORE INTO words VALUES (?)");
                         let stmt = this.db.prepare("INSERT INTO mappings VALUES (?, (SELECT rowid FROM words WHERE word = ?))");
                         for (let word of uniqueWords) {
-                            words_stmt.run([word], this.errorLogger);
-                            stmt.run([rowid, word], this.errorLogger);
+                            words_stmt.run([word], this.dbLogger.error);
+                            stmt.run([rowid, word], this.dbLogger.error);
                         }
                         words_stmt.finalize((err) => {
                             if (err) {
                                 Promise.reject(err);
                             } else {
-                                stmt.finalize(this.errorLogger);
+                                stmt.finalize(this.dbLogger.error);
                             }
                         });
                     })
-                    .catch((err) => this.errorLogger(`indexing article: ${err}`));
+                    .catch((err) => this.dbLogger.error(`indexing article`, err));
             })
-            .catch((err) => this.errorLogger(`adding article to query database: ${err}`));
+            .catch((err) => this.dbLogger.error(`adding article to query database`, err));
     }
 
     /**
@@ -84,7 +84,7 @@ class QueryDatabase extends Database {
     unindexArticle = async (article_id) => {
         return this.run("DELETE FROM mappings WHERE rowid IN (SELECT rowid FROM articles WHERE article_id = ?)", [article_id])
             .then(() => this.run("DELETE FROM articles WHERE article_id = ?", [article_id]))
-            .catch((err) => this.errorLogger(`UNindexing article: ${err}`));
+            .catch((err) => this.dbLogger.error(`UNindexing article`, err));
     }
 
     /**
@@ -110,7 +110,7 @@ class QueryDatabase extends Database {
 
         return this.all(stmt, words)
             .then((rows) => rows.map((row) => row.article_id))
-            .catch((err) => this.errorLogger(`finding articles: ${err}`));
+            .catch((err) => this.dbLogger.error(`finding articles`, err));
     }
 }
 

@@ -1,6 +1,5 @@
 const { Author, Article, ArticleStyle, PDFPrint } = require("./types.js");
 const { Database } = require("./database.js");
-const { logger } = require("../logger.js");
 const { ARTICLE_DATABASE_PATH } = require("../config.js");
 
 class ArticleDatabase extends Database {
@@ -80,8 +79,8 @@ class ArticleDatabase extends Database {
                 UNIQUE (description)
             );`
         )
-            .then(() => logger.info(`database '${this.path}' tables: ok`))
-            .catch((err) => this.errorLogger(`database '${this.path}' tables: ${err}`));
+            .then(() => this.dbLogger.info("tables ok"))
+            .catch((err) => this.dbLogger.error("initialising tables", err));
     }
 
     /**
@@ -91,7 +90,7 @@ class ArticleDatabase extends Database {
     saveArticle = async (article) => {
         return this.run('INSERT INTO articles VALUES(?, ?, ?, ?, ?, ?, ?, ?)',
             [article.id, article.stage, article.timestamp, article.title, article.subtitle, article.language, article.category, article.description])
-            .catch((err) => this.errorLogger(`saving article: ${err}`));
+            .catch((err) => this.dbLogger.error(`saving article`, err));
     }
 
     /**
@@ -114,7 +113,7 @@ class ArticleDatabase extends Database {
                     return this.run('INSERT INTO article_tags VALUES(?, ?)', [article.id, tag]);
                 }))),
         ])
-            .catch((err) => this.errorLogger(`updating article metadata: ${err}`));
+            .catch((err) => this.dbLogger.error(`updating article metadata`, err));
     }
 
     /**
@@ -125,7 +124,7 @@ class ArticleDatabase extends Database {
      */
     updateArticleStage = async (article) => {
         return this.run('UPDATE articles SET stage = ? WHERE id = ?', [article.stage, article.id])
-            .catch((err) => this.errorLogger(`updating article stage: ${err}`));
+            .catch((err) => this.dbLogger.error(`updating article stage`, err));
     }
 
     /**
@@ -141,7 +140,7 @@ class ArticleDatabase extends Database {
                         articleStyle.title_fontweight, articleStyle.title_position, articleStyle.subtitle_font,
                         articleStyle.subtitle_fontsize, articleStyle.subtitle_fontweight, articleStyle.subtitle_color,
                         articleStyle.subtitle_position, articleStyle.dropcap]))
-            .catch((err) => this.errorLogger(`updating article styles: ${err}`));
+            .catch((err) => this.dbLogger.error(`updating article styles`, err));
     }
 
     /**
@@ -160,7 +159,7 @@ class ArticleDatabase extends Database {
                     row.subtitle_color, row.subtitle_position, row.dropcap)
             )
             .catch((err) => {
-                this.errorLogger(`getting article style: ${err}`);
+                this.dbLogger.error(`getting article style`, err);
                 return new ArticleStyle();
             })
     }
@@ -175,7 +174,7 @@ class ArticleDatabase extends Database {
             this.run('DELETE FROM article_authors WHERE id = ?', [id]),
             this.run('DELETE FROM article_tags WHERE id = ?', [id]),
             this.run('DELETE FROM article_credits WHERE id = ?', [id])
-        ]).catch((err) => this.errorLogger(`removing article from the database: ${err}`));
+        ]).catch((err) => this.dbLogger.error(`removing article from the database`, err));
     }
 
     /**
@@ -221,7 +220,7 @@ class ArticleDatabase extends Database {
 
         return this.all(stmt, [value])
             .then((rows) => rows.map((row) => row.id))
-            .catch((err) => {this.errorLogger(`searching article IDs: ${err}`); return []});
+            .catch((err) => {this.dbLogger.error(`searching article IDs`, err); return []});
     }
 
     /**
@@ -239,7 +238,7 @@ class ArticleDatabase extends Database {
         let articleIDs = await this.searchArticleIDs(key, value, exact, pageNumber, pageSize);
         if (!articleIDs) return undefined;
         return Promise.all(articleIDs.map((id) => this.getArticle(id)))
-            .catch((err) => this.errorLogger(`searching articles: ${err}`));
+            .catch((err) => this.dbLogger.error(`searching articles`, err));
     }
 
     /**
@@ -261,7 +260,7 @@ class ArticleDatabase extends Database {
                 }
                 return article;
             })
-            .catch((err) => this.errorLogger(`getting article: ${err}`));
+            .catch((err) => this.dbLogger.error(`getting article`, err));
     }
 
     /**
@@ -271,7 +270,7 @@ class ArticleDatabase extends Database {
     getArticleMeta = async (id) => {
         return this.get('SELECT * FROM articles WHERE id = ?', [id])
             .then((row) => new Article(row.stage, new Date(row.timestamp), row.title, row.subtitle, row.language, row.category, row.description))
-            .catch((err) => {this.errorLogger(`getting article meta: ${err}`); return undefined});
+            .catch((err) => {this.dbLogger.error(`getting article meta`, err); return undefined});
     }
 
     /**
@@ -283,7 +282,7 @@ class ArticleDatabase extends Database {
     getArticleAuthors = async (id) => {
         return this.all('SELECT author FROM article_authors WHERE id = ? ORDER BY author ASC', [id])
             .then((rows) => rows.map((row) => new Author(row.author)))
-            .catch((err) => {this.errorLogger(`getting article authors: ${err}`); return []});
+            .catch((err) => {this.dbLogger.error(`getting article authors`, err); return []});
     }
 
     /**
@@ -295,7 +294,7 @@ class ArticleDatabase extends Database {
     getArticleTags = async (id) => {
         return this.all('SELECT tag FROM article_tags WHERE id = ? ORDER BY tag ASC', [id])
             .then((rows) => rows.map((row) => row.tag))
-            .catch((err) => {this.errorLogger(`getting article tags: ${err}`); return []});
+            .catch((err) => {this.dbLogger.error(`getting article tags`, err); return []});
     }
 
     /**
@@ -312,7 +311,7 @@ class ArticleDatabase extends Database {
      */
     addPDFPrint = async (pdfprint) => {
         return this.run(`INSERT OR IGNORE into pdfprints VALUES (?, ?)`, [pdfprint.timestamp, pdfprint.description])
-            .catch((err) => this.errorLogger(`adding pdfprint: ${err}`));
+            .catch((err) => this.dbLogger.error(`adding pdfprint`, err));
     }
 
     /**
@@ -320,7 +319,7 @@ class ArticleDatabase extends Database {
      */
     removePDFPrint = async (pdfprintDescription) => {
         return this.run(`DELETE FROM pdfprints WHERE description = ?`, [pdfprintDescription])
-            .catch((err) => this.errorLogger(`removing pdfprint: ${err}`));
+            .catch((err) => this.dbLogger.error(`removing pdfprint`, err));
     }
 
     /**
@@ -329,7 +328,7 @@ class ArticleDatabase extends Database {
     getAllPDFPrintsSorted = async () => {
         return this.all(`SELECT * FROM pdfprints ORDER BY timestamp DESC`)
             .then((rows) => rows.map((row) => new PDFPrint(new Date(row.timestamp), row.description)))
-            .catch((err) => {this.errorLogger(`getting pdfprints: ${err}`); return []});
+            .catch((err) => {this.dbLogger.error(`getting pdfprints`, err); return []});
     }
 
     /**
@@ -340,7 +339,7 @@ class ArticleDatabase extends Database {
     addArticleCredit = async (articleID, name, credited_for) => {
         if (name) {
             return this.run('INSERT OR REPLACE INTO article_credits VALUES (?, ?, ?)', [articleID, name, credited_for])
-                .catch((err) => this.errorLogger(`adding article credits: ${err}`));
+                .catch((err) => this.dbLogger.error(`adding article credits`, err));
         } else {
             return Promise.resolve(undefined);
         }
@@ -351,7 +350,7 @@ class ArticleDatabase extends Database {
      */
     removeAllCredits = async (articleID) => {
         return this.run('DELETE FROM article_credits WHERE id = ?', [articleID])
-            .catch((err) => this.errorLogger(`removing article credits: ${err}`));
+            .catch((err) => this.dbLogger.error(`removing article credits`, err));
     }
 
     /**
@@ -369,7 +368,7 @@ class ArticleDatabase extends Database {
                 }
             })
             .catch((err) => {
-                this.errorLogger(`getting article credits: ${err}`);
+                this.dbLogger.error(`getting article credits`, err);
                 return {};
             })
     }

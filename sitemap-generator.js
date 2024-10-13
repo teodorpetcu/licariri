@@ -41,7 +41,7 @@ const generateSitemapFile = async () => {
                     article.lastmod = activities[0].timestamp;
                 }
             })
-            .catch((err) => logger.error(`getting article modifications for sitemap: ${err}`));
+            .catch((err) => logger.error(`getting article modifications for sitemap`, err));
     }))
 
     for (let article of articles) {
@@ -66,7 +66,7 @@ const generateSitemapFile = async () => {
 
     return fs.promises.writeFile(SITEMAP_FILE_PATH, sitemapXML, { encoding: "utf-8" })
         .then(() => logger.info("updated sitemap.xml"))
-        .catch((err) => logger.error(`writing sitemap.xml file: ${err}`));
+        .catch((err) => logger.error(`writing sitemap.xml file`, err));
 }
 
 generateSitemapFile();

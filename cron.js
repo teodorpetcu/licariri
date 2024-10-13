@@ -22,7 +22,7 @@ const updateAllArticles = async () => {
         ])
             .then(([content, articleStyle]) => renderArticlePage(article, content, articleStyle))
             .then((_status) => logger.info(`re-rendered article "${article.id}"`))
-            .catch((err) => logger.error(`failed re-rendering article "${article.id}": ${err}`));
+            .catch((err) => logger.error(`failed re-rendering article "${article.id}"`, err));
     }));
 }
 
@@ -57,7 +57,7 @@ const dailyUpdateJob = async () => {
             .then(() => updateAllArticles()),
     ])
         .then(() => logger.info("successfully ran daily update job"))
-        .catch((err) => logger.error(`failed running daily update job: ${err}`))
+        .catch((err) => logger.error(`during daily update job`, err))
 }
 
 const dailyUpdateJobTimer = () => {

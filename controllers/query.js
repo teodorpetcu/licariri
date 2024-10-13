@@ -113,7 +113,7 @@ const renderQueryPage = async (query) => {
     return ejs.renderFile(__dirname + "/../views/query.ejs",
         {articles: searchResults, searchPageTitle, message},
         {async: true})
-        .catch((err) => logger.error(`rendering query page: ${err}`));
+        .catch((err) => logger.error(`rendering query page`, err));
 }
 
 const get_queryPage = async (req, res) => {
@@ -148,7 +148,7 @@ const prerenderQueryAsFile = async (query) => {
         return renderQueryPage(query)
             .then((queryPage) => fs.promises.writeFile(filename, queryPage))
             .then(() => true)
-            .catch((err) => `writing prerendered query page file: ${err}`);
+            .catch((err) => logger.error(`writing prerendered query page file`, err));
     } else {
         return Promise.resolve(false);
     }

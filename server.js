@@ -122,6 +122,6 @@ Promise.all([
         dailyUpdateJobTimer();
     })
     .catch((err) => {
-        logger.err(`failed starting up server: ${err}`);
+        logger.error(`failed starting up server`, err);
         process.exit(1);
     });
