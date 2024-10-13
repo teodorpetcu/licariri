@@ -75,6 +75,7 @@ class UsersDatabase extends Database {
      */
     constructor(path) {
         super(path);
+        this.name = "admin";
     }
 
     /**
@@ -121,12 +122,10 @@ class UsersDatabase extends Database {
      * @param {User} user - User object
      * @param {string} pass - Plain-text password
      */
-    //TODO: return status
-    //TODO: handle eventual errors
     addUser = async (user, pass) => {
         let hash = await hashPassword(pass);
         return this.run('INSERT INTO users VALUES(?, ?, ?, ?)', [user.id, user.privilege, user.suspended, hash])
-            .catch(this.errorLogger);
+            .catch((err) => this.errorLogger(`adding user '${user}': ${err}`));
     }
 
     /**
@@ -137,7 +136,7 @@ class UsersDatabase extends Database {
     changePassword = async (user, pass) => {
         let hash = await hashPassword(pass);
         return this.run('UPDATE users SET password = ? WHERE id = ?', [hash, user.id])
-            .catch(this.errorLogger);
+            .catch((err) => this.errorLogger(`changing password for '${user}': ${err}`));
     }
 
     /**
@@ -153,7 +152,7 @@ class UsersDatabase extends Database {
                 return validatePassword(pass, row.password);
             })
             .catch((err) => {
-                this.errorLogger(err);
+                this.errorLogger(`getting user id while trying to validate password: ${err}`);
                 // Whether there was an actual error or the ID does not exist in
                 // the database, it makes no difference when we're trying to
                 // authenticate. That being said, we're still going to wait, so
@@ -170,7 +169,7 @@ class UsersDatabase extends Database {
      */
     addSession = async (session) => {
         return this.run('INSERT INTO sessions VALUES (?, ?, ?)', [session.user_id, session.token, session.timestamp])
-            .catch(this.errorLogger);
+            .catch((err) => this.errorLogger(`adding session: ${err}`));
     }
 
     /**
@@ -186,7 +185,7 @@ class UsersDatabase extends Database {
                 return new User(row.id, row.privilege, row.suspended);
             })
             .catch((err) => {
-                this.errorLogger(err);
+                this.errorLogger(`getting user matching session token: ${err}`);
                 return undefined;
             });
     }
@@ -198,7 +197,7 @@ class UsersDatabase extends Database {
      */
     removeSession = async (token) => {
         return this.run(`DELETE FROM sessions WHERE token = ?`, [token])
-            .catch(this.errorLogger);
+            .catch((err) => this.errorLogger(`removing session: ${err}`));
     }
 
     /**
@@ -211,7 +210,7 @@ class UsersDatabase extends Database {
                 return rows.map((row) => new Session(row.user_id, row.token, new Date(row.timestamp)));
             })
             .catch((err) => {
-                this.errorLogger(err);
+                this.errorLogger(`getting all user sessions: ${err}`);
                 return undefined;
             })
     }
@@ -224,7 +223,7 @@ class UsersDatabase extends Database {
      */
     addActivity = async (user, action, target) => {
         return this.run('INSERT INTO activity VALUES (?, ?, ?, ?)', [Date.now(), user.id, action, target])
-            .catch(this.errorLogger);
+            .catch((err) => this.errorLogger(`adding user activity: ${err}`));
     }
 
     /**
@@ -237,7 +236,7 @@ class UsersDatabase extends Database {
      */
     changeActivityTarget = async (action, oldTarget, newTarget) => {
         return this.run('UPDATE activity SET target = ? WHERE action = ? AND target = ?', [newTarget, action, oldTarget])
-            .catch(this.errorLogger);
+            .catch((err) => this.errorLogger(`changeActivity(${action}, ${oldTarget}, ${newTarget}): ${err}`));
     }
 
     /**
@@ -249,7 +248,7 @@ class UsersDatabase extends Database {
                 return rows.map((row) => new Activity(row.user, row.action, row.target, new Date(row.timestamp)));
             })
             .catch((err) => {
-                errorLogger(err);
+                this.errorLogger(`getting all user activities: ${err}`);
                 return [];
             });
     }
@@ -268,7 +267,7 @@ class UsersDatabase extends Database {
                 if (err === undefined) {
                     this.errorLogger("getAllUsers() rows undefined");
                 } else {
-                    this.errorLogger(err);
+                    this.errorLogger(`getting all users: ${err}`);
                 }
                 return undefined;
             });
@@ -284,17 +283,17 @@ class UsersDatabase extends Database {
             .then((rows) => {
                 return rows.map((row) => new Activity(row.user, row.action, row.target, row.timestamp));
             })
-            .catch((err) => {this.errorLogger(err); return []});
+            .catch((err) => {this.errorLogger(`getting article modifications: ${err}`); return []});
     }
 
     suspendUser = async (userID) => {
         return this.run(`UPDATE users SET suspended = 1 WHERE id = ?`, [userID])
-            .catch(this.errorLogger);
+            .catch((err) => this.errorLogger(`suspending user '${userID}': ${err}`));
     }
 
     unSuspendUser = async (userID) => {
         return this.run(`UPDATE users SET suspended = 0 WHERE id = ?`, [userID])
-            .catch(this.errorLogger);
+            .catch((err) => this.errorLogger(`un-suspending user '${userID}': ${err}`));
     }
 }
 

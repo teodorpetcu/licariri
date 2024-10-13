@@ -9,6 +9,7 @@ const CONFIG = {
     WEBSITE_URL:  "https://licariri.ro", // PLACEHOLDER; used for sitemap
     LISTENING_PORT: 8000,
     LOG_FILE_PATH: APPDATA_DIR + "/runtime.log",
+    ERROR_LOG_FILE_PATH: APPDATA_DIR + "/error.log",
     SECURITY_LOG_FILE_PATH: APPDATA_DIR + "/security.log",
     ARTICLES_DIRECTORY: ARTICLES_DIRECTORY,
     ARTICLE_DATABASE_PATH: DATABASES_DIRECTORY + "/articles.sql",

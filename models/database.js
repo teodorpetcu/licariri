@@ -11,7 +11,7 @@ class Database {
         this.path = path;
         this.db = new sqlite3.Database(path, (err) => {
             if (err) {
-                logger.error(`database '${this.path}': ${err}`);
+                this.errorLogger(`while connecting; ${err}`);
             } else {
                 logger.info(`database '${this.path}': ok`);
             }
@@ -20,7 +20,7 @@ class Database {
 
     errorLogger = async (err) => {
         if (err) {
-            logger.error(`database '${this.path}': ${err}`)
+            logger.error(`database '${this.name}': ${err}`)
         }
     }
 

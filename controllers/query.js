@@ -2,7 +2,7 @@ const ejs = require("ejs");
 const fs = require("fs");
 
 const { fileExists } = require("../util.js");
-const { errorLogger } = require("../logger.js")
+const { logger } = require("../logger.js")
 const { queryDatabase } = require("../models/query.js");
 const { articleDatabase } = require("../models/articles.js");
 const { QUERY_PRERENDERS } = require("../config.js");
@@ -113,7 +113,7 @@ const renderQueryPage = async (query) => {
     return ejs.renderFile(__dirname + "/../views/query.ejs",
         {articles: searchResults, searchPageTitle, message},
         {async: true})
-        .catch(errorLogger);
+        .catch((err) => logger.error(`rendering query page: ${err}`));
 }
 
 const get_queryPage = async (req, res) => {
@@ -148,7 +148,7 @@ const prerenderQueryAsFile = async (query) => {
         return renderQueryPage(query)
             .then((queryPage) => fs.promises.writeFile(filename, queryPage))
             .then(() => true)
-            .catch(errorLogger);
+            .catch((err) => `writing prerendered query page file: ${err}`);
     } else {
         return Promise.resolve(false);
     }

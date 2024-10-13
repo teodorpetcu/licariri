@@ -9,6 +9,7 @@ class QueryDatabase extends Database {
      */
     constructor(path) {
         super(path);
+        this.name = "query";
     }
 
     /**
@@ -61,15 +62,15 @@ class QueryDatabase extends Database {
                         }
                         words_stmt.finalize((err) => {
                             if (err) {
-                                logger.error(`database '${this.path}': ${err}`);
+                                Promise.reject(err);
                             } else {
                                 stmt.finalize(this.errorLogger);
                             }
                         });
                     })
-                    .catch(this.errorLogger);
+                    .catch((err) => this.errorLogger(`indexing article: ${err}`));
             })
-            .catch(this.errorLogger);
+            .catch((err) => this.errorLogger(`adding article to query database: ${err}`));
     }
 
     /**
@@ -83,7 +84,7 @@ class QueryDatabase extends Database {
     unindexArticle = async (article_id) => {
         return this.run("DELETE FROM mappings WHERE rowid IN (SELECT rowid FROM articles WHERE article_id = ?)", [article_id])
             .then(() => this.run("DELETE FROM articles WHERE article_id = ?", [article_id]))
-            .catch(this.errorLogger);
+            .catch((err) => this.errorLogger(`UNindexing article: ${err}`));
     }
 
     /**
@@ -109,7 +110,7 @@ class QueryDatabase extends Database {
 
         return this.all(stmt, words)
             .then((rows) => rows.map((row) => row.article_id))
-            .catch(this.errorLogger);
+            .catch((err) => this.errorLogger(`finding articles: ${err}`));
     }
 }
 

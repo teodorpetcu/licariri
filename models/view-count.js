@@ -8,6 +8,7 @@ class ViewsDatabase extends Database {
      */
     constructor(path) {
         super(path);
+        this.name = "views";
     }
 
     /**
@@ -40,7 +41,7 @@ class ViewsDatabase extends Database {
      */
     logRequest = async (timestamp, ip, articleID) => {
         return this.run("INSERT INTO article_requests VALUES (?, ?, ?)", [timestamp, ip, articleID])
-            .catch(this.errorLogger);
+            .catch((err) => this.errorLogger(`logging request to article: ${err}`));
     }
 
     /**
@@ -49,7 +50,7 @@ class ViewsDatabase extends Database {
      */
     updateArticleViews = async () => {
         return this.run('INSERT OR REPLACE INTO article_views SELECT article_requested, COUNT(DISTINCT ip) FROM article_requests GROUP BY article_requested')
-            .catch(this.errorLogger);
+            .catch((err) => this.errorLogger(`updating article views: ${err}`));
     }
 
     /**
@@ -62,7 +63,7 @@ class ViewsDatabase extends Database {
                 return rows[0].unique_views;
             })
             .catch((err) => {
-                this.errorLogger(err);
+                this.errorLogger(`getting article views: ${err}`);
                 return 0;
             });
     }
@@ -76,7 +77,7 @@ class ViewsDatabase extends Database {
         return Promise.all([
             this.run('UPDATE article_views SET article_id = ? WHERE article_id = ?', [newID, originalID]),
             this.run('UPDATE article_requests SET article_requested = ? WHERE article_requested = ?', [newID, originalID]),
-        ]).catch(this.errorLogger)
+        ]).catch((err) => this.errorLogger(`renaming article: ${err}`))
     }
 }
 

@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const { logger, errorLogger } = require("./logger.js");
+const { logger } = require("./logger.js");
 const { formatDate } = require("./util.js");
 const { WEBSITE_URL, SITEMAP_FILE_PATH } = require("./config.js");
 const { articleDatabase } = require("./models/articles.js");
@@ -41,7 +41,7 @@ const generateSitemapFile = async () => {
                     article.lastmod = activities[0].timestamp;
                 }
             })
-            .catch((_) => {});
+            .catch((err) => logger.error(`getting article modifications for sitemap: ${err}`));
     }))
 
     for (let article of articles) {
@@ -65,8 +65,8 @@ const generateSitemapFile = async () => {
     sitemapXML += `\n</urlset>`
 
     return fs.promises.writeFile(SITEMAP_FILE_PATH, sitemapXML, { encoding: "utf-8" })
-        .then(() => logger.info("sitemap updated"))
-        .catch(errorLogger);
+        .then(() => logger.info("updated sitemap.xml"))
+        .catch((err) => logger.error(`writing sitemap.xml file: ${err}`));
 }
 
 generateSitemapFile();

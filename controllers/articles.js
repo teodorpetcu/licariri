@@ -4,7 +4,7 @@ const fs = require("fs");
 const pdf2img = require("pdf-img-convert")
 const sharp = require("sharp");
 
-const { logger, errorLogger } = require("../logger.js")
+const { logger } = require("../logger.js")
 const { fileExists } = require("../util.js");
 
 const { Author, Article, ArticleStyle } = require("../models/types.js");
@@ -38,19 +38,20 @@ const renderArticlePage = async (article, plainTextContent, articleStyle, credit
     return fs.promises.writeFile(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, plainTextContent)
         .then(fs.promises.writeFile(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`, renderedPage))
         .then(() => Promise.resolve(true))
-        .catch((err) => {errorLogger(err); return Promise.resolve(false)});
+        .catch((err) => {logger.error(`rendering article page: ${err}`); return Promise.resolve(false)});
 }
 
 const updateMainPage = async () => {
     let [articles, pdfprints] = await Promise.all([
         articleDatabase.searchArticles("stage", "public"),
         articleDatabase.getAllPDFPrintsSorted(),
-    ]).catch(errorLogger);
+    ]).catch((err) => logger.error(`searching articles & pdfprints for main page: ${err}`));
     await Promise.all(articles.map(async (article) => {
         return articleDatabase.getArticleStyle(article.id).then((style) => article.style = style);
-    })).catch(errorLogger);
+    })).catch((err) => logger.error(`fetching article styles for main page: ${err}`));
     let renderedPage = await ejs.renderFile(__dirname + "/../views/main.ejs", {articles, pdfprints}, {async: true});
-    return fs.promises.writeFile(`${MAIN_PAGE_HTML_FILE_PATH}`, renderedPage).catch(errorLogger);
+    return fs.promises.writeFile(`${MAIN_PAGE_HTML_FILE_PATH}`, renderedPage)
+        .catch((err) => logger.error(`writing main page HTML file: ${err}`));
 }
 
 const get_mainPage = async (_, res) => {
@@ -140,7 +141,7 @@ const post_adminAddArticle = async (req, res) => {
                             return fs.promises.unlink(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.md`)
                         }
                     })
-            ]).catch(errorLogger);
+            ]).catch(logger.error);
         }
         if (thumbnail && /^image/.test(thumbnail.mimetype)) {
             if (originalArticle.id && originalArticle.id != article.id) {
@@ -158,7 +159,7 @@ const post_adminAddArticle = async (req, res) => {
                             `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.webp`);
                     }
                 })
-                .catch(errorLogger);
+                .catch(logger.error);
         }
 
         articleDatabase.removeAllCredits(articleID);
@@ -231,7 +232,7 @@ const post_updateArticleStage = async (req, res) => {
                             `${ARTICLES_DIRECTORY}/${article.stage}/images/${article.id}.webp`)
                     }
                 }),
-        ]).catch(errorLogger);
+        ]).catch(logger.error);
         articleDatabase.updateArticleStage(article);
         updateMainPage();
 
@@ -275,9 +276,8 @@ const post_adminAddPDFprint = async (req, res) => {
                 sharp(img[0].data)
                     .webp({quality: WEBP_COMPRESSION_QUALITY})
                     .toFile(`${PDFPRINT_THUMBNAILS_PATH}/${pdfprint.description}.webp`)
-                    .catch(err => {Promise.reject(err)})
-            )
-            .catch(errorLogger);
+                    .catch(err => {Promise.reject(err)}))
+            .catch((err) => logger.error(`extracting pdfprint thumbnail: ${err}`));
 
         usersDatabase.addActivity(req.user, "addpdfprint", description)
         updateMainPage();

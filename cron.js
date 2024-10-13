@@ -57,7 +57,7 @@ const dailyUpdateJob = async () => {
             .then(() => updateAllArticles()),
     ])
         .then(() => logger.info("successfully ran daily update job"))
-        .catch((err) => errorLogger(`failed running daily update job: ${err}`))
+        .catch((err) => logger.error(`failed running daily update job: ${err}`))
 }
 
 const dailyUpdateJobTimer = () => {

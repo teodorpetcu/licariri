@@ -6,7 +6,7 @@ const {
 const { usersDatabase, User, Session, Activity } = require("../models/admin.js");
 const { articleDatabase } = require("../models/articles.js");
 const { Article } = require("../models/types.js");
-const { logger, loginLogger ,errorLogger } = require("../logger.js");
+const { logger } = require("../logger.js");
 const { fileExists, formatDate } = require("../util.js");
 
 const fs = require("fs");
@@ -76,7 +76,7 @@ const get_adminPannelPage = async (req, res) => {
             articleDatabase.searchArticles("stage", "trash").then((articles) => paginate(articles, 12)),
             articleDatabase.getAllPDFPrintsSorted().then((pdfprints) => paginate(pdfprints, 12)),
             usersPagesPromise,
-        ]).catch(errorLogger);
+        ]).catch((err) => logger.error(`fetching pages for admin pannel: ${err}`));
         res.render("admin", {publicArticlesPages, draftArticlesPages, trashArticlesPages, pdfprints, user: req.user, usersPages});
     } else {
         res.redirect("login");
@@ -94,11 +94,11 @@ const post_adminLoginCheck = async (req, res) => {
         if (rememberMe == "on") {
             cookieOptions.maxAge = 28 * MILISECONDS_IN_A_DAY; // 4 weeks
         }
-        loginLogger.info(`${req.ip} login SUCCESS as user '${id}'`);
+        logger.security(`${req.ip} login SUCCESS as user '${id}'`);
         res.cookie("session", session.token, cookieOptions);
         res.redirect("/admin");
     } else {
-        loginLogger.info(`${req.ip} login FAIL as user '${id}'`);
+        logger.security(`${req.ip} login FAIL as user '${id}'`);
         res.redirect("/login");
     }
 }
@@ -155,7 +155,7 @@ const post_adminChangeUserPassword = async (req, res) => {
         await Promise.all([
             usersDatabase.changePassword(req.user, req.body.password),
             usersDatabase.addActivity(req.user, "changepassword", "self"),
-        ]).catch(errorLogger)
+        ]).catch(logger.error)
             .finally(() => res.sendStatus(200))
     } else {
         res.sendStatus(401);
