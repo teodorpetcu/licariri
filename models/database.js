@@ -18,6 +18,20 @@ class Database {
         })
     }
 
+    close = async () => {
+        return new Promise((resolve, reject) => {
+            this.db.close((err) => {
+                if (err) {
+                    this.dbLogger.error("closing database connection", err)
+                    return reject(err);
+                } else {
+                    this.dbLogger.info("close ok")
+                    return resolve();
+                }
+            });
+        })
+    }
+
     dbLogger = {
         info: async (msg) => {
             logger.info(`(database '${this.name}') ${msg}`);

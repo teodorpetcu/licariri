@@ -110,6 +110,8 @@ app.use("/admin/articles/images", express.static(PUBLIC_ARTICLE_IMAGES_PATH), ex
 
 app.get("*", requestLogger, (req, res) => res.status(404).render("404", {url: req.url}));
 
+let httpServer = undefined;
+
 logger.info("connecting to databases...");
 Promise.all([
     articleDatabase.init(),
@@ -118,10 +120,34 @@ Promise.all([
     viewsDatabase.init(),
 ])
     .then(() => {
-        app.listen(LISTENING_PORT, () => logger.info(`web server up`));
+        httpServer = app.listen(LISTENING_PORT, () => logger.info(`web server up`));
         dailyUpdateJobTimer();
     })
     .catch((err) => {
         logger.error(`failed starting up server`, err);
         process.exit(1);
     });
+
+const gracefulShutdown = (signal) => {
+    Promise.all([
+        logger.info(`received ${signal} signal; terminating...`),
+        articleDatabase.close(),
+        usersDatabase.close(),
+        queryDatabase.close(),
+        viewsDatabase.close(),
+    ])
+        .then(() => {
+            if (httpServer) {
+                httpServer.close((err) => {
+                    logger.info("web server down");
+                    process.exit(err ? 1 : 0);
+                })
+            } else {
+                process.exit(0);
+            }
+        })
+}
+
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("SIGQUIT", () => gracefulShutdown("SIGQUIT"));
