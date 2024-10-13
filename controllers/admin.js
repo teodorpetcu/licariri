@@ -6,7 +6,7 @@ const {
 const { usersDatabase, User, Session, Activity } = require("../models/admin.js");
 const { articleDatabase } = require("../models/articles.js");
 const { Article } = require("../models/types.js");
-const { logger, errorLogger } = require("../logger.js");
+const { logger, loginLogger ,errorLogger } = require("../logger.js");
 const { fileExists, formatDate } = require("../util.js");
 
 const fs = require("fs");
@@ -94,15 +94,18 @@ const post_adminLoginCheck = async (req, res) => {
         if (rememberMe == "on") {
             cookieOptions.maxAge = 28 * MILISECONDS_IN_A_DAY; // 4 weeks
         }
+        loginLogger.info(`${req.ip} login SUCCESS as user '${id}'`);
         res.cookie("session", session.token, cookieOptions);
         res.redirect("/admin");
     } else {
+        loginLogger.info(`${req.ip} login FAIL as user '${id}'`);
         res.redirect("/login");
     }
 }
 
 const post_adminLogout = async(req, res) => {
     usersDatabase.removeSession(req.cookies.session);
+    res.clearCookie("session");
     res.redirect("/login")
 }
 

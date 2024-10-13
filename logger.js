@@ -1,6 +1,6 @@
 const winston = require("winston");
 
-const { LOG_FILE_PATH } = require("./config.js");
+const { LOG_FILE_PATH, SECURITY_LOG_FILE_PATH } = require("./config.js");
 
 const logger = winston.createLogger({
     level: "info",
@@ -13,6 +13,18 @@ const logger = winston.createLogger({
         new winston.transports.File({ filename: LOG_FILE_PATH })
     ],
 });
+
+const loginLogger = winston.createLogger({
+    level: "info",
+    format: winston.format.combine(
+        winston.format.errors({stack: true}),
+        winston.format.timestamp({format: 'YYYY-MM-DD HH:mm:ss'}),
+        winston.format.printf((info) => `[${info.timestamp}] ${info.level}: ${info.message}`)
+    ),
+    transports: [
+        new winston.transports.File({ filename: SECURITY_LOG_FILE_PATH })
+    ],
+})
 
 if (process.env.NODE_ENV !== 'production') {
     logger.add(new winston.transports.Console({
@@ -44,6 +56,7 @@ const errorLogger = async (err) => {
 
 module.exports = {
     logger,
+    loginLogger,
     requestLogger,
     errorLogger,
 };
