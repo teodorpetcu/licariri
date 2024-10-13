@@ -69,6 +69,11 @@ app.use(fileUpload());
 app.use(bodyParser.urlencoded({ extended: true, }));
 app.use(cookieParser());
 
+app.use((err, _req, res, _next) => {
+    logger.error("express route", err);
+    res.status(500).send("Ceva s-a stricat! (Eroare HTTP 500)");
+});
+
 app.get("/css/licariri.css", requestLogger, (_, res) => res.sendFile(__dirname + "/views/css/licariri.css"));
 app.get("/main.webp", requestLogger, (_, res) => res.sendFile(MAIN_PAGE_BACKGROUND_IMAGE_PATH));
 app.get("/mesotalogo.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/mesotalogo.webp"));
