@@ -47,7 +47,6 @@ const {
     PUBLIC_ARTICLE_IMAGES_PATH,
     DRAFT_ARTICLE_IMAGES_PATH,
     TRASH_ARTICLE_IMAGES_PATH,
-    MAIN_PAGE_BACKGROUND_IMAGE_PATH,
 } = require("./config.js");
 
 const { logger, requestLogger } = require("./logger.js");
@@ -75,7 +74,7 @@ app.use((err, _req, res, _next) => {
 });
 
 app.get("/css/licariri.css", requestLogger, (_, res) => res.sendFile(__dirname + "/views/css/licariri.css"));
-app.get("/main.webp", requestLogger, (_, res) => res.sendFile(MAIN_PAGE_BACKGROUND_IMAGE_PATH));
+app.get("/main.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/main.webp"));
 app.get("/mesotalogo.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/mesotalogo.webp"));
 app.use("/articles/images", requestLogger, express.static(PUBLIC_ARTICLE_IMAGES_PATH));
 app.use("/pdfprints", requestLogger, express.static(PDFPRINT_CONTENTS_PATH));
@@ -109,7 +108,6 @@ app.post("/admin/user/password", requestLogger, post_adminChangeUserPassword);
 app.post("/admin/pdfprints/add", requestLogger, post_adminAddPDFprint);
 app.post("/admin/pdfprints/remove", requestLogger, post_adminRemovePDFprint);
 
-app.get("/admin/user.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/appdata/user.webp"));
 app.use("/admin/articles/images", requestLogger);
 app.use("/admin/articles/images", express.static(PUBLIC_ARTICLE_IMAGES_PATH), express.static(DRAFT_ARTICLE_IMAGES_PATH), express.static(TRASH_ARTICLE_IMAGES_PATH));
 

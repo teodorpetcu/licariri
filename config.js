@@ -33,7 +33,6 @@ const CONFIG = {
     },
     SITEMAP_FILE_PATH: APPDATA_DIR + "/sitemap.xml",
     MAIN_PAGE_HTML_FILE_PATH: APPDATA_DIR + "/main.html",
-    MAIN_PAGE_BACKGROUND_IMAGE_PATH: APPDATA_DIR + "/main.webp",
     MAIN_PAGE_ARTICLE_COUNT: 12,
     COOKIE_OPTIONS: {
         httpOnly: true,
