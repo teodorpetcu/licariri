@@ -84,8 +84,9 @@ body.open *:not(#main-nav) {
             margin: 0;
             a {
                 color: white;
-                -webkit-text-stroke-width: 2.4px;
-                -webkit-text-stroke-color: #ff4b3390;
+                -webkit-text-stroke-width: 3px;
+                -webkit-text-stroke-color: #ff4b33;
+                paint-order: stroke fill;
                 text-decoration: none;
             }
         }
@@ -108,8 +109,9 @@ body.open *:not(#main-nav) {
     font-family: "Baskervville";
     a {
         color: white;
-        -webkit-text-stroke-width: 2px;
-        -webkit-text-stroke-color: #ff4b3390;
+        -webkit-text-stroke-width: 3px;
+        -webkit-text-stroke-color: #ff4b33;
+        paint-order: stroke fill;
         text-decoration: none;
     }
 }
@@ -240,8 +242,9 @@ body.open *:not(#main-nav) {
 #main-page-contents {
     text-align: center;
     > h1 {
-        -webkit-text-stroke-color: orange;
+        -webkit-text-stroke-color: #ff4500;
         -webkit-text-stroke-width: 0.8px;
+        paint-order: stroke fill;
     }
 }
 
@@ -621,6 +624,7 @@ hr {
             font-family: "Kameron";
             -webkit-text-stroke-width: 2px;
             -webkit-text-stroke-color: black;
+            paint-order: stroke fill;
             margin-bottom: 0;
         }
         h2 {
@@ -788,6 +792,13 @@ hr {
         position: absolute !important;
         top: 10px !important;
         left: 10px !important;
+        a {
+            color: #ff4b33;
+            -webkit-text-stroke-width: 0px !important;
+            text-decoration: underline;
+            text-decoration-thickness: 3px;
+            text-decoration-color: black;
+        }
     }
     #main-nav-button {
         right: 10px !important;
