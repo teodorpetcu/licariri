@@ -76,6 +76,7 @@ body.open *:not(#main-nav) {
         text-align: center;
         transform: translateX(-50%);
         h1 {
+            letter-spacing: 0.1rem;
             font-family: "Baskervville";
             line-height: 1;
             font-size: 4.8em;
