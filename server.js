@@ -74,6 +74,7 @@ app.use((err, _req, res, _next) => {
 });
 
 app.get("/css/licariri.css", requestLogger, (_, res) => res.sendFile(__dirname + "/views/css/licariri.css"));
+app.get("/squiggly-line.svg", requestLogger, (_, res) => res.sendFile(__dirname + "/squiggly-line.svg"));
 app.get("/mesotalogo.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/mesotalogo.webp"));
 app.use("/articles/images", requestLogger, express.static(PUBLIC_ARTICLE_IMAGES_PATH));
 app.use("/pdfprints", requestLogger, express.static(PDFPRINT_CONTENTS_PATH));

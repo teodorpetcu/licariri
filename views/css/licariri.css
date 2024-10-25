@@ -315,6 +315,17 @@ body.open *:not(#main-nav) {
     }
 }
 
+.squiggly-line {
+    margin: inherit;
+    background-image: url("/squiggly-line.svg");
+    content: "";
+    display: inline-block;
+    transform: translateZ(0);
+    max-width: 800px;
+    width: 95%;
+    height: 6px;
+}
+
 #main-page p {
     font-family: "Hind";
     margin: 0;

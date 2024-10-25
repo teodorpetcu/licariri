@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events" viewBox="0 0 20 4">
+    <path fill="none" stroke="#000000" stroke-width="1" class="squiggly" d="M0,3.5 c 5,0, 5, -3, 10, -3 s 5,3, 10, 3 c 5,0, 5, -3, 10, -3 s 5,3, 10, 3"/>
+        <style type="text/css">
+        .squiggly {
+            backface-visibility: hidden;
+            perspective: 1000;
+            will-change: transform;
+            animation: shift 0.5s linear infinite;
+        }
+        @keyframes shift {
+            from {
+                transform: translate3d(0, 0, 0);
+            }
+            to {
+                transform: translate3d(-20px, 0, 0);
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .squiggly {
+                animation: none;
+            }
+        }
+        </style>
+</svg>
