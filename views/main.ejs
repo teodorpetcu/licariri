@@ -11,86 +11,90 @@
 <%_ if (articles.length) { _%>
 <%- await include("main-nav"); _%>
 <%_ } _%>
-    <img id="main-page-background-image">
     <div id="main-page-header">
         <div id="website-title-container">
             <h1><a href="/">Licăriri</a></h1>
             <h6><i>revista elevilor Colegiului Național „Dr. Ioan Meșotă”, Brașov</i></h6>
         </div>
+        <hr>
     </div>
     <div id="main-page-contents">
-        <h1 style="color: white; margin-bottom: 0px;">DESPRE NOI</h1>
-        <div id="accordion-container">
-            <div class="accordion">
-                <input type="checkbox" id="call-to-action-accordion">
-                <label for="call-to-action-accordion"><h1>Oferim glas ideilor colegilor noștri</h1></label>
-                <div class="accordion-content">
-                    <p>Dacă în prezent ești elev (sau chiar absolvent) al Colegiului nostru și crezi că ai ceva de împărtășit, fie că&#8209;i vorba de proză, poezie, cronică de cărți, eseuri de orice fel și chip, articole științifice sau jurnalism în limbile română, engleză, franceză sau germană, fie că-i vorba de ilustrații sau fotografii, fie că ai numai o întrebare, fie că pur și simplu vrei să ne scrii ceva ce ți-a trecut prin minte într-o zi oarecare, suntem disponibili la adresa de mail: <b><a href="mailto:licariri@mesota.ro">licariri@mesota.ro</a>.</b></p>
-                    <p>Te rugăm doar ca, pe lângă orice dorești să ne comunici, să ne spui numele tău și clasa din care faci parte.</p>
+        <div id="introduction">
+            <div id="types-of-texts">
+                <div id="text">
+                    <ul>
+                        <li>proză</li>
+                        <li>poezie</li>
+                        <li>eseuri</li>
+                        <li>cronică de cărți</li>
+                        <li>interviuri</li>
+                    </ul>
+                </div>
+                <div id="languages">
+                    <ul>
+                        <li>română</li>
+                        <li>engleză</li>
+                        <li>franceză</li>
+                        <li>germană</li>
+                    </ul>
                 </div>
             </div>
-            <div class="accordion">
-                <input type="checkbox" id="upcoming-magazine-accordion">
-                <label for="upcoming-magazine-accordion"><h1>Pregătim ediția nr. 15 a revistei (2024-2025)</h1></label>
-                <div class="accordion-content">
-                    <p>Ziua de 30 ianuarie a fiecărui an. Atunci se sărbătorește Ziua Colegiului Național „Dr. Ioan Meșotă”, și tot atunci apare o nouă ediție a revistei noastre.</p>
-                    <p>Fiecare volum pornește de la o tematică diferită, un ghiont într&#8209;o direcție cu multe subtilități pe care elevii au prilejul să le exploreze și să le interpreteze textual sau chiar vizual. Pentru ediția care urmează să apară în 2025, am ales tema:</p>
-                    <h2><i>nostalgie și vis</i></h2>
-                    <p>Dacă ești meșotist și acele trei cuvinte magice de mai sus ți&#8209;au aprins o scânteie în minte, atunci te invităm să ne trimiți absolut orice la adresa: <b><a href="mailto:licariri@mesota.ro">licariri@mesota.ro</a></b>.</p>
-                    <p>Între timp, îți propunem să răsfoiești revistele din anii trecuți încărcate pe acest website. Spor!</p>
-                    <h4>TERMEN LIMITĂ PRIMIRE MATERIALE: 5 IANUARIE 2025</h4>
-                </div>
+            <ul id="drawings">
+                <li>ilustrații</li>
+                <li>fotografii</li>
+            </ul>
+            <div id="call-to-action">
+                <h4>cu tema</h4>
+                <h1>Nostalgie și vis</h1>
+                <h4>pe care le poți trimite până pe</h4>
+                <h2>15 decembrie 2024</h2>
+                <h4>la adresa</h4>
+                <h2><a href="mailto:licariri@mesota.ro">licariri@mesota.ro</a></h2>
+                <h6>(dacă vrei, putem publica materialele pe care ni le trimiți pe site în loc să le adăugăm ediției tipărite)</h6>
             </div>
-            <div class="accordion">
-                <input type="checkbox" id="website-articles-accordion">
-                <label for="website-articles-accordion"><h1>Nu pierdem idei</h1></label>
-                <div class="accordion-content">
-                    <p>Înțelegem prea bine că o temă, oricât de interpretabilă, reprezintă totuși o limită care descurajează abordarea altor subiecte sau stiluri.</p>
-                    <p>De aceea, propunem o soluție practică: materialele care nu dezvoltă tematica propusă <b>pot fi publicate pe site</b>. În acest fel, nu doar că ținem cont de roadele unui efort entuziast, ci le facem și mai accesibile, fiind pe internet.</p>
-                </div>
-            </div>
-            <div class="accordion">
-                <input type="checkbox" id="recruitment-accordion">
-                <label for="recruitment-accordion"><h1>Ne lărgim echipa încontinuu</h1></label>
-                <div class="accordion-content">
-                    <p>Dacă ești elev al colegiului nostru și îți dorești să faci parte din echipa redacției, te invităm să completezi formularul de mai jos:</p>
-                    <h2><a href="https://docs.google.com/forms/d/e/1FAIpQLSfMF5N2VG0JjLG6X0xB6GujUYCfiUVYhtbV_ZirYHI7RPfZyg/viewform">https://docs.google.com/forms/d/e/1FAIpQLSfMF5N2VG0JjLG6X0xB6GujUYCfiUVYhtbV_ZirYHI7RPfZyg/viewform</a></h2>
-                    <p>După trimiterea formularului, vei primi un mail ca să-ți confirmăm că l-am primit. Noi vom revizui cererea de înscriere și îți vom răspunde în termen de câteva zile.</p>
-                    <p>Te așteptăm cu drag! &mdash; <i>Redacția</i></p>
+            <p>Între timp, îți propunem să răsfoiești un fragment din volumul publicat anul trecut:</p>
+            <div class="pdfprint-highlight-container">
+                <div class="pdfprint-thumbnail">
+                    <a href="/pdfprints/Licăriri%202023-2024%20-%20fragment.pdf"><img src="/pdfprints/thumbnails/Licăriri%202023-2024.webp"></a>
+                    <br>
+                    <a class="pdfprint-description" href="/pdfprints/Licăriri%202023-2024%20-%20fragment.pdf">Licăriri 2023-2024 (fragment)</a>
                 </div>
             </div>
         </div>
 
         <%_ if (articles.length) { _%>
-        <h1 style="color: white">ARTICOLE</h1>
-        <div id="article-thumbnail-grid">
-        <%_ for (article of articles) { _%>
-            <a href="/articles/<%= article.id %>">
-                <div class="article-thumbnail">
-                    <%_ if (article.style.hide_title_in_thumbnail !== 'on') { _%>
-                    <h1 style="font-family: <%= article.style.title_font %>; font-size: <%= article.style.title_fontsize_thumbnail %>rem; font-weight: <%= article.style.title_fontweight %>; color: <%= article.style.title_color %>" class="center<% if (article.style.title_fill_style === 'on') { %> colour-complement-background<%_ } _%>"><%= article.title %></h1>
-                    <%_ } _%>
-                    <img src="/articles/images/<%= article.id %>.webp">
-                </div>
-            </a>
-        <%_ } _%>
+        <div>
+            <div id="article-thumbnail-grid">
+            <%_ for (article of articles) { _%>
+                <a href="/articles/<%= article.id %>">
+                    <div class="article-thumbnail">
+                        <%_ if (article.style.hide_title_in_thumbnail !== 'on') { _%>
+                        <h1 style="font-family: <%= article.style.title_font %>; font-size: <%= article.style.title_fontsize_thumbnail %>rem; font-weight: <%= article.style.title_fontweight %>; color: <%= article.style.title_color %>" class="center<% if (article.style.title_fill_style === 'on') { %> colour-complement-background<%_ } _%>"><%= article.title %></h1>
+                        <%_ } _%>
+                        <img src="/articles/images/<%= article.id %>.webp">
+                    </div>
+                </a>
+            <%_ } _%>
+            </div>
         </div>
         <%_ } _%>
 
         <%_ if (pdfprints.length) { _%>
-        <h1 style="color: white">ARHIVA VOLUMELOR TIPĂRITE</h1>
-        <div id="pdfprint-thumbnail-grid">
-        <%_ for (pdfprint of pdfprints) { _%>
-            <div class="pdfprint-thumbnail">
-                <a href="/pdfprints/<%= pdfprint.description %>.pdf"><img src="/pdfprints/thumbnails/<%= pdfprint.description %>.webp"></a>
-                <br>
-                <a class="pdfprint-description" href="/pdfprints/<%= pdfprint.description %>.pdf"><%= pdfprint.description %></a>
+        <div>
+            <p>Și chiar și revistele dintr-un trecut un pic mai îndepărtat. De ce nu?</p>
+            <div id="pdfprint-thumbnail-grid">
+            <%_ for (pdfprint of pdfprints) { _%>
+                <div class="pdfprint-thumbnail">
+                    <a href="/pdfprints/<%= pdfprint.description %>.pdf"><img src="/pdfprints/thumbnails/<%= pdfprint.description %>.webp"></a>
+                    <br>
+                    <a class="pdfprint-description" href="/pdfprints/<%= pdfprint.description %>.pdf"><%= pdfprint.description %></a>
+                </div>
+            <%_ } _%>
             </div>
-        <%_ } _%>
         </div>
         <%_ } _%>
-<%- await include("copyright") _%>
     </div>
+<%- await include("copyright") _%>
 </body>
 
 <%_ if (articles.length) { _%>
