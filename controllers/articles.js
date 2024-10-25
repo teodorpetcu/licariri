@@ -55,7 +55,6 @@ const updateMainPage = async () => {
 }
 
 const get_mainPage = async (_, res) => {
-    await updateMainPage();
     res.sendFile(`${MAIN_PAGE_HTML_FILE_PATH}`);
 }
 
