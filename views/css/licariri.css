@@ -295,8 +295,8 @@ body.open *:not(#main-nav) {
             margin: 0;
         }
         h1 {
-            font-family: "Georgia" !important;
-            font-weight: 600;
+            font-family: "Georgia", serif;
+            font-weight: 700;
             margin-top: 0;
             margin-bottom: 16px;
             line-height: 1;
@@ -305,6 +305,24 @@ body.open *:not(#main-nav) {
             opacity: 0.9;
             font-style: italic;
             font-weight: 500;
+        }
+    }
+    #further-explanation {
+        * {
+            margin: 0;
+        }
+        h5 {
+            margin: 0 auto;
+            max-width: 700px;
+        }
+        h4 {
+            opacity: 0.8;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+        p {
+            margin-top: 20px;
+            line-height: 1;
         }
     }
     .pdfprint-highlight-container {
@@ -762,6 +780,7 @@ hr {
 }
 
 #copyright {
+    font-family: "Kameron", sans-serif;
     text-align: center;
     width: 100%;
     background-color: #ffffff;
