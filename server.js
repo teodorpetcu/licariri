@@ -92,6 +92,7 @@ if (process.env.ALLOW_QUERY_ROUTES == "true") {
 
 if (process.env.ALLOW_ADMIN_ROUTES == "true") {
     logger.info("/login, /admin routes FUNCTIONAL");
+    app.get("/css/login.css", requestLogger, (_, res) => res.sendFile(__dirname + "/views/css/login.css"));
     app.get("/login", requestLogger, get_adminLoginPage);
     app.post("/login", requestLogger, post_adminLoginCheck);
 
