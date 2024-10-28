@@ -6,8 +6,8 @@
     "instances": 1,
     "env": {
         "NODE_ENV": "production",
-        "ALLOW_QUERY_ROUTES": "true",
-        "ALLOW_ADMIN_ROUTES": "true"
+        "ALLOW_QUERY_ROUTES": "false",
+        "ALLOW_ADMIN_ROUTES": "false"
     }
   }]
 }

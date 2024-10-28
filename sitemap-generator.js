@@ -69,8 +69,6 @@ const generateSitemapFile = async () => {
         .catch((err) => logger.error(`writing sitemap.xml file`, err));
 }
 
-generateSitemapFile();
-
 module.exports = {
     generateSitemapFile,
 };

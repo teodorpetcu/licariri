@@ -10,6 +10,7 @@ const { viewsDatabase } = require("./models/view-count.js");
 const { queryDatabase } = require("./models/query.js");
 
 const {
+    updateMainPage,
     get_mainPage,
     get_articlePage,
 
@@ -47,6 +48,7 @@ const {
     PUBLIC_ARTICLE_IMAGES_PATH,
     DRAFT_ARTICLE_IMAGES_PATH,
     TRASH_ARTICLE_IMAGES_PATH,
+    SITEMAP_FILE_PATH,
 } = require("./config.js");
 
 const { logger, requestLogger } = require("./logger.js");
@@ -60,7 +62,7 @@ app.disable("x-powered-by");
 // putting this before other `app.use()` calls makes it not use other middleware
 app.get("/robots.txt", requestLogger, (_, res) => res.sendFile(__dirname + "/robots.txt"));
 // REMEMBER TO ADD `Sitemap` CLAUSE TO robots.txt !!!!
-//app.get("/sitemap.xml", requestLogger, (_, res) => res.sendFile(__dirname + "/sitemap.xml"));
+app.get("/sitemap.xml", requestLogger, (_, res) => res.sendFile(SITEMAP_FILE_PATH));
 
 app.set("view engine", "ejs");
 
@@ -133,6 +135,7 @@ Promise.all([
     queryDatabase.init(),
     viewsDatabase.init(),
 ])
+    .then(() => updateMainPage())
     .then(() => {
         httpServer = app.listen(LISTENING_PORT, () => logger.info(`web server up`));
         dailyUpdateJobTimer();

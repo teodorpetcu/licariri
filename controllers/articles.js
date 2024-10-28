@@ -15,6 +15,8 @@ const { queryDatabase } = require("../models/query.js");
 const { viewsDatabase } = require("../models/view-count.js");
 const { usersDatabase } = require("../models/admin.js")
 
+const { generateSitemapFile } = require("../sitemap-generator.js");
+
 const {
     MAIN_PAGE_HTML_FILE_PATH,
     ARTICLES_DIRECTORY,
@@ -49,8 +51,12 @@ const updateMainPage = async () => {
     await Promise.all(articles.map(async (article) => {
         return articleDatabase.getArticleStyle(article.id).then((style) => article.style = style);
     })).catch((err) => logger.error(`fetching article styles for main page`, err));
+    articles = [];
     let renderedPage = await ejs.renderFile(__dirname + "/../views/main.ejs", {articles, pdfprints}, {async: true});
-    return fs.promises.writeFile(`${MAIN_PAGE_HTML_FILE_PATH}`, renderedPage)
+    return Promise.all([
+        fs.promises.writeFile(`${MAIN_PAGE_HTML_FILE_PATH}`, renderedPage),
+        generateSitemapFile(),
+    ])
         .catch((err) => logger.error(`writing main page HTML file`, err));
 }
 
@@ -295,6 +301,7 @@ const post_adminRemovePDFprint = async (req, res) => {
 }
 
 module.exports = {
+    updateMainPage,
     get_mainPage,
     get_articlePage,
     post_adminAddArticle,
