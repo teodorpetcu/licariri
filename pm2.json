@@ -1,13 +1,25 @@
 {
-  "apps" : [{
-    "name": "licariri",
-    "script": "server.js",
-    "exec_mode": "fork",
-    "instances": 1,
-    "env": {
-        "NODE_ENV": "production",
-        "ALLOW_QUERY_ROUTES": "false",
-        "ALLOW_ADMIN_ROUTES": "false"
+    "apps" : [
+    {
+        "name": "licariri",
+        "script": "server.js",
+        "exec_mode": "cluster",
+        "log_type": "raw",
+        "instances": 4,
+        "env": {
+            "NODE_ENV": "production",
+            "ALLOW_QUERY_ROUTES": "false",
+            "ALLOW_ADMIN_ROUTES": "false"
+        }
+    },
+    {
+        "name": "licariri-cron",
+        "script": "cron.js",
+        "exec_mode": "fork",
+        "instances": 1,
+        "env": {
+            "NODE_ENV": "production"
+        }
     }
-  }]
+    ]
 }

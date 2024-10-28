@@ -71,6 +71,4 @@ const dailyUpdateJobTimer = () => {
     }, milisecondsToNextMidnight);
 }
 
-module.exports = {
-    dailyUpdateJobTimer,
-}
+dailyUpdateJobTimer()
