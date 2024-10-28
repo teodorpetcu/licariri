@@ -88,8 +88,35 @@ class ArticleDatabase extends Database {
      * @param {Article} article
      */
     saveArticle = async (article) => {
-        return this.run('INSERT INTO articles VALUES(?, ?, ?, ?, ?, ?, ?, ?)',
-            [article.id, article.stage, article.timestamp, article.title, article.subtitle, article.language, article.category, article.description])
+        return this.run(`INSERT INTO articles (
+                id,
+                stage,
+                timestamp,
+                title,
+                subtitle,
+                language,
+                category,
+                description
+            ) VALUES (
+                $id,
+                $stage,
+                $timestamp,
+                $title,
+                $subtitle,
+                $language,
+                $category,
+                $description
+            )`,
+            {
+                $id: article.id,
+                $stage: article.stage,
+                $timestamp: article.timestamp,
+                $title: article.title,
+                $subtitle: article.subtitle,
+                $language: article.language,
+                $category: article.category,
+                $description: article.description,
+        })
             .catch((err) => this.dbLogger.error(`saving article`, err));
     }
 
@@ -100,8 +127,16 @@ class ArticleDatabase extends Database {
      */
     updateMetadata = async (originalArticleID, article) => {
         return Promise.all([
-            this.run('UPDATE articles SET id = ?, title = ?, subtitle = ?, language = ?, category = ?, description = ? WHERE id = ?',
-                [article.id, article.title, article.subtitle, article.language, article.category, article.description, originalArticleID]),
+            this.run('UPDATE articles SET id = $id, title = $title, subtitle = $subtitle, language = $language, category = $category, description = $description WHERE id = $originalID',
+                {
+                    $id: article.id,
+                    $title: article.title,
+                    $subtitle: article.subtitle,
+                    $language: article.language,
+                    $category: article.category,
+                    $description: article.description,
+                    $originalID: originalArticleID,
+            }),
 
             this.run('DELETE from article_authors WHERE id = ?', [originalArticleID])
                 .then(() => Promise.all(article.authors.map((author) => {
@@ -134,12 +169,58 @@ class ArticleDatabase extends Database {
      */
     updateArticleStyles = async (originalArticleID, article, articleStyle) => {
         return this.run('DELETE FROM article_styles WHERE id = ?', [originalArticleID])
-            .then(() => this.run('INSERT INTO article_styles VALUES (?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                    [article.id, articleStyle.hide_title_in_thumbnail, articleStyle.title_font, articleStyle.title_fill_style,
-                        articleStyle.title_color, articleStyle.title_fontsize_thumbnail, articleStyle.title_fontsize_article,
-                        articleStyle.title_fontweight, articleStyle.title_position, articleStyle.subtitle_font,
-                        articleStyle.subtitle_fontsize, articleStyle.subtitle_fontweight, articleStyle.subtitle_color,
-                        articleStyle.subtitle_position, articleStyle.dropcap]))
+            /* This INSERT statement is pure madness. */
+            .then(() => this.run(`INSERT INTO article_styles (
+                    id,
+                    hide_title_in_thumbnail,
+                    title_font,
+                    title_fill_style,
+                    title_color,
+                    title_fontsize_thumbnail,
+                    title_fontsize_article,
+                    title_fontweight,
+                    title_position,
+                    subtitle_font,
+                    subtitle_fontsize,
+                    subtitle_fontweight,
+                    subtitle_color,
+                    subtitle_position,
+                    dropcap
+                )
+                VALUES (
+                    $id,
+                    $hide_title_in_thumbnail,
+                    $title_font,
+                    $title_fill_style,
+                    $title_color,
+                    $title_fontsize_thumbnail,
+                    $title_fontsize_article,
+                    $title_fontweight,
+                    $title_position,
+                    $subtitle_font,
+                    $subtitle_fontsize,
+                    $subtitle_fontweight,
+                    $subtitle_color,
+                    $subtitle_position,
+                    $dropcap
+                )`, {
+                    $id: article.id,
+                    $hide_title_in_thumbnail: articleStyle.hide_title_in_thumbnail,
+                    $title_font: articleStyle.title_font,
+                    $title_fill_style: articleStyle.title_fill_style,
+                    $title_color: articleStyle.title_color,
+                    $title_fontsize_thumbnail: articleStyle.title_fontsize_thumbnail,
+                    $title_fontsize_article: articleStyle.title_fontsize_article,
+                    $title_fontweight: articleStyle.title_fontweight,
+                    $title_position: articleStyle.title_position,
+                    $subtitle_font: articleStyle.subtitle_font,
+                    $subtitle_fontsize: articleStyle.subtitle_fontsize,
+                    $subtitle_fontweight: articleStyle.subtitle_fontweight,
+                    $subtitle_color: articleStyle.subtitle_color,
+                    $subtitle_position: articleStyle.subtitle_position,
+                    $dropcap: articleStyle.dropcap,
+                }
+            ))
             .catch((err) => this.dbLogger.error(`updating article styles`, err));
     }
 
@@ -151,16 +232,25 @@ class ArticleDatabase extends Database {
      */
     getArticleStyle = async (articleID) => {
         return this.get('SELECT * FROM article_styles WHERE id = ?', [articleID])
-            .then((row) => new ArticleStyle(row.hide_title_in_thumbnail,
-                    row.title_font, row.title_fill_style, row.title_color,
-                    row.title_fontsize_thumbnail, row.title_fontsize_article,
-                    row.title_fontweight, row.title_position, row.subtitle_font,
-                    row.subtitle_fontsize, row.subtitle_fontweight,
-                    row.subtitle_color, row.subtitle_position, row.dropcap)
-            )
+            .then((row) => new ArticleStyle({
+                hide_title_in_thumbnail: row.hide_title_in_thumbnail,
+                title_font: row.title_font,
+                title_fill_style: row.title_fill_style,
+                title_color: row.title_color,
+                title_fontsize_thumbnail: row.title_fontsize_thumbnail,
+                title_fontsize_article: row.title_fontsize_article,
+                title_fontweight: row.title_fontweight,
+                title_position: row.title_position,
+                subtitle_font: row.subtitle_font,
+                subtitle_fontsize: row.subtitle_fontsize,
+                subtitle_fontweight: row.subtitle_fontweight,
+                subtitle_color: row.subtitle_color,
+                subtitle_position: row.subtitle_position,
+                dropcap: row.dropcap
+            }))
             .catch((err) => {
                 this.dbLogger.error(`getting article style`, err);
-                return new ArticleStyle();
+                return new ArticleStyle({});
             })
     }
 
@@ -269,7 +359,15 @@ class ArticleDatabase extends Database {
      */
     getArticleMeta = async (id) => {
         return this.get('SELECT * FROM articles WHERE id = ?', [id])
-            .then((row) => new Article(row.stage, new Date(row.timestamp), row.title, row.subtitle, row.language, row.category, row.description))
+            .then((row) => new Article({
+                stage: row.stage,
+                timestamp: new Date(row.timestamp),
+                title: row.title,
+                subtitle: row.subtitle,
+                language: row.language,
+                category: row.category,
+                description: row.description
+            }))
             .catch((err) => {this.dbLogger.error(`getting article meta`, err); return undefined});
     }
 

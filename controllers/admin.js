@@ -130,8 +130,10 @@ const get_adminAddArticle = async (req, res) => {
                 .then((credits) => article.credits = credits),
         ])
     } else {
-        article = new Article(stage="draft", timestamp=undefined,
-            title=`Articol fără titlu (${await articleDatabase.getUntitledArticleCount() + 1})`);
+        article = new Article({
+            stage: "draft",
+            title: `Articol fără titlu (${await articleDatabase.getUntitledArticleCount() + 1})`,
+        });
         article.style = {};
         await articleDatabase.saveArticle(article);
     }

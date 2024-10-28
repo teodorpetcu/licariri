@@ -110,8 +110,23 @@ const post_adminAddArticle = async (req, res) => {
 
     let thumbnail = req.files ? req.files.thumbnail : undefined;
 
-    const article = new Article(stage, timestamp, title, subtitle, language, category, description, authors, tags);
-    const articleStyle = new ArticleStyle(req.body.hide_title_in_thumbnail, req.body.title_font, req.body.title_fill_style, req.body.title_color, req.body.title_fontsize_thumbnail, req.body.title_fontsize_article, req.body.title_fontweight, req.body.title_position, req.body.subtitle_font, req.body.subtitle_fontsize, req.body.subtitle_fontweight, req.body.subtitle_color, req.body.subtitle_position, req.body.dropcap)
+    const article = new Article({ stage: stage, timestamp, title, subtitle, language, category, description, authors, tags });
+    const articleStyle = new ArticleStyle({
+        hide_title_in_thumbnail: req.body.hide_title_in_thumbnail,
+        title_font: req.body.title_font,
+        title_fill_style: req.body.title_fill_style,
+        title_color: req.body.title_color,
+        title_fontsize_thumbnail: req.body.title_fontsize_thumbnail,
+        title_fontsize_article: req.body.title_fontsize_article,
+        title_fontweight: req.body.title_fontweight,
+        title_position: req.body.title_position,
+        subtitle_font: req.body.subtitle_font,
+        subtitle_fontsize: req.body.subtitle_fontsize,
+        subtitle_fontweight: req.body.subtitle_fontweight,
+        subtitle_color: req.body.subtitle_color,
+        subtitle_position: req.body.subtitle_position,
+        dropcap: req.body.dropcap
+    });
 
     if ((article.id != originalArticle.id && articleWithSameTitle)
         || !article.id) {

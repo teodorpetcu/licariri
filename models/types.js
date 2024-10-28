@@ -12,19 +12,18 @@ class Author {
 class Article {
     /**
      * NOTE: the ID is inferrable from the title
-     * @param {string} stage
-     * @param {Date} timestamp
-     * @param {string} title
-     * @param {string} subtitle
-     * @param {string} language
-     * @param {string} category
-     * @param {string} descripion
-     * @param {Author[]} authors
-     * @param {string[]} tags
+     * @param {Object} obj
+     * @param {string} obj.stage
+     * @param {Date} obj.timestamp
+     * @param {string} obj.title
+     * @param {string} obj.subtitle
+     * @param {string} obj.language
+     * @param {string} obj.category
+     * @param {string} obj.descripion
+     * @param {Author[]} obj.authors
+     * @param {string[]} obj.tags
      */
-    constructor(stage = "", timestamp = new Date(),
-                title, subtitle, language = "", category, description,
-                authors = [], tags = []) {
+    constructor({stage, timestamp = new Date(), title, subtitle, language = "", category, description, authors = [], tags = []}) {
         language = language.toLowerCase();
         if (! ["ro", "en", "fr", "de"].includes(language)) language = "ro";
 
@@ -55,22 +54,22 @@ class Article {
 
 class ArticleStyle {
     /**
-     * @param {int} hide_title_in_thumbnail
-     * @param {string} title_font
-     * @param {string} title_fill_style
-     * @param {string} title_color
-     * @param {int} title_fontsize_thumbnail
-     * @param {int} title_fontsize_article
-     * @param {int} title_fontweight
-     * @param {string} title_position
-     * @param {string} subtitle_font
-     * @param {int} subtitle_fontsize
-     * @param {int} subtitle_fontweight
-     * @param {string} subtitle_position
-     * @param {string} subtitle_position
-     * @param {string} dropcap
+     * @param {Object} obj
+     * @param {number} obj.hide_title_in_thumbnail
+     * @param {string} obj.title_font
+     * @param {string} obj.title_fill_style
+     * @param {string} obj.title_color
+     * @param {number} obj.title_fontsize_thumbnail
+     * @param {number} obj.title_fontsize_article
+     * @param {number} obj.title_fontweight
+     * @param {string} obj.title_position
+     * @param {string} obj.subtitle_font
+     * @param {number} obj.subtitle_fontsize
+     * @param {number} obj.subtitle_fontweight
+     * @param {string} obj.subtitle_position
+     * @param {string} obj.dropcap
      */
-    constructor(hide_title_in_thumbnail, title_font, title_fill_style, title_color, title_fontsize_thumbnail, title_fontsize_article, title_fontweight, title_position, subtitle_font, subtitle_fontsize, subtitle_fontweight, subtitle_color, subtitle_position, dropcap) {
+    constructor({hide_title_in_thumbnail, title_font, title_fill_style, title_color, title_fontsize_thumbnail, title_fontsize_article, title_fontweight, title_position, subtitle_font, subtitle_fontsize, subtitle_fontweight, subtitle_color, subtitle_position, dropcap}) {
         this.hide_title_in_thumbnail  = hide_title_in_thumbnail;
         this.title_font               = title_font;
         this.title_fill_style         = title_fill_style
