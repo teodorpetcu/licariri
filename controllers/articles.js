@@ -82,6 +82,8 @@ const post_adminAddArticle = async (req, res) => {
         articleDatabase.getArticleMeta(articleID),
     ])
 
+    if (!originalArticle) originalArticle = articleWithSameTitle;
+
     const stage = originalArticle.stage;
     const timestamp = new Date(originalArticle.timestamp);
     const title = req.body.title.replace(/\//g, "").trim();
@@ -99,7 +101,7 @@ const post_adminAddArticle = async (req, res) => {
                     : (typeof req.body["tags[]"] === "string"
                         ? [req.body["tags[]"].trim()]
                         : []);
-    const content = req.body.content.replace(/([<>\\])/g, "\\$1");
+    const content = req.body.content//.replace(/([<>\\])/g, "\\$1");
     const credits = {
         editorial: req.body.credit_editorial.split(", ").map((name) => name.trim()).sort().filter((a) => a),
         dtp: req.body.credit_dtp.split(", ").map((name) => name.trim()).sort().filter((a) => a),
@@ -165,7 +167,12 @@ const post_adminAddArticle = async (req, res) => {
         }
         if (thumbnail && /^image/.test(thumbnail.mimetype)) {
             if (originalArticle.id && originalArticle.id != article.id) {
-                fs.promises.unlink(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.webp`)
+                fileExists(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/${originalArticle.id}.webp`)
+                    .then((st) => {
+                        if (st) {
+                            return fs.promises.unlink(`${ARTICLES_DIRECTORY}/${originalArticle.stage}/images/${originalArticle.id}.webp`)
+                        }
+                    })
             }
             sharp(thumbnail.data)
                 .webp({quality: WEBP_COMPRESSION_QUALITY})
@@ -228,7 +235,7 @@ const post_updateArticleStage = async (req, res) => {
     article.failsafe_setStage(req.body.stage)
     // TODO: ensure the article has a thumbnail, etc. before publishing
     if (article.stage != originalStage) {
-        Promises.all([
+        Promise.all([
             fileExists(`${ARTICLES_DIRECTORY}/${originalStage}/${article.id}.html`)
                 .then((st) => {
                     if (st) {

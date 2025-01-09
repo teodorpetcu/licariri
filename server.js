@@ -108,8 +108,8 @@ if (process.env.ALLOW_ADMIN_ROUTES == "true") {
     app.get("/admin/articles/:articleID", requestLogger, get_adminAddArticle);
 
     app.post("/admin/logout", requestLogger, post_adminLogout);
-    app.post("/admin/articles/:articleID", requestLogger, post_adminAddArticle);
     app.post("/admin/articles/stage", requestLogger, post_updateArticleStage);
+    app.post("/admin/articles/:articleID", requestLogger, post_adminAddArticle);
     //app.post("/admin/articles/remove", requestLogger, post_adminRemoveArticle);
     app.post("/admin/user/add", requestLogger, post_adminAddUser);
     app.post("/admin/user/suspend", requestLogger, post_adminSuspendUser);

@@ -111,8 +111,8 @@ const post_adminLogout = async(req, res) => {
 
 const get_adminAddArticle = async (req, res) => {
     let article = await articleDatabase.getArticle(req.params.articleID);
-    article.credits = { editorial: [], dtp: [], thumbnail: [] };
     if (article) {
+        article.credits = { editorial: [], dtp: [], thumbnail: [] };
         let contentsPath = `${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`;
         await Promise.all([
             articleDatabase.getArticleStyle(article.id)
@@ -135,6 +135,7 @@ const get_adminAddArticle = async (req, res) => {
             title: `Articol fără titlu (${await articleDatabase.getUntitledArticleCount() + 1})`,
         });
         article.style = {};
+        article.credits = { editorial: [], dtp: [], thumbnail: [] };
         await articleDatabase.saveArticle(article);
     }
     res.render("edit-article-contents", {defaults: article});

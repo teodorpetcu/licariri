@@ -56,6 +56,23 @@
                 <h4>(care va fi lansată <b>la sfârșitul lunii ianuarie 2025</b>, de Ziua Colegiului nostru)</h4>
                 <h5>(P.S.: dacă nu te inspiră tema și ai alte idei, în loc să adăugăm materialele pe care ni le trimiți la revista propriu-zisă, le putem publica pe site)</h5>
             </div>
+            <%_ if (articles.length) { _%>
+            <div>
+                <div id="article-thumbnail-grid">
+                <%_ for (article of articles) { _%>
+                    <a href="/articles/<%= article.id %>">
+                        <div class="article-thumbnail">
+                            <%_ if (article.style.hide_title_in_thumbnail !== 'on') { _%>
+                            <h1 style="font-family: <%= article.style.title_font %>; font-size: <%= article.style.title_fontsize_thumbnail %>rem; font-weight: <%= article.style.title_fontweight %>; color: <%= article.style.title_color %>" class="center<% if (article.style.title_fill_style === 'on') { %> colour-complement-background<%_ } _%>"><%= article.title %></h1>
+                            <%_ } _%>
+                            <img src="/articles/images/<%= article.id %>.webp">
+                        </div>
+                    </a>
+                <%_ } _%>
+                </div>
+            </div>
+            <%_ } _%>
+
             <span class="squiggly-line"></span>
             <p>Între timp, îți propunem să răsfoiești volumul publicat anul trecut:</p>
             <div class="pdfprint-highlight-container">
@@ -66,23 +83,6 @@
                 </div>
             </div>
         </div>
-
-        <%_ if (articles.length) { _%>
-        <div>
-            <div id="article-thumbnail-grid">
-            <%_ for (article of articles) { _%>
-                <a href="/articles/<%= article.id %>">
-                    <div class="article-thumbnail">
-                        <%_ if (article.style.hide_title_in_thumbnail !== 'on') { _%>
-                        <h1 style="font-family: <%= article.style.title_font %>; font-size: <%= article.style.title_fontsize_thumbnail %>rem; font-weight: <%= article.style.title_fontweight %>; color: <%= article.style.title_color %>" class="center<% if (article.style.title_fill_style === 'on') { %> colour-complement-background<%_ } _%>"><%= article.title %></h1>
-                        <%_ } _%>
-                        <img src="/articles/images/<%= article.id %>.webp">
-                    </div>
-                </a>
-            <%_ } _%>
-            </div>
-        </div>
-        <%_ } _%>
 
         <%_ if (pdfprints.length) { _%>
         <div>
