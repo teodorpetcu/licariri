@@ -523,6 +523,10 @@ body.open *:not(#main-nav) {
     img {
         vertical-align: middle;
     }
+    h2, h4, h5, h6 {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
     h1, h3 {
         padding-left: 5px;
         padding-right: 5px;

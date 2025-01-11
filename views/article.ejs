@@ -38,14 +38,22 @@
         <%_ if (article.authors.length) { _%>
         <ul class="article-authors">
             <%_ for (let author of article.authors) { _%>
+            <%_ if (QUERY_ROUTES_ALLOWED) { _%>
             <li><a href="/query/?author=<%= author.name _%>"><%= author.name _%></a></li>
+            <%_ } else { _%>
+            <li><%= author.name _%></li>
+            <%_ } _%>
             <%_ } _%>
         </ul>
         <%_ } _%>
         <div id="tags-date-grid">
             <ul class="article-tags">
                 <%_ for (tag of article.tags) { _%>
+                <%_ if (QUERY_ROUTES_ALLOWED) { _%>
                 <li><a href="/query/?tag=<%= tag _%>">#<%= tag _%></a></li>
+                <%_ } else { _%>
+                <li>#<%= tag _%></li>
+                <%_ } _%>
                 <%_ } _%>
             </ul>
             <b id="article-date"><%= article.date %></b>

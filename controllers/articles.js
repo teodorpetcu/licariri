@@ -35,7 +35,8 @@ const {
 const renderArticlePage = async (article, plainTextContent, articleStyle, credits) => {
     // TODO: use another function to write markdown contents
     article.contents = marked.parse(plainTextContent).trim();
-    let renderedPage = await ejs.renderFile(__dirname + "/../views/article.ejs", {article, articleStyle, credits}, {async: true});
+    const QUERY_ROUTES_ALLOWED = process.env.ALLOW_QUERY_ROUTES == "true";
+    let renderedPage = await ejs.renderFile(__dirname + "/../views/article.ejs", {article, articleStyle, credits, QUERY_ROUTES_ALLOWED}, {async: true});
 
     return fs.promises.writeFile(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, plainTextContent)
         .then(fs.promises.writeFile(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`, renderedPage))
@@ -108,7 +109,8 @@ const post_adminAddArticle = async (req, res) => {
         thumbnail: req.body.credit_thumbnail.split(", ").map((name) => name.trim()).sort().filter((a) => a),
     }
     // TODO: improve description selection
-    const description = content.slice(0, 250);
+    //const description = content.slice(0, 250);
+    const description = "";
 
     let thumbnail = req.files ? req.files.thumbnail : undefined;
 
