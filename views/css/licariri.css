@@ -501,12 +501,14 @@ body.open *:not(#main-nav) {
 }
 
 #article-contributors {
-    line-height: 0;
-    position: absolute;
-    top: 102vh;
-    right: 100px;
+    text-align: center;
     font-family: "Kameron";
+    opacity: 0.8;
     font-style: italic;
+    h5 {
+        margin-top: 15px;
+        margin-bottom: 0px;
+    }
 }
 
 #article-contents, #article-info {
@@ -560,7 +562,7 @@ body.open *:not(#main-nav) {
 }
 
 .dropcap {
-    text-indent: 0;
+    text-indent: 0 !important;
 }
 
 .dropcap::first-letter {
