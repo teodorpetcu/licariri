@@ -105,7 +105,7 @@
                 margin-bottom: 0;
             }
         }
-        .pdfprint-row {
+        .magazine-row {
             display: grid;
             grid-template-columns: 1.2rem 1fr 1fr 1fr !important;
             margin: 0 auto !important;
@@ -126,7 +126,7 @@
                 }
             }
         }
-        #tab-changePassword, #tab-addpdfprint, #tab-addUser {
+        #tab-changePassword, #tab-addmagazine, #tab-addUser {
             text-align: center;
             border-radius: 10px;
             padding: 15px;

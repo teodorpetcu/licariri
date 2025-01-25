@@ -1,4 +1,4 @@
-const { Author, Article, ArticleStyle, PDFPrint } = require("./types.js");
+const { Author, Article, ArticleStyle, Magazine } = require("./types.js");
 const { Database } = require("./database.js");
 const { ARTICLE_DATABASE_PATH } = require("../config.js");
 
@@ -72,7 +72,7 @@ class ArticleDatabase extends Database {
                 credited_for    TEXT NOT NULL,
                 FOREIGN KEY (id) REFERENCES articles (id)
             );
-            CREATE TABLE IF NOT EXISTS pdfprints
+            CREATE TABLE IF NOT EXISTS magazines
             (
                 timestamp           INT,
                 description         TEXT,
@@ -405,28 +405,28 @@ class ArticleDatabase extends Database {
     }
 
     /**
-     * @param {PDFPrint} pdfprint
+     * @param {Magazine} magazine
      */
-    addPDFPrint = async (pdfprint) => {
-        return this.run(`INSERT OR IGNORE into pdfprints VALUES (?, ?)`, [pdfprint.timestamp, pdfprint.description])
-            .catch((err) => this.dbLogger.error(`adding pdfprint`, err));
+    addMagazine = async (magazine) => {
+        return this.run(`INSERT OR IGNORE into magazines VALUES (?, ?)`, [magazine.timestamp, magazine.description])
+            .catch((err) => this.dbLogger.error(`adding magazine`, err));
     }
 
     /**
-     * @param {PDFPrint} pdfprint
+     * @param {Magazine} magazine
      */
-    removePDFPrint = async (pdfprintDescription) => {
-        return this.run(`DELETE FROM pdfprints WHERE description = ?`, [pdfprintDescription])
-            .catch((err) => this.dbLogger.error(`removing pdfprint`, err));
+    removeMagazine = async (magazineDescription) => {
+        return this.run(`DELETE FROM magazines WHERE description = ?`, [magazineDescription])
+            .catch((err) => this.dbLogger.error(`removing magazine`, err));
     }
 
     /**
-     * @param {Promise<[PDFPrint]>}
+     * @param {Promise<[Magazine]>}
      */
-    getAllPDFPrintsSorted = async () => {
-        return this.all(`SELECT * FROM pdfprints ORDER BY timestamp DESC`)
-            .then((rows) => rows.map((row) => new PDFPrint(new Date(row.timestamp), row.description)))
-            .catch((err) => {this.dbLogger.error(`getting pdfprints`, err); return []});
+    getAllMagazinesSorted = async () => {
+        return this.all(`SELECT * FROM magazines ORDER BY timestamp DESC`)
+            .then((rows) => rows.map((row) => new Magazine(new Date(row.timestamp), row.description)))
+            .catch((err) => {this.dbLogger.error(`getting magazines`, err); return []});
     }
 
     /**

@@ -28,8 +28,8 @@
 
         <hr>
 
-        <button id="inputButton-tab-pdfprints">Arhivă reviste</button>
-        <button id="inputButton-tab-addpdfprint">Adaugă ediție tipărită</button>
+        <button id="inputButton-tab-magazines">Arhivă reviste</button>
+        <button id="inputButton-tab-addmagazine">Adaugă ediție tipărită</button>
 
         <form style="position: absolute; bottom: 10px; right:10px;" action="/admin/logout" method="POST">
             <button type="submit">
@@ -64,7 +64,7 @@
             <%_ for ([pageNumber, page] of usersPages.entries()) { _%>
             <div id="tab-manageUsers-page<%= pageNumber %>" class="article-page<% if (pageNumber == 0) { %> active-page<%_ } _%>">
                 <%_ for ([userIndex, o_user] of page.entries()) { _%>
-                <div class="article-row pdfprint-row">
+                <div class="article-row magazine-row">
                     <span><%= pageNumber * usersPages[0].length + userIndex + 1 %>.</span>
                     <span><%= o_user.id %></span>
                     <span><%= o_user.privilege%></span>
@@ -238,20 +238,20 @@
             <p>(nimic)</p>
             <%_ } _%>
         </div>
-        <div id="tab-pdfprints" class="article-list">
+        <div id="tab-magazines" class="article-list">
             <h1>Ediții ale revistei publicate pe site</h1>
-            <%_ if (pdfprints.length) { _%>
-            <%_ for ([pageNumber, page] of pdfprints.entries()) { _%>
-            <div id="tab-pdfprints-page<%= pageNumber %>" class="article-page<% if (pageNumber == 0) { %> active-page<%_ } _%>">
-                <%_ for ([pdfprintIndex, pdfprint] of page.entries()) { _%>
-                <div class="article-row pdfprint-row">
-                    <p><%= pageNumber * pdfprints[0].length + pdfprintIndex + 1 %>.</p>
+            <%_ if (magazines.length) { _%>
+            <%_ for ([pageNumber, page] of magazines.entries()) { _%>
+            <div id="tab-magazines-page<%= pageNumber %>" class="article-page<% if (pageNumber == 0) { %> active-page<%_ } _%>">
+                <%_ for ([magazineIndex, magazine] of page.entries()) { _%>
+                <div class="article-row magazine-row">
+                    <p><%= pageNumber * magazines[0].length + magazineIndex + 1 %>.</p>
                     <div>
-                        <a href="/pdfprints/<%= pdfprint.filename _%>"><%= pdfprint.description %></a>
+                        <a href="/magazines/<%= magazine.filename _%>"><%= magazine.description %></a>
                     </div>
-                    <p><%= pdfprint.date %> </p>
-                    <form action="/admin/pdfprints/remove" method="POST">
-                        <input type="hidden" name="description" value="<%= pdfprint.description %>">
+                    <p><%= magazine.date %> </p>
+                    <form action="/admin/magazines/remove" method="POST">
+                        <input type="hidden" name="description" value="<%= magazine.description %>">
                         <input type="submit" value="ȘTERGE">
                     </form>
                 </div>
@@ -259,8 +259,8 @@
             </div>
             <div class="page-selector">
                 <h5>Pagina:</h5>
-                <%_ for (let i = 0; i < pdfprints.length; i++) { _%>
-                <button id="inputButton-pdfprints-page<%= i %>" <%_ if (i == 0) { _%>class="active-page-button"<%_ }%>><%= i  + 1 %></button>
+                <%_ for (let i = 0; i < magazines.length; i++) { _%>
+                <button id="inputButton-magazines-page<%= i %>" <%_ if (i == 0) { _%>class="active-page-button"<%_ }%>><%= i  + 1 %></button>
                 <%_ } _%>
             </div>
             <%_ } _%>
@@ -268,9 +268,9 @@
             <p>(nimic)</p>
             <%_ } _%>
         </div>
-        <div id="tab-addpdfprint">
+        <div id="tab-addmagazine">
             <h1>Adaugă ediție tipărită</h1>
-            <form action="/admin/pdfprints/add" method="post" autocomplete="off" enctype="multipart/form-data">
+            <form action="/admin/magazines/add" method="post" autocomplete="off" enctype="multipart/form-data">
                 <div>
                     <label>Fișier PDF</label>
                     <input required type="file"
@@ -307,8 +307,8 @@
         "articlesPublished",
         "articlesDrafts",
         "articlesTrash",
-        "pdfprints",
-        "addpdfprint"
+        "magazines",
+        "addmagazine"
     ];
 
     const refreshActiveTab = () => {

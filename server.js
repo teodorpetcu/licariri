@@ -16,8 +16,8 @@ const {
 
     post_adminAddArticle,
     //post_adminRemoveArticle,
-    post_adminAddPDFprint,
-    post_adminRemovePDFprint,
+    post_adminAddMagazine,
+    post_adminRemoveMagazine,
     post_updateArticleStage,
 } = require("./controllers/articles.js")
 
@@ -43,8 +43,8 @@ const {
 
 const {
     LISTENING_PORT,
-    PDFPRINT_CONTENTS_PATH,
-    PDFPRINT_THUMBNAILS_PATH,
+    MAGAZINES_PATH,
+    MAGAZINE_THUMBNAILS_PATH,
     PUBLIC_ARTICLE_IMAGES_PATH,
     DRAFT_ARTICLE_IMAGES_PATH,
     TRASH_ARTICLE_IMAGES_PATH,
@@ -78,8 +78,11 @@ app.get("/css/licariri.css", requestLogger, (_, res) => res.sendFile(__dirname +
 app.get("/squiggly-line.svg", requestLogger, (_, res) => res.sendFile(__dirname + "/squiggly-line.svg"));
 app.get("/mesotalogo.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/mesotalogo.webp"));
 app.use("/articles/images", requestLogger, express.static(PUBLIC_ARTICLE_IMAGES_PATH));
-app.use("/pdfprints", requestLogger, express.static(PDFPRINT_CONTENTS_PATH));
-app.use("/pdfprints/thumbnails", requestLogger, express.static(PDFPRINT_THUMBNAILS_PATH));
+app.use("/magazines", requestLogger, express.static(MAGAZINES_PATH));
+app.use("/magazines/thumbnails", requestLogger, express.static(MAGAZINE_THUMBNAILS_PATH));
+
+// TODO: deprecate forever
+app.use("/pdfprints", requestLogger, (req, res) => res.redirect(301, `/magazines${req.url}`));
 
 app.get("/", requestLogger, get_mainPage);
 app.get("/articles/:articleID", get_articlePage);
@@ -114,8 +117,8 @@ if (process.env.ALLOW_ADMIN_ROUTES == "true") {
     app.post("/admin/user/add", requestLogger, post_adminAddUser);
     app.post("/admin/user/suspend", requestLogger, post_adminSuspendUser);
     app.post("/admin/user/password", requestLogger, post_adminChangeUserPassword);
-    app.post("/admin/pdfprints/add", requestLogger, post_adminAddPDFprint);
-    app.post("/admin/pdfprints/remove", requestLogger, post_adminRemovePDFprint);
+    app.post("/admin/magazines/add", requestLogger, post_adminAddMagazine);
+    app.post("/admin/magazines/remove", requestLogger, post_adminRemoveMagazine);
 
     app.use("/admin/articles/images", requestLogger);
     app.use("/admin/articles/images", express.static(PUBLIC_ARTICLE_IMAGES_PATH), express.static(DRAFT_ARTICLE_IMAGES_PATH), express.static(TRASH_ARTICLE_IMAGES_PATH));

@@ -113,7 +113,7 @@ class UsersDatabase extends Database {
         // `activity` table action types:
         //      ["modify", "rename", "publish", "draft", "trash"] articles
         //      ["adduser", "suspenduser", "unsuspenduser"] user
-        //      ["addpdfprint", "rmpdfprint"] pdfprint
+        //      ["addmagazine", "rmmagazine"] magazine
     }
 
     /**

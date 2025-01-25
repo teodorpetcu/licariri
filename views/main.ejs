@@ -8,91 +8,66 @@
 </head>
 
 <body id="main-page">
-<%_ if (articles.length) { _%>
-<%- await include("main-nav"); _%>
+<%_ if (false && articles.length) { _%>
+<%- await include("nav"); _%>
 <%_ } _%>
     <div id="main-page-header">
-        <div id="website-title-container">
-            <h1><a href="/">Licăriri</a></h1>
-            <h6><i>revista elevilor Colegiului Național „Dr. Ioan Meșotă”, Brașov</i></h6>
-        </div>
+        <h1><a href="/">Licăriri</a></h1>
+        <h6><i>revista elevilor Colegiului Național „Dr. Ioan Meșotă”, Brașov</i></h6>
         <hr>
     </div>
     <div id="main-page-contents">
         <div id="introduction">
-            <div id="types-of-texts">
-                <div id="text">
-                    <ul>
-                        <li>proză</li>
-                        <li>poezie</li>
-                        <li>eseuri</li>
-                        <li>cronică de cărți</li>
-                        <li>interviuri</li>
-                    </ul>
-                </div>
-                <div id="languages">
-                    <ul>
-                        <li>română</li>
-                        <li>engleză</li>
-                        <li>franceză</li>
-                        <li>germană</li>
-                    </ul>
+            <h4>anul acesta, ne-am propus doar trei cuvinte:</h4>
+            <h1>Nostalgie și vis</h1>
+            <h4>și cu toate lucrările primite de la elevi, am ajuns la</h4>
+            <h1>peste 100 de pagini de text.</h1>
+            <div class="magazine-highlight-container">
+                <div class="magazine-thumbnail">
+                    <a href="/magazines/Licăriri%202024-2025%20editorial.pdf"><img src="/magazines/thumbnails/Licăriri%202024-2025.webp"></a>
+                    <br>
+                    <a class="magazine-description"
+                        href="/magazines/Licăriri%202024-2025%20editorial.pdf">Licăriri 2024-2025 (editorial)</a>
                 </div>
             </div>
-            <ul id="drawings">
-                <li>ilustrații</li>
-                <li>fotografii</li>
-            </ul>
-            <div id="call-to-action">
-                <h4>cu tema</h4>
-                <h1>Nostalgie și vis</h1>
-                <h4>pe care le poți trimite până pe</h4>
-                <h2>15 decembrie 2024</h2>
-                <h4>la adresa</h4>
-                <h2><a href="mailto:licariri@mesota.ro">licariri@mesota.ro</a></h2>
-            </div>
-            <div id="further-explanation">
-                <p>După, noi punem cap la cap piesele noii ediții ale revistei.</p>
-                <h4>(care va fi lansată <b>la sfârșitul lunii ianuarie 2025</b>, de Ziua Colegiului nostru)</h4>
-                <h5>(P.S.: dacă nu te inspiră tema și ai alte idei, în loc să adăugăm materialele pe care ni le trimiți la revista propriu-zisă, le putem publica pe site)</h5>
-            </div>
+
             <%_ if (articles.length) { _%>
-            <div>
-                <div id="article-thumbnail-grid">
-                <%_ for (article of articles) { _%>
-                    <a href="/articles/<%= article.id %>">
-                        <div class="article-thumbnail">
-                            <%_ if (article.style.hide_title_in_thumbnail !== 'on') { _%>
-                            <h1 style="font-family: <%= article.style.title_font %>; font-size: <%= article.style.title_fontsize_thumbnail %>rem; font-weight: <%= article.style.title_fontweight %>; color: <%= article.style.title_color %>" class="center<% if (article.style.title_fill_style === 'on') { %> colour-complement-background<%_ } _%>"><%= article.title %></h1>
-                            <%_ } _%>
-                            <img src="/articles/images/<%= article.id %>.webp">
-                        </div>
-                    </a>
-                <%_ } _%>
-                </div>
+            <p>Deși majoritatea lor au fost adăugate ediției tipărite, considerăm că unele își au locul aici, pe internet.</p>
+            <div class="article-thumbnail-grid">
+            <%_ for (article of articles) { _%>
+                <a href="/articles/<%= article.id %>">
+                    <div class="article-thumbnail">
+                        <%_ if (article.style.hide_title_in_thumbnail !== 'on') { _%>
+                        <h1 style="font-family: <%= article.style.title_font %>; font-size: <%= article.style.title_fontsize_thumbnail %>rem; font-weight: <%= article.style.title_fontweight %>; color: <%= article.style.title_color %>" class="center<% if (article.style.title_fill_style === 'on') { %> colour-complement-background<%_ } _%>"><%= article.title %></h1>
+                        <%_ } _%>
+                        <img src="/articles/images/<%= article.id %>.webp">
+                    </div>
+                </a>
+            <%_ } _%>
             </div>
             <%_ } _%>
 
             <span class="squiggly-line"></span>
-            <p>Între timp, îți propunem să răsfoiești volumul publicat anul trecut:</p>
-            <div class="pdfprint-highlight-container">
-                <div class="pdfprint-thumbnail">
-                    <a href="/pdfprints/Licăriri%202023-2024.pdf"><img src="/pdfprints/thumbnails/Licăriri%202023-2024.webp"></a>
+
+            <p>Cât timp aștepți să mai redactăm ceva, îți propunem să răsfoiești volumul publicat anul trecut:</p>
+            <div class="magazine-highlight-container">
+                <div class="magazine-thumbnail">
+                    <a href="/magazines/Licăriri%202023-2024.pdf"><img src="/magazines/thumbnails/Licăriri%202023-2024.webp"></a>
                     <br>
-                    <a class="pdfprint-description" href="/pdfprints/Licăriri%202023-2024.pdf">Licăriri 2023-2024</a>
+                    <a class="magazine-description" href="/magazines/Licăriri%202023-2024.pdf">Licăriri 2023-2024</a>
                 </div>
             </div>
         </div>
 
-        <%_ if (pdfprints.length) { _%>
-        <div>
-            <p>Și chiar și revistele dintr-un trecut un pic mai îndepărtat. De ce nu?</p>
-            <div id="pdfprint-thumbnail-grid">
-            <%_ for (pdfprint of pdfprints) { _%>
-                <div class="pdfprint-thumbnail">
-                    <a href="/pdfprints/<%= pdfprint.description %>.pdf"><img src="/pdfprints/thumbnails/<%= pdfprint.description %>.webp"></a>
+        <%_ if (magazines.length) { _%>
+        <div id="magazine-archive">
+            <p>Și chiar și revistele dintr-un trecut puțin mai îndepărtat. De ce nu?</p>
+            <div class="magazine-thumbnail-grid">
+            <%_ for (magazine of magazines) { _%>
+                <div class="magazine-thumbnail">
+                    <a href="/magazines/<%= magazine.description %>.pdf"><img src="/magazines/thumbnails/<%= magazine.description %>.webp"></a>
                     <br>
-                    <a class="pdfprint-description" href="/pdfprints/<%= pdfprint.description %>.pdf"><%= pdfprint.description %></a>
+                    <a class="magazine-description" href="/magazines/<%= magazine.description %>.pdf"><%= magazine.description %></a>
                 </div>
             <%_ } _%>
             </div>
@@ -102,8 +77,8 @@
 <%- await include("copyright") _%>
 </body>
 
-<%_ if (articles.length) { _%>
-<%- await include("main-nav-script"); _%>
+<%_ if (false && articles.length) { _%>
+<%- await include("nav-script"); _%>
 <%_ } _%>
 
 </html>

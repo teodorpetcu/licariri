@@ -9,7 +9,7 @@ const { fileExists } = require("../util.js");
 
 const { Author, Article, ArticleStyle } = require("../models/types.js");
 const { prerenderQueryAsFile } = require("./query.js");
-const { PDFPrint } = require("../models/types.js");
+const { Magazine } = require("../models/types.js");
 const { articleDatabase } = require("../models/articles.js");
 const { queryDatabase } = require("../models/query.js");
 const { viewsDatabase } = require("../models/view-count.js");
@@ -21,8 +21,8 @@ const {
     MAIN_PAGE_HTML_FILE_PATH,
     ARTICLES_DIRECTORY,
     PUBLIC_ARTICLE_CONTENTS_PATH,
-    PDFPRINT_CONTENTS_PATH,
-    PDFPRINT_THUMBNAILS_PATH,
+    MAGAZINES_PATH,
+    MAGAZINE_THUMBNAILS_PATH,
     WEBP_COMPRESSION_QUALITY,
 } = require("../config.js");
 
@@ -44,16 +44,43 @@ const renderArticlePage = async (article, plainTextContent, articleStyle, credit
         .catch((err) => {logger.error(`rendering article page`, err); return Promise.resolve(false)});
 }
 
+const reRenderArticle = async (article) => {
+    let plainTextContent = await fs.promises.readFile(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, {encoding: "utf-8"});
+    article.contents = marked.parse(plainTextContent).trim();
+    const QUERY_ROUTES_ALLOWED = process.env.ALLOW_QUERY_ROUTES == "true";
+    let renderedPage = await ejs.renderFile(__dirname + "/../views/article.ejs", {article, articleStyle: article.style, credits: article.credits, QUERY_ROUTES_ALLOWED}, {async: true});
+    return fs.promises.writeFile(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`, renderedPage);
+}
+
+const reRenderAllArticles = async () => {
+    let articles = await articleDatabase.searchArticles();
+    // TODO: this code is horrible
+    await Promise.all(articles.map(async (article) => {
+        return articleDatabase.getArticleStyle(article.id).then((style) => article.style = style)
+    })).catch((err) => logger.error(`fetching article styles for re-rendering all articles`, err));
+    await Promise.all(articles.map(async (article) => {
+        return articleDatabase.getArticleCredits(article.id).then((credits) => article.credits = credits)
+    })).catch((err) => logger.error(`fetching article credits for re-rendering all articles`, err));
+    await Promise.all(articles.map(async (article) => {
+        return reRenderArticle(article)
+    })).catch((err) => logger.error(`re-rendering all articles`, err))
+    logger.info("successfully re-rendered all articles")
+}
+
+reRenderAllArticles();
+
 const updateMainPage = async () => {
-    let [articles, pdfprints] = await Promise.all([
+    let [articles, magazines] = await Promise.all([
         articleDatabase.searchArticles("stage", "public"),
-        articleDatabase.getAllPDFPrintsSorted(),
-    ]).catch((err) => logger.error(`searching articles & pdfprints for main page`, err));
+        articleDatabase.getAllMagazinesSorted(),
+    ]).catch((err) => logger.error(`searching articles & magazines for main page`, err));
     await Promise.all(articles.map(async (article) => {
         return articleDatabase.getArticleStyle(article.id).then((style) => article.style = style);
     })).catch((err) => logger.error(`fetching article styles for main page`, err));
-    articles = [];
-    let renderedPage = await ejs.renderFile(__dirname + "/../views/main.ejs", {articles, pdfprints}, {async: true});
+    // TODO: fix this, it's very hacky
+    magazines.shift();
+    magazines.shift();
+    let renderedPage = await ejs.renderFile(__dirname + "/../views/main.ejs", {articles, magazines}, {async: true});
     return Promise.all([
         fs.promises.writeFile(`${MAIN_PAGE_HTML_FILE_PATH}`, renderedPage),
         generateSitemapFile(),
@@ -284,15 +311,15 @@ const post_adminRemoveArticle = async (req, res) => {
     res.redirect("/admin");
 }
 
-const post_adminAddPDFprint = async (req, res) => {
+const post_adminAddMagazine = async (req, res) => {
     let timestamp = new Date(req.body.date).getTime();
     let description = req.body.description.replace(/\//g, "").trim();
     let pdffile = req.files ? req.files.pdffile : undefined;
-    const pdfprint = new PDFPrint(timestamp, description);
+    const magazine = new Magazine(new Date(timestamp), description);
 
     if (pdffile && /pdf$/.test(pdffile.mimetype)) {
-        articleDatabase.addPDFPrint(pdfprint);
-        const pdffilepath = `${PDFPRINT_CONTENTS_PATH}/${pdfprint.filename}`;
+        articleDatabase.addMagazine(magazine);
+        const pdffilepath = `${MAGAZINES_PATH}/${magazine.filename}`;
         fs.promises.writeFile(pdffilepath, pdffile.data);
 
         pdf2img.convert(pdffile.data,
@@ -302,26 +329,26 @@ const post_adminAddPDFprint = async (req, res) => {
             }
         )
             .then((img) =>
-                sharp(img[0].data)
+                sharp(img[0])
                     .webp({quality: WEBP_COMPRESSION_QUALITY})
-                    .toFile(`${PDFPRINT_THUMBNAILS_PATH}/${pdfprint.description}.webp`)
+                    .toFile(`${MAGAZINE_THUMBNAILS_PATH}/${magazine.description}.webp`)
                     .catch(err => {Promise.reject(err)}))
-            .catch((err) => logger.error(`extracting pdfprint thumbnail`, err));
+            .catch((err) => logger.error(`extracting magazine thumbnail`, err));
 
-        usersDatabase.addActivity(req.user, "addpdfprint", description)
+        usersDatabase.addActivity(req.user, "addmagazine", description)
         updateMainPage();
-        res.status(200).redirect("/admin/pdfprints");
+        res.status(200).redirect("/admin/magazines");
     } else {
-        res.status(500).redirect("/admin/pdfprints");
+        res.status(500).redirect("/admin/magazines");
     }
 }
 
-const post_adminRemovePDFprint = async (req, res) => {
-    let pdfprintDescription = req.body.description;
-    articleDatabase.removePDFPrint(pdfprintDescription);
-    usersDatabase.addActivity(req.user, "rmpdfprint", pdfprintDescription)
+const post_adminRemoveMagazine = async (req, res) => {
+    let magazineDescription = req.body.description;
+    articleDatabase.removeMagazine(magazineDescription);
+    usersDatabase.addActivity(req.user, "rmmagazine", magazineDescription)
     updateMainPage();
-    res.status(200).redirect("/admin/pdfprints");
+    res.status(200).redirect("/admin/magazines");
 }
 
 module.exports = {
@@ -330,8 +357,8 @@ module.exports = {
     get_articlePage,
     post_adminAddArticle,
     post_adminRemoveArticle,
-    post_adminAddPDFprint,
-    post_adminRemovePDFprint,
+    post_adminAddMagazine,
+    post_adminRemoveMagazine,
     post_updateArticleStage,
     renderArticlePage,
 };

@@ -16,9 +16,9 @@ const escapeStringForXML = (str) => {
 }
 
 const generateSitemapFile = async () => {
-    let [articles, pdfprints] = await Promise.all([
+    let [articles, magazines] = await Promise.all([
         articleDatabase.searchArticles("stage", "public"),
-        articleDatabase.getAllPDFPrintsSorted(),
+        articleDatabase.getAllMagazinesSorted(),
     ])
 
     let sitemapXML =
@@ -54,11 +54,11 @@ const generateSitemapFile = async () => {
     </url>`
     }
 
-    for (let pdfprint of pdfprints) {
+    for (let magazine of magazines) {
     sitemapXML += `
     <url>
-        <loc>${WEBSITE_URL}/pdfprints/${escapeStringForXML(pdfprint.filename)}</loc>
-        <lastmod>${formatDate(new Date(pdfprint.timestamp))}</lastmod>
+        <loc>${WEBSITE_URL}/magazines/${escapeStringForXML(magazine.filename)}</loc>
+        <lastmod>${formatDate(new Date(magazine.timestamp))}</lastmod>
         <changefreq>never</changefreq>
     </url>`
     }

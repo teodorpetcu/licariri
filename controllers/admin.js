@@ -70,14 +70,14 @@ const get_adminPannelPage = async (req, res) => {
         if (req.user.privilege >= USER_PRIVILEGES["SUPERUSER"]) {
             usersPagesPromise = usersDatabase.getAllUsers().then((users) => paginate(users, 12));
         }
-        const [publicArticlesPages, draftArticlesPages, trashArticlesPages, pdfprints, usersPages] = await Promise.all([
+        const [publicArticlesPages, draftArticlesPages, trashArticlesPages, magazines, usersPages] = await Promise.all([
             articleDatabase.searchArticles("stage", "public").then((articles) => paginate(articles, 12)),
             articleDatabase.searchArticles("stage", "draft").then((articles) => paginate(articles, 12)),
             articleDatabase.searchArticles("stage", "trash").then((articles) => paginate(articles, 12)),
-            articleDatabase.getAllPDFPrintsSorted().then((pdfprints) => paginate(pdfprints, 12)),
+            articleDatabase.getAllMagazinesSorted().then((magazines) => paginate(magazines, 12)),
             usersPagesPromise,
         ]).catch((err) => logger.error(`fetching pages for admin pannel`, err));
-        res.render("admin", {publicArticlesPages, draftArticlesPages, trashArticlesPages, pdfprints, user: req.user, usersPages});
+        res.render("admin", {publicArticlesPages, draftArticlesPages, trashArticlesPages, magazines, user: req.user, usersPages});
     } else {
         res.redirect("login");
     }
@@ -208,9 +208,9 @@ const activityToHumanReadable = async (activity) => {
         activity.action = `a suspendat utilizatorul`;
     } else if (activity.action == "unsuspendUser") {
         activity.action = `a eliminat suspendarea utilizatorului`;
-    } else if (activity.action == "addpdfprint") {
+    } else if (activity.action == "addmagazine") {
         activity.action = `a adăugat ediția print a revistei`;
-    } else if (activity.action == "rmpdfprint") {
+    } else if (activity.action == "rmmagazine") {
         activity.action = `a șters ediția print a revistei`;
     }
     let t = new Date(activity.timestamp);

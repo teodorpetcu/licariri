@@ -7,17 +7,25 @@
 <%- await include("meta"); _%>
 </head>
 
-<body>
+<body id="article-page">
+    <h1 id="website-logo"><a href="/">Licăriri</a></h1>
     <div id="article-headline">
         <img id="article-thumbnail" src="/articles/images/<%= article.id %>.webp" class="no-select">
+        <div id="thumbnail-text-container" class="center">
         <%_ if (articleStyle.title_position == "thumbnail") { _%>
-        <h1 id="article-title" style="font-family: <%= articleStyle.title_font %>; font-size: <%= articleStyle.title_fontsize_article %>rem; font-weight: <%= articleStyle.title_fontweight %>; color: <%= articleStyle.title_color %>" class="center<% if (articleStyle.title_fill_style === 'on') { %> colour-complement-background<%_ } _%>"><%= article.title _%></h1>
+            <h1 id="article-title" style="font-family: <%=
+                articleStyle.title_font %>; font-size: <%=
+                articleStyle.title_fontsize_article %>rem; font-weight: <%=
+            articleStyle.title_fontweight %>; color: <%=
+            articleStyle.title_color %>" <%_ if (articleStyle.title_fill_style
+            === 'on') { %> class="colour-complement-background"<%_ } _%>><%= article.title _%></h1>
+            <%_ } _%>
+            <%_ if (article.subtitle && articleStyle.subtitle_position == "thumbnail") { _%>
+            <h2 id="article-subtitle" style="font-family: <%= articleStyle.subtitle_font %>; font-size: <%= articleStyle.subtitle_fontsize %>rem; font-weight: <%= articleStyle.subtitle_fontweight %>; color: <%= articleStyle.subtitle_color %>"><%= article.subtitle %></h2>
         <%_ } _%>
-        <%_ if (article.subtitle && articleStyle.subtitle_position == "thumbnail") { _%>
-        <h2 id="article-subtitle" style="font-family: <%= articleStyle.subtitle_font %>; font-size: <%= articleStyle.subtitle_fontsize %>rem; font-weight: <%= articleStyle.subtitle_fontweight %>; color: <%= articleStyle.subtitle_color %>" class="center"><%= article.subtitle %></h2>
-        <%_ } _%>
+        </div>
     </div>
-    <div id="article-info">
+    <div class="article-info">
         <%_ if (articleStyle.title_position == "article") { _%>
         <div style="text-align: center">
             <h1 id="article-title" style="font-family: <%= articleStyle.title_font %>; font-size: <%= articleStyle.title_fontsize_article %>rem; font-weight: <%= articleStyle.title_fontweight %>; color: <%= articleStyle.title_color %>"><%= article.title %></h1>
@@ -46,7 +54,7 @@
             <%_ } _%>
         </ul>
         <%_ } _%>
-        <div id="tags-date-grid">
+        <div class="tags-date-grid">
             <ul class="article-tags">
                 <%_ for (tag of article.tags) { _%>
                 <%_ if (QUERY_ROUTES_ALLOWED) { _%>
@@ -56,7 +64,7 @@
                 <%_ } _%>
                 <%_ } _%>
             </ul>
-            <b id="article-date"><%= article.date %></b>
+            <b class="article-date"><%= article.date %></b>
         </div>
         <%_ if (credits) { _%>
         <div id="article-contributors">
@@ -78,14 +86,6 @@
     </div>
 <%- await include("copyright") _%>
 </body>
-
-<%_ if (article.subtitle && articleStyle.subtitle_position == "thumbnail") { _%>
-<script>
-    articleTitle = document.getElementById("article-title");
-    articleSubtitle = document.getElementById("article-subtitle");
-    articleSubtitle.style.marginTop = (articleTitle.offsetHeight + articleSubtitle.offsetHeight) + "px";
-</script>
-<%_ } _%>
 
 <%_ if (articleStyle.dropcap == "dropcap") { _%>
 <script>

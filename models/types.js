@@ -87,7 +87,7 @@ class ArticleStyle {
     }
 }
 
-class PDFPrint {
+class Magazine {
     /**
      * @param {int} timestamp
      * @param {string} description
@@ -104,5 +104,5 @@ module.exports = {
     Author,
     Article,
     ArticleStyle,
-    PDFPrint,
+    Magazine,
 };
