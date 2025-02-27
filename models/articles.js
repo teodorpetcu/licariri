@@ -79,8 +79,6 @@ class ArticleDatabase extends Database {
                 UNIQUE (description)
             );`
         )
-            .then(() => this.dbLogger.info("tables ok"))
-            .catch((err) => this.dbLogger.error("initialising tables", err));
     }
 
     /**

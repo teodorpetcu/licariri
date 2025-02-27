@@ -36,8 +36,6 @@ class QueryDatabase extends Database {
                 UNIQUE (article_id)
             );`
         )
-            .then(() => this.dbLogger.info("tables ok"))
-            .catch((err) => this.dbLogger.error("initialising tables", err));
     }
 
     /**

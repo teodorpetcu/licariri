@@ -108,8 +108,6 @@ class UsersDatabase extends Database {
                 FOREIGN KEY (user) REFERENCES users (id)
             );`
         )
-            .then(() => this.dbLogger.info("tables ok"))
-            .catch((err) => this.dbLogger.error(`initialising tables`, err));
         // `activity` table action types:
         //      ["modify", "rename", "publish", "draft", "trash"] articles
         //      ["adduser", "suspenduser", "unsuspenduser"] user

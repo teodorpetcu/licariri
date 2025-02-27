@@ -9,12 +9,21 @@ class Database {
      */
     constructor(path) {
         this.path = path;
-        this.db = new sqlite3.Database(path, (err) => {
-            if (err) {
-                this.dbLogger.error("connecting", err);
-            } else {
-                this.dbLogger.info("connection ok");
-            }
+        this.db = undefined;
+    }
+
+    /**
+     * @returns {Promise<undefined>}
+     */
+    open = async () => {
+        return new Promise((resolve, reject) => {
+            this.db = new sqlite3.Database(this.path, (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(undefined);
+                }
+            })
         })
     }
 
@@ -22,10 +31,9 @@ class Database {
         return new Promise((resolve, reject) => {
             this.db.close((err) => {
                 if (err) {
-                    this.dbLogger.error("closing database connection", err)
                     return reject(err);
                 } else {
-                    this.dbLogger.info("close ok")
+                    this.db = undefined;
                     return resolve();
                 }
             });

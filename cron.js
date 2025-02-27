@@ -14,6 +14,7 @@ const MILISECONDS_IN_A_DAY = 24 * 60 * 60 * 1000;
  * @returns {Promise<undefined>}
  */
 const updateAllArticles = async () => {
+    await articleDatabase.open();
     const articles = await articleDatabase.searchArticles();
     return Promise.all(articles.map(async (article) => {
         return Promise.all([
@@ -35,6 +36,7 @@ const updateAllArticles = async () => {
  * midnight.
  */
 const removeOldSessionsFromDatabase = async () => {
+    await usersDatabase.open();
     let sessions = await usersDatabase.getAllSessions();
     let today = new Date();
     let numberRemoved = 0;
@@ -51,6 +53,7 @@ const removeOldSessionsFromDatabase = async () => {
 }
 
 const dailyUpdateJob = async () => {
+    await viewsDatabase.open();
     return Promise.all([
         removeOldSessionsFromDatabase(),
         viewsDatabase.updateArticleViews()

@@ -132,28 +132,32 @@ let httpServer = undefined;
 
 logger.info("connecting to databases...");
 Promise.all([
-    articleDatabase.init(),
-    usersDatabase.init(),
-    queryDatabase.init(),
-    viewsDatabase.init(),
+    articleDatabase.open().then(articleDatabase.init()),
+    usersDatabase.open().then(usersDatabase.init()),
+    queryDatabase.open().then(queryDatabase.init()),
+    viewsDatabase.open().then(viewsDatabase.init()),
 ])
+    .then(() => logger.info("database open ok"))
     .then(() => updateMainPage())
     .then(() => {
         httpServer = app.listen(LISTENING_PORT, () => logger.info(`web server up`));
     })
     .catch((err) => {
-        logger.error(`failed starting up server`, err);
+        logger.error(`failed to start server`, err);
         process.exit(1);
     });
 
-const gracefulShutdown = (signal) => {
-    Promise.all([
-        logger.info(`received ${signal} signal; terminating...`),
+const gracefulShutdown = async (signal) => {
+    logger.info(`received ${signal} signal; terminating...`);
+    await Promise.all([
         articleDatabase.close(),
         usersDatabase.close(),
         queryDatabase.close(),
         viewsDatabase.close(),
     ])
+        .then(() => {
+            logger.info("database close ok")
+        })
         .then(() => {
             if (httpServer) {
                 httpServer.close((err) => {
@@ -163,6 +167,9 @@ const gracefulShutdown = (signal) => {
             } else {
                 process.exit(0);
             }
+        })
+        .catch((err) => {
+            logger.error("closing database", err)
         })
 }
 

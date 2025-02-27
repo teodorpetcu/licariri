@@ -67,8 +67,6 @@ const reRenderAllArticles = async () => {
     logger.info("successfully re-rendered all articles")
 }
 
-reRenderAllArticles();
-
 const updateMainPage = async () => {
     let [articles, magazines] = await Promise.all([
         articleDatabase.searchArticles("stage", "public"),

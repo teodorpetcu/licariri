@@ -16,6 +16,10 @@ const escapeStringForXML = (str) => {
 }
 
 const generateSitemapFile = async () => {
+    await Promise.all([
+        articleDatabase.open(),
+        usersDatabase.open(),
+    ])
     let [articles, magazines] = await Promise.all([
         articleDatabase.searchArticles("stage", "public"),
         articleDatabase.getAllMagazinesSorted(),
