@@ -53,6 +53,7 @@ const removeOldSessionsFromDatabase = async () => {
 }
 
 const dailyUpdateJob = async () => {
+    logger.info("running daily update job...");
     await viewsDatabase.open();
     return Promise.all([
         removeOldSessionsFromDatabase(),
@@ -63,11 +64,13 @@ const dailyUpdateJob = async () => {
         .catch((err) => logger.error(`during daily update job`, err))
 }
 
-const dailyUpdateJobTimer = () => {
-    let milisecondsToNextMidnight = new Date();
-    milisecondsToNextMidnight.setHours(24, 0, 0, 0);
-    milisecondsToNextMidnight = milisecondsToNextMidnight.getTime() - Date.now();
-    logger.info(`started daily job timer, next ETA: ${Math.floor(milisecondsToNextMidnight / 1000)}sec`)
+const dailyUpdateJobTimer = async () => {
+    let midnightDate = new Date(); midnightDate.setHours(24, 0, 0, 0);
+    let milisecondsToNextMidnight = midnightDate.getTime() - Date.now();
+    let seconds = Math.floor((milisecondsToNextMidnight / 1000) % 60);
+    let minutes = Math.floor((milisecondsToNextMidnight / (1000 * 60)) % 60);
+    let hours = Math.floor((milisecondsToNextMidnight / (1000 * 60 * 60)) % 24);
+    logger.info(`started daily job timer, next ETA: ${hours}h ${minutes}min ${seconds}s`)
     return setTimeout(() => {
         dailyUpdateJob();
         return setInterval(() => dailyUpdateJob, MILISECONDS_IN_A_DAY);

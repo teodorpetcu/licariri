@@ -1,11 +1,14 @@
 {
     "apps" : [
     {
-        "name": "licariri",
+        "name": "licariri-server",
         "script": "server.js",
         "exec_mode": "cluster",
+        "instances": 1,
         "log_type": "raw",
-        "instances": 4,
+        "out_file": "/var/log/licariri-out.log",
+        "error_file": "/var/log/licariri-err.log",
+        "combine_logs": true,
         "env": {
             "NODE_ENV": "production",
             "ALLOW_QUERY_ROUTES": "false",
@@ -17,6 +20,10 @@
         "script": "cron.js",
         "exec_mode": "fork",
         "instances": 1,
+        "log_type": "raw",
+        "out_file": "/var/log/licariri-out.log",
+        "error_file": "/var/log/licariri-err.log",
+        "combine_logs": true,
         "env": {
             "NODE_ENV": "production"
         }
