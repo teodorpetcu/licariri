@@ -81,9 +81,6 @@ app.use("/articles/images", requestLogger, express.static(PUBLIC_ARTICLE_IMAGES_
 app.use("/magazines", requestLogger, express.static(MAGAZINES_PATH));
 app.use("/magazines/thumbnails", requestLogger, express.static(MAGAZINE_THUMBNAILS_PATH));
 
-// TODO: deprecate forever
-app.use("/pdfprints", requestLogger, (req, res) => res.redirect(301, `/magazines${req.url}`));
-
 app.get("/", requestLogger, get_mainPage);
 app.get("/articles/:articleID", get_articlePage);
 
