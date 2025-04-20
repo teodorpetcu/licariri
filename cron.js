@@ -20,8 +20,9 @@ const updateAllArticles = async () => {
         return Promise.all([
             fs.promises.readFile(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, {encoding: "utf-8"}),
             articleDatabase.getArticleStyle(article.id),
+            articleDatabase.getArticleCredits(article.id),
         ])
-            .then(([content, articleStyle]) => renderArticlePage(article, content, articleStyle))
+            .then(([content, articleStyle, credits]) => renderArticlePage(article, content, articleStyle, credits))
             .then((_status) => logger.info(`re-rendered article "${article.id}"`))
             .catch((err) => logger.error(`failed re-rendering article "${article.id}"`, err));
     }));
