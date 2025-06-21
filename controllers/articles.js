@@ -1,8 +1,8 @@
 const marked = require("marked");
 const ejs = require("ejs");
 const fs = require("fs");
-const pdf2img = require("pdf-img-convert")
 const sharp = require("sharp");
+const { exec } = require("child_process")
 
 const { logger } = require("../logger.js")
 const { fileExists } = require("../util.js");
@@ -318,26 +318,24 @@ const post_adminAddMagazine = async (req, res) => {
     if (pdffile && /pdf$/.test(pdffile.mimetype)) {
         articleDatabase.addMagazine(magazine);
         const pdffilepath = `${MAGAZINES_PATH}/${magazine.filename}`;
-        fs.promises.writeFile(pdffilepath, pdffile.data);
+        fs.promises.writeFile(pdffilepath, pdffile.data).then(() => {
+            return new Promise((resolve, reject) => {
+                exec(`${__dirname}/../make-webp-thumbnail.sh ${pdffilepath} --same-directory`, (err, _stdout, _stderr) => {
+                    if (err) {
+                        return reject(err);
+                    } else {
+                        return resolve();
+                    }
+                })
+            })
+            .then(() => usersDatabase.addActivity(req.user, "addmagazine", description))
+            .then(() => updateMainPage())
+            .then(() => res.status(200).redirect("/"))
+        })
+            .catch((err) => logger.error(`extracting magazine thumbnail`, err))
 
-        pdf2img.convert(pdffile.data,
-            conversion_config = {
-                height: 750,
-                page_numbers: [1],
-            }
-        )
-            .then((img) =>
-                sharp(img[0])
-                    .webp({quality: WEBP_COMPRESSION_QUALITY})
-                    .toFile(`${MAGAZINE_THUMBNAILS_PATH}/${magazine.description}.webp`)
-                    .catch(err => {Promise.reject(err)}))
-            .catch((err) => logger.error(`extracting magazine thumbnail`, err));
-
-        usersDatabase.addActivity(req.user, "addmagazine", description)
-        updateMainPage();
-        res.status(200).redirect("/admin/magazines");
     } else {
-        res.status(500).redirect("/admin/magazines");
+        res.status(500).redirect("/");
     }
 }
 
