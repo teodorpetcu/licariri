@@ -8,16 +8,21 @@
 <%- await include("meta"); _%>
 </head>
 
-<body id="main-page">
+<body id="home-page">
 <%_ if (false && articles.length) { _%>
 <%- await include("nav"); _%>
 <%_ } _%>
-    <div id="main-page-header">
-        <h1><a href="/">Licăriri</a></h1>
-        <h6><i>revista elevilor Colegiului Național „Dr. Ioan Meșotă”, Brașov</i></h6>
-        <hr>
+    <div id="home-page-landing" class="no-select">
+        <div id="landing-top">
+            <h2>Revista</h2>
+        </div>
+        <div id="landing-bottom">
+            <h1>Licăriri</h1>
+            <p>a elevilor C. N. <i>„Dr. Ioan Meșotă”</i>, Brașov</p>
+        </div>
     </div>
-    <div id="main-page-contents">
+    <div id="home-page-contents">
+        <span class="squiggly-line"></span>
         <div id="introduction">
             <h4>anul acesta, ne-am propus doar trei cuvinte:</h4>
             <h1>Nostalgie și vis</h1>

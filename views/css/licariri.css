@@ -1,6 +1,7 @@
 :root {
     --font-color: black;
     --neutral-color: #f6f6f6;
+    --landing-color: #e56717;
 }
 
 html,
@@ -50,7 +51,7 @@ body {
     user-select: none;
 }
 
-#main-page {
+#home-page {
     color: var(--font-color);
     h1, h2, h3, h4, h5, h6, p {
         padding-left: 5px;
@@ -58,38 +59,55 @@ body {
     }
 }
 
-#main-page-header {
-    position: relative;
-    margin: 0 auto;
-    max-width: 1000px;
-    margin-top: 20px;
-    text-align: center;
-    h1 {
-        letter-spacing: 0.1rem;
-        font-family: "Baskervville";
-        line-height: 1;
-        font-size: 4.8em;
-        margin: 0;
-        a {
-            color: white;
-            -webkit-text-stroke-width: 3px;
-            -webkit-text-stroke-color: #ff4b33;
-            paint-order: stroke fill;
-            text-decoration: none;
-        }
-    }
-    h6 {
+#home-page-landing {
+    #landing-top {
         font-family: "Kameron";
-        font-size: 0.9em;
-        margin: 0 5px 1.6rem 5px;
+        position: relative;
+        h2 {
+            font-size: calc(100% * 9);
+            position: absolute;
+            bottom: -47px;
+            padding-right: 140px;
+            left: 50%;
+            transform: translateX(-50%);
+            margin: 0;
+            letter-spacing: 1px;
+        }
+        background-color: var(--landing-color);
+        color: var(--neutral-color);
+        height: 279px;
     }
-    hr {
-        max-width: 90%;
-        margin: 0 auto 0 auto;
+    #landing-bottom {
+        height: 250px;
+        font-family: "Kameron";
+        position: relative;
+        background-color: var(--neutral-color);
+        text-align: center;
+        h1 {
+            padding-right: 50px;
+            font-size: 12em;
+            position: absolute;
+            margin: 0;
+            top: -50px;
+            padding-left: 190px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--landing-color);
+            font-style: italic;
+        }
+        p {
+            position: relative;
+            margin: 0;
+            top: 150px;
+            transform: translateX(42%);
+            display: inline-block;
+            font-weight: 600;
+            font-family: "Hind";
+        }
     }
 }
 
-#main-page-contents {
+#home-page-contents {
     text-align: center;
     > h1 {
         -webkit-text-stroke-color: #ff4500;
@@ -98,7 +116,7 @@ body {
     }
 }
 
-#main-page #introduction {
+#home-page #introduction {
     font-family: "Hind";
     ul, li {
         font-size: 1.5rem;
@@ -106,7 +124,7 @@ body {
         margin: 0;
         padding: 0;
     }
-    margin-top: 1rem;
+    margin-top: 1.6rem;
     > h1 {
         font-family: "Kameron";
         margin: 0;
@@ -131,7 +149,7 @@ body {
     }
 }
 
-#main-page p {
+#home-page p {
     font-family: "Hind";
     margin: 32px 0 0 0;
     font-size: 1.3rem;
@@ -478,7 +496,7 @@ body {
 }
 
 @media(max-width: 420px) {
-    #main-page #introduction {
+    #home-page #introduction {
         ul, li {
             font-size: 1.2rem;
         }
