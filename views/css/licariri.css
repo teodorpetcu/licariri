@@ -11,10 +11,15 @@ body {
     padding: 0;
     width: 100%;
     max-width: 100%;
-    overflow-x: hidden;
     min-height: 100%;
     height: auto;
     background-color: var(--neutral-color);
+}
+
+/* for some reason, adding this to html makes scrolling possible while the menu
+ * is open */
+body {
+    overflow-x: hidden;
 }
 
 #cover {
