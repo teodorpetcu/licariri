@@ -75,9 +75,11 @@ const updateMainPage = async () => {
     await Promise.all(articles.map(async (article) => {
         return articleDatabase.getArticleStyle(article.id).then((style) => article.style = style);
     })).catch((err) => logger.error(`fetching article styles for main page`, err));
-    // TODO: fix this, it's very hacky
+
+    // to avoid including the editorial volume, which is in a highlight
+    // container on the main page
     magazines.shift();
-    magazines.shift();
+
     let renderedPage = await ejs.renderFile(__dirname + "/../views/main.ejs", {articles, magazines}, {async: true});
     return Promise.all([
         fs.promises.writeFile(`${MAIN_PAGE_HTML_FILE_PATH}`, renderedPage),

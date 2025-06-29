@@ -35,8 +35,8 @@
                 </div>
             </div>
 
-            <%_ if (articles.length) { _%>
-            <p>Deși majoritatea lor au fost adăugate ediției tipărite, considerăm că unele își au locul aici, pe internet.</p>
+            <a name="articole"></a>
+            <h4>Cu câteva articole disponibile exclusiv aici, digital.</h4>
             <div class="article-thumbnail-grid">
             <%_ for (article of articles) { _%>
                 <a href="/articles/<%= article.id %>">
@@ -49,34 +49,43 @@
                 </a>
             <%_ } _%>
             </div>
-            <%_ } _%>
 
             <span class="squiggly-line"></span>
+        </div>
 
-            <p>Cât timp aștepți să mai redactăm ceva, îți propunem să răsfoiești volumul publicat anul trecut:</p>
-            <div class="magazine-highlight-container">
-                <div class="magazine-thumbnail">
-                    <a href="/magazines/Licăriri%202023-2024.pdf"><img src="/magazines/thumbnails/Licăriri%202023-2024.webp"></a>
-                    <br>
-                    <a class="magazine-description" href="/magazines/Licăriri%202023-2024.pdf">Licăriri 2023-2024</a>
+        <div id="magazines">
+            <a name="reviste"></a>
+            <p>Elevii redacției și ai liceului se schimbă; munca lor rămâne. Îți propunem să răsfoiești și volumele publicate în anii trecuți:</p>
+            <div id="magazine-archive">
+                <div class="magazine-thumbnail-grid">
+                <%_ for (magazine of magazines.filter((magazine) => magazine.timestamp > 946684800)) { _%>
+                    <div class="magazine-thumbnail">
+                        <a href="/magazines/<%= magazine.description %>.pdf"><img src="/magazines/thumbnails/<%= magazine.description %>.webp"></a>
+                        <br>
+                        <a class="magazine-description" href="/magazines/<%= magazine.description %>.pdf"><%= magazine.description %></a>
+                    </div>
+                <%_ } _%>
+                </div>
+            </div>
+
+            <hr>
+
+            <a name="reviste-comuniste"></a>
+            <p>Ne-au rămas moștenire și <b>peste o mie de pagini</b> cuprinse în <b>25</b> de ediții mai vechi, de pe vremea părinților noștri.</p>
+            <h3>Te invităm să vezi perioada comunistă prin ochii adolescenților brașoveni de atunci</h3>
+            <h4>...dar și prin ochii cenzurii de stat.</h4>
+            <div id="magazine-archive-communism">
+                <div class="magazine-thumbnail-grid">
+                <%_ for (magazine of magazines.filter((magazine) => magazine.timestamp < 946684800)) { _%>
+                    <div class="magazine-thumbnail">
+                        <a href="/magazines/<%= magazine.description %>.pdf"><img src="/magazines/thumbnails/<%= magazine.description %>.webp"></a>
+                        <br>
+                        <a class="magazine-description" href="/magazines/<%= magazine.description %>.pdf"><%= magazine.description %></a>
+                    </div>
+                <%_ } _%>
                 </div>
             </div>
         </div>
-
-        <%_ if (magazines.length) { _%>
-        <div id="magazine-archive">
-            <p>Și chiar și revistele dintr-un trecut puțin mai îndepărtat. De ce nu?</p>
-            <div class="magazine-thumbnail-grid">
-            <%_ for (magazine of magazines) { _%>
-                <div class="magazine-thumbnail">
-                    <a href="/magazines/<%= magazine.description %>.pdf"><img src="/magazines/thumbnails/<%= magazine.description %>.webp"></a>
-                    <br>
-                    <a class="magazine-description" href="/magazines/<%= magazine.description %>.pdf"><%= magazine.description %></a>
-                </div>
-            <%_ } _%>
-            </div>
-        </div>
-        <%_ } _%>
     </div>
 <%- await include("copyright") _%>
 </body>
