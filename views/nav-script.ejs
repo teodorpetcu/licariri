@@ -1,35 +1,32 @@
 <script>
     const menuCheckbox = document.getElementById("main-nav-button-checkbox");
     const mainNav = document.getElementById("hamburger-menu");
-    const websiteLogo = document.getElementById("website-logo");
+    const menuLinks = document.getElementsByClassName("menu-link");
+    for (menuLink of menuLinks) {
+        menuLink.addEventListener(("click"), (evt) => {
+            menuCheckbox.checked = false;
+            mainNav.classList.remove("open");
+            document.body.classList.remove("open");
+        })
+    }
     menuCheckbox.checked = false;
     window.addEventListener("click", (evt) => {
         if(mainNav.classList.contains("open") && !document.getElementById("hamburger-menu").contains(evt.target)) {
             menuCheckbox.checked = false;
             mainNav.classList.remove("open");
-            websiteLogo.classList.remove("open");
             document.body.classList.remove("open");
         }
     })
     menuCheckbox.addEventListener("change", function() {
         if (this.checked) {
             mainNav.classList.add("open");
-            websiteLogo.classList.add("open");
             document.body.classList.add("open");
         } else {
             mainNav.classList.remove("open");
-            websiteLogo.classList.remove("open");
             document.body.classList.remove("open");
         }
     })
     const oneREM = parseFloat(getComputedStyle(document.documentElement).fontSize);
     const mediaQueryPX = 800 + 4 * oneREM;
-    window.addEventListener("resize", (evt) => {
-        if (window.innerWidth <= mediaQueryPX) {
-            websiteLogo.classList.remove("colour-complement-background");
-        } else {
-            websiteLogo.classList.add("colour-complement-background");
-        }
-    })
     window.dispatchEvent(new Event('resize'));
 </script>
