@@ -152,6 +152,10 @@ body.open * {
 
         .contact {
             margin-top: 10px;
+            a {
+                font-weight: 600;
+                color: #1c1b1a;
+            }
         }
 
         .contact a:hover, #social-media-links a:hover {
