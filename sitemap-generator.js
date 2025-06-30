@@ -59,10 +59,16 @@ const generateSitemapFile = async () => {
     }
 
     for (let magazine of magazines) {
+        let date;
+        if (magazine.timestamp >= 946684800) { // year 2000 in unix time
+            date = new Date(magazine.timestamp);
+        } else { // old magazines, from the communist period
+            date = new Date("2025-06-29")
+        }
     sitemapXML += `
     <url>
         <loc>${WEBSITE_URL}/magazines/${escapeStringForXML(magazine.filename)}</loc>
-        <lastmod>${formatDate(new Date(magazine.timestamp))}</lastmod>
+        <lastmod>${formatDate(date)}</lastmod>
         <changefreq>never</changefreq>
     </url>`
     }
