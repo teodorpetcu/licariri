@@ -78,6 +78,7 @@ app.get("/css/licariri.css", requestLogger, (_, res) => res.sendFile(__dirname +
 app.get("/squiggly-line.svg", requestLogger, (_, res) => res.sendFile(__dirname + "/squiggly-line.svg"));
 app.get("/logo-mesota.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/logo-mesota.webp"));
 app.get("/logo-website.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/logo-website.webp"));
+app.get("/logo-mic.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/logo-mic.webp"));
 app.use("/articles/images", requestLogger, express.static(PUBLIC_ARTICLE_IMAGES_PATH));
 app.use("/magazines", requestLogger, express.static(MAGAZINES_PATH));
 app.use("/magazines/thumbnails", requestLogger, express.static(MAGAZINE_THUMBNAILS_PATH));

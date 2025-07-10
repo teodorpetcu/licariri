@@ -429,20 +429,12 @@ body.open * {
     color: white;
 }
 
-#article-page #website-logo {
+#website-logo {
     position: fixed;
     z-index: 11;
     margin: 0;
-    top: 20px;
-    left: 20px;
-    font-family: "Baskervville";
-    a {
-        color: white;
-        -webkit-text-stroke-width: 3px;
-        -webkit-text-stroke-color: #ff4b33;
-        paint-order: stroke fill;
-        text-decoration: none;
-    }
+    top: 10px;
+    left: 5px;
 }
 
 #article-headline #thumbnail-text-container {
@@ -766,7 +758,7 @@ body.open * {
 }
 
 @media (max-width: calc(800px + 4rem)) {
-    #article-page #website-logo {
+    #website-logo {
         display: none;
     }
 }
