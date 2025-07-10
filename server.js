@@ -74,6 +74,7 @@ app.use((err, _req, res, _next) => {
     res.status(500).send("Ceva s-a stricat! (Eroare HTTP 500)");
 });
 
+app.get("/favicon.ico", requestLogger, (_, res) => res.sendFile(__dirname + "/favicon.ico"));
 app.get("/css/licariri.css", requestLogger, (_, res) => res.sendFile(__dirname + "/views/css/licariri.css"));
 app.get("/squiggly-line.svg", requestLogger, (_, res) => res.sendFile(__dirname + "/squiggly-line.svg"));
 app.get("/logo-mesota.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/logo-mesota.webp"));
