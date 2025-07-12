@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+[[ -z "${XDG_CONFIG_HOME}" ]] \
+    && XDG_CONFIG_HOME="${HOME}/.config"
 readonly CREDENTIALS_FILE="${XDG_CONFIG_HOME}/licariri/cloudflare-cache-purge-css.sh"
 [[ -f "${CREDENTIALS_FILE}" ]] \
     && source "${CREDENTIALS_FILE}" \

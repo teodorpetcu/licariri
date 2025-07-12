@@ -1,6 +1,8 @@
 #!/usr/bin/bash
 
 # TODO: put in a separate file and source that
+[[ -z "${XDG_CONFIG_HOME}" ]] \
+    && XDG_CONFIG_HOME="${HOME}/.config"
 readonly CREDENTIALS_FILE="${XDG_CONFIG_HOME}/licariri/cloudflare-update-dns-credentials.sh"
 [[ -f "${CREDENTIALS_FILE}" ]] \
     && source "${CREDENTIALS_FILE}" \
@@ -37,3 +39,4 @@ function update_cloudflare_dns_record {
 }
 
 new_ip_differs_from_last && update_ip_log && update_cloudflare_dns_record
+exit 0

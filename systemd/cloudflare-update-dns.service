@@ -2,4 +2,4 @@
 
 [Service]
 Type=oneshot
-ExecStart=%h/.local/bin/cloudflare-update-dns.service
+ExecStart=%h/.local/bin/cloudflare-update-dns.sh

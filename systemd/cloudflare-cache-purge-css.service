@@ -1,0 +1,5 @@
+[Unit]
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/cloudflare-cache-purge-css.sh

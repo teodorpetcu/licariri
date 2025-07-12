@@ -1,0 +1,7 @@
+[Unit]
+
+[Path]
+PathChanged=%h/licariri/views/css/
+
+[Install]
+WantedBy=multi-user.target
