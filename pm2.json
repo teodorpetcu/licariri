@@ -3,7 +3,7 @@
     {
         "name": "licariri-server",
         "script": "server.js",
-        "exec_mode": "cluster",
+        "exec_mode": "fork",
         "instances": 1,
         "log_type": "raw",
         "out_file": "/var/log/licariri-out.log",
