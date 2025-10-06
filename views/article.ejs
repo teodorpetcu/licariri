@@ -4,6 +4,7 @@
 <head>
     <title><%= article.title %></title>
     <meta name="description" content="<%= article.description %>">
+    <meta property="og:image" content="https://licariri.ro/articles/images/<%= article.id %>.webp"/>
 <%- await include("meta"); _%>
 </head>
 
