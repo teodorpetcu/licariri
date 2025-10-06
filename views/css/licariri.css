@@ -1,6 +1,6 @@
 :root {
     --font-color: black;
-    --neutral-color: #f6f6f6;
+    --neutral-color: #f4f4f4;
     --landing-color: #e56717;
 }
 
@@ -96,9 +96,9 @@ body.open * {
     }
 
     #hamburger-menu {
+        min-width: 450px;
         background-color: #eaeaea;
         padding: 20px;
-        padding-top: calc(3em);
         position: fixed;
         z-index: 9;
         width: 100%;
@@ -120,11 +120,24 @@ body.open * {
         }
 
         #hamburger-menu-logo {
+            position: relative;
             img {
+                position: relative;
                 max-width: 400px;
                 width: 90%;
+                z-index: 999 !important;
             }
-            margin-bottom: 50px;
+        }
+        #hamburger-menu-logo:after {
+            margin: -20px -20px 50px -20px;
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0%;
+            height: calc(50% + 10px);
+            background: var(--landing-color);
+            z-index: 0 !important;
         }
 
         #social-media-links {
@@ -151,6 +164,8 @@ body.open * {
         }
 
         .contact {
+            font-family: "Hind";
+            font-size: 1em;
             margin-top: 10px;
             a {
                 font-weight: 600;
@@ -158,6 +173,9 @@ body.open * {
             }
         }
 
+        .contact a, #social-media-links a{
+            transition: color 0.2s;
+        }
         .contact a:hover, #social-media-links a:hover {
             color: var(--landing-color);
         }
@@ -167,12 +185,15 @@ body.open * {
             max-width: 600px;
             padding: 40px;
             margin: 1.5rem auto 1.5rem auto;
-            background-color: var(--landing-color);
-            color: var(--neutral-color);
+            background-color: #f6f3ee;
+            text-decoration-color: var(--landing-color);
+            border: 5px solid #e2dcd3;
+            color: #2f2a25;
             font-size: 2rem;
             font-family: "Hind";
             font-weight: 800;
             text-transform: uppercase;
+            transition: background-color 0.2s;
         }
         .menu-link:hover {
             background-color: #ff9040;
@@ -226,7 +247,10 @@ body.open * {
 
 #home-page-landing {
     #landing-top {
-        height: 279px;
+        margin-left: 160px; margin-right: 160px;
+        border-bottom-left-radius: 25px;
+        border-bottom-right-radius: 25px;
+        height: 150px;
         font-family: "Kameron";
         position: relative;
         background-color: var(--landing-color);
@@ -243,7 +267,7 @@ body.open * {
         }
     }
     #landing-bottom {
-        height: 250px;
+        height: 200px;
         font-family: "Kameron";
         position: relative;
         background-color: var(--neutral-color);
@@ -632,10 +656,12 @@ body.open * {
 }
 
 /************ MEDIA QUERIES ************/
+@media(min-width: 906px) {
+}
 @media(max-width: 905px) {
     #home-page-landing {
         #landing-top {
-            height: 210px;
+            height: 140px;
             h2 {
                 font-size: 7em;
                 bottom: -34px;
@@ -644,7 +670,7 @@ body.open * {
             }
         }
         #landing-bottom {
-            height: 200px;
+            height: 170px !important;
             h1 {
                 font-size: 9em;
                 top: -42px;
@@ -661,7 +687,7 @@ body.open * {
 @media(max-width: 610px) {
     #home-page-landing {
         #landing-top {
-            height: 150px;
+            height: 120px !important;
             h2 {
                 font-size: 5em;
                 bottom: -25px;
@@ -670,7 +696,7 @@ body.open * {
             }
         }
         #landing-bottom {
-            height: 180px;
+            height: 140px !important;
             h1 {
                 font-size: 7em;
                 top: -31px;
@@ -688,7 +714,7 @@ body.open * {
 @media(max-width: 485px) {
     #home-page-landing {
         #landing-top {
-            height: 120px !important;
+            height: 100px !important;
             h2 {
                 font-size: 4em;
                 bottom: -20px;
@@ -697,7 +723,7 @@ body.open * {
             }
         }
         #landing-bottom {
-            height: 150px;
+            height: 110px !important;
             h1 {
                 font-size: 5em;
                 top: -21px;
@@ -713,18 +739,15 @@ body.open * {
     }
 }
 
-@media(max-height: 500px) {
-    #home-page-landing {
-        #landing-top {
-            height: 140px;
-        }
-        #landing-bottom {
-            height: 170px;
-        }
-    }
-}
-
 @media(max-width: calc(1250px + 7rem)) {
+    #home-page-landing #landing-top {
+        margin-left: 0px; margin-right: 0px;
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+    }
+    #website-logo {
+        display: none;
+    }
     .article-thumbnail-grid {
         width: calc(950px + 4rem);
         grid-template-columns: repeat(3, 300px);
@@ -757,12 +780,6 @@ body.open * {
     }
 }
 
-@media (max-width: calc(800px + 4rem)) {
-    #website-logo {
-        display: none;
-    }
-}
-
 @media(max-width: 670px) {
     #article-page .article-info, #article-contents {
         width: 95%;
@@ -780,7 +797,7 @@ body.open * {
     }
 }
 
-@media(min-width: calc(801px + 4rem)) {
+@media(min-width: calc(801px)) {
     #hamburger-menu {
         border-left: 3px solid black;
         width: 40% !important;
@@ -789,6 +806,7 @@ body.open * {
 
 @media(max-width: 800px) {
     #hamburger-menu {
+        min-width: 0px !important;
         .menu-link {
             font-size: 1.2rem !important;
             padding: 20px !important;
