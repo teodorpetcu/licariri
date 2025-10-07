@@ -2,28 +2,35 @@
     const menuCheckbox = document.getElementById("main-nav-button-checkbox");
     const mainNav = document.getElementById("hamburger-menu");
     const menuLinks = document.getElementsByClassName("menu-link");
+    const hideCover = () => {
+        menuCheckbox.checked = false;
+        mainNav.classList.remove("open");
+        document.body.classList.remove("open");
+        document.getElementById("cover").addEventListener("transitionend", function handler(evt) {
+            if (evt.propertyName == "opacity") {
+                document.body.classList.remove("bring-cover-front");
+            }
+            document.getElementById("cover").removeEventListener("transitionend", handler);
+        })
+    }
     for (menuLink of menuLinks) {
         menuLink.addEventListener(("click"), (evt) => {
-            menuCheckbox.checked = false;
-            mainNav.classList.remove("open");
-            document.body.classList.remove("open");
+            hideCover();
         })
     }
     menuCheckbox.checked = false;
     window.addEventListener("click", (evt) => {
         if(mainNav.classList.contains("open") && !document.getElementById("hamburger-menu").contains(evt.target)) {
-            menuCheckbox.checked = false;
-            mainNav.classList.remove("open");
-            document.body.classList.remove("open");
+            hideCover();
         }
     })
     menuCheckbox.addEventListener("change", function() {
         if (this.checked) {
             mainNav.classList.add("open");
+            document.body.classList.add("bring-cover-front");
             document.body.classList.add("open");
         } else {
-            mainNav.classList.remove("open");
-            document.body.classList.remove("open");
+            hideCover();
         }
     })
     const oneREM = parseFloat(getComputedStyle(document.documentElement).fontSize);
