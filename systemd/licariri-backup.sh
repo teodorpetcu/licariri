@@ -3,7 +3,7 @@
 [[ -z "${APPDATA_PATH}" ]] \
     && APPDATA_PATH="${HOME}/licariri/appdata"
 [[ -z "${BACKUPS_DIRECTORY}" ]] \
-    && BACKUPS_DIRECTORY="${HOME}/backup"
+    && BACKUPS_DIRECTORY="${HOME}/backups/licariri"
 [[ -z "${BACKUP_MAX_AGE_DAYS}" ]] \
     && BACKUP_MAX_AGE_DAYS=60
 

@@ -4,4 +4,4 @@
 PathChanged=%h/licariri/views/css/
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target

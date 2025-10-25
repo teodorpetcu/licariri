@@ -2,7 +2,7 @@
 
 [[ -z "${XDG_CONFIG_HOME}" ]] \
     && XDG_CONFIG_HOME="${HOME}/.config"
-readonly CREDENTIALS_FILE="${XDG_CONFIG_HOME}/licariri/cloudflare-cache-purge-css.sh"
+readonly CREDENTIALS_FILE="${XDG_CONFIG_HOME}/licariri/cloudflare-cache-purge-css-credentials.sh"
 [[ -f "${CREDENTIALS_FILE}" ]] \
     && source "${CREDENTIALS_FILE}" \
     || (echo "error: no credentials file at '${CREDENTIALS_FILE}'" 1>&2 && exit 1)
