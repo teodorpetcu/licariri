@@ -6,6 +6,9 @@
 
 html,
 body {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    overflow: -moz-scrollbars-none;
     position: absolute;
     margin: 0;
     padding: 0;
