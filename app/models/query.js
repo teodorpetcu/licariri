@@ -1,5 +1,5 @@
 const { Database } = require("./database.js");
-const { logger } = require("../logger.js");
+const { logger } = require("../services/logger.js");
 const { QUERY_DATABASE_PATH } = require("../config.js");
 
 class QueryDatabase extends Database {

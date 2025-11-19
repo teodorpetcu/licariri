@@ -1,6 +1,6 @@
 const sqlite3 = require("sqlite3");
 
-const { logger } = require("../logger.js");
+const { logger } = require("../services/logger.js");
 
 class Database {
     /**

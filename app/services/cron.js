@@ -5,7 +5,7 @@ const { usersDatabase } = require("./models/admin.js");
 const { viewsDatabase } = require("./models/view-count.js");
 const { renderArticlePage } = require("./controllers/articles.js");
 const { logger } = require("./logger.js");
-const { ARTICLES_DIRECTORY } = require("./config.js");
+const { ARTICLES_DIRECTORY } = require("../config.js");
 
 const MILISECONDS_IN_A_DAY = 24 * 60 * 60 * 1000;
 

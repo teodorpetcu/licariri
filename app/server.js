@@ -51,7 +51,7 @@ const {
     SITEMAP_FILE_PATH,
 } = require("./config.js");
 
-const { logger, requestLogger } = require("./logger.js");
+const { logger, requestLogger } = require("./services/logger.js");
 
 const app = express();
 
@@ -59,7 +59,7 @@ app.set("trust proxy", ["loopback"]);
 app.disable("x-powered-by");
 
 // putting this before other `app.use()` calls makes it not use other middleware
-app.get("/robots.txt", requestLogger, (_, res) => res.sendFile(__dirname + "/robots.txt"));
+app.get("/robots.txt", requestLogger, (_, res) => res.sendFile(__dirname + "/public/robots.txt"));
 // REMEMBER TO ADD `Sitemap` CLAUSE TO robots.txt !!!!
 app.get("/sitemap.xml", requestLogger, (_, res) => res.sendFile(SITEMAP_FILE_PATH));
 
@@ -74,12 +74,12 @@ app.use((err, _req, res, _next) => {
     res.status(500).send("Ceva s-a stricat! (Eroare HTTP 500)");
 });
 
-app.get("/favicon.ico", requestLogger, (_, res) => res.sendFile(__dirname + "/favicon.ico"));
-app.get("/css/licariri.css", requestLogger, (_, res) => res.sendFile(__dirname + "/views/css/licariri.css"));
-app.get("/squiggly-line.svg", requestLogger, (_, res) => res.sendFile(__dirname + "/squiggly-line.svg"));
-app.get("/logo-mesota.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/logo-mesota.webp"));
-app.get("/logo-website.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/logo-website.webp"));
-app.get("/logo-mic.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/logo-mic.webp"));
+app.get("/favicon.ico", requestLogger, (_, res) => res.sendFile(__dirname + "/public/favicon.ico"));
+app.get("/css/licariri.css", requestLogger, (_, res) => res.sendFile(__dirname + "/public/css/licariri.css"));
+app.get("/squiggly-line.svg", requestLogger, (_, res) => res.sendFile(__dirname + "/public/squiggly-line.svg"));
+app.get("/logo-mesota.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/public/logo-mesota.webp"));
+app.get("/logo-website.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/public/logo-website.webp"));
+app.get("/logo-mic.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/public/logo-mic.webp"));
 app.use("/articles/images", requestLogger, express.static(PUBLIC_ARTICLE_IMAGES_PATH));
 app.use("/magazines", requestLogger, express.static(MAGAZINES_PATH));
 app.use("/magazines/thumbnails", requestLogger, express.static(MAGAZINE_THUMBNAILS_PATH));

@@ -1,10 +1,10 @@
 const fs = require("fs");
 
 const { logger } = require("./logger.js");
-const { formatDate } = require("./util.js");
-const { WEBSITE_URL, SITEMAP_FILE_PATH } = require("./config.js");
-const { articleDatabase } = require("./models/articles.js");
-const { usersDatabase } = require("./models/admin.js");
+const { formatDate } = require("../utils/util.js");
+const { WEBSITE_URL, SITEMAP_FILE_PATH } = require("../config.js");
+const { articleDatabase } = require("../models/articles.js");
+const { usersDatabase } = require("../models/admin.js");
 
 const escapeStringForXML = (str) => {
     return str.replaceAll("&", "&amp;")

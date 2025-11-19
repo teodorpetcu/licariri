@@ -4,8 +4,8 @@ const fs = require("fs");
 const sharp = require("sharp");
 const { exec } = require("child_process")
 
-const { logger } = require("../logger.js")
-const { fileExists } = require("../util.js");
+const { logger } = require("../services/logger.js")
+const { fileExists } = require("../utils/util.js");
 
 const { Author, Article, ArticleStyle } = require("../models/types.js");
 const { prerenderQueryAsFile } = require("./query.js");
@@ -15,14 +15,13 @@ const { queryDatabase } = require("../models/query.js");
 const { viewsDatabase } = require("../models/view-count.js");
 const { usersDatabase } = require("../models/admin.js")
 
-const { generateSitemapFile } = require("../sitemap-generator.js");
+const { generateSitemapFile } = require("../services/sitemap-generator.js");
 
 const {
     MAIN_PAGE_HTML_FILE_PATH,
     ARTICLES_DIRECTORY,
     PUBLIC_ARTICLE_CONTENTS_PATH,
     MAGAZINES_PATH,
-    MAGAZINE_THUMBNAILS_PATH,
     WEBP_COMPRESSION_QUALITY,
 } = require("../config.js");
 

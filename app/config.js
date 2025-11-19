@@ -1,7 +1,7 @@
 const fs = require("fs");
-const { fileExists } = require("./util.js");
+const { fileExists } = require("./utils/util.js");
 
-const APPDATA_DIR = __dirname + "/appdata";
+const APPDATA_DIR = "/data";
 const DATABASES_DIRECTORY = APPDATA_DIR + "/databases";
 const ARTICLES_DIRECTORY = APPDATA_DIR + "/articles";
 

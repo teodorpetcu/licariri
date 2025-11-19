@@ -1,4 +1,4 @@
-const { formatDate } = require("../util.js");
+const { formatDate } = require("../utils/util.js");
 
 class Author {
     /**

@@ -6,8 +6,8 @@ const {
 const { usersDatabase, User, Session, Activity } = require("../models/admin.js");
 const { articleDatabase } = require("../models/articles.js");
 const { Article } = require("../models/types.js");
-const { logger } = require("../logger.js");
-const { fileExists, formatDate } = require("../util.js");
+const { logger } = require("../services/logger.js");
+const { fileExists, formatDate } = require("../utils/util.js");
 
 const fs = require("fs");
 

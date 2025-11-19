@@ -1,8 +1,8 @@
 const ejs = require("ejs");
 const fs = require("fs");
 
-const { fileExists } = require("../util.js");
-const { logger } = require("../logger.js")
+const { fileExists } = require("../utils/util.js");
+const { logger } = require("../services/logger.js")
 const { queryDatabase } = require("../models/query.js");
 const { articleDatabase } = require("../models/articles.js");
 const { QUERY_PRERENDERS } = require("../config.js");
