@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
 
 // for ensuring that the databases are loaded before the server starts listening
+const { createDataDirectoriesIfTheyDontExist } = require("./utils/util.js");
 const { usersDatabase } = require("./models/admin.js");
 const { articleDatabase } = require("./models/articles.js");
 const { viewsDatabase } = require("./models/view-count.js");
@@ -131,12 +132,14 @@ app.get("*", requestLogger, (req, res) => res.status(404).render("404", {url: re
 let httpServer = undefined;
 
 logger.info("connecting to databases...");
-Promise.all([
-    articleDatabase.open().then(articleDatabase.init()),
-    usersDatabase.open().then(usersDatabase.init()),
-    queryDatabase.open().then(queryDatabase.init()),
-    viewsDatabase.open().then(viewsDatabase.init()),
-])
+logger.info("connecting to databases...");
+createDataDirectoriesIfTheyDontExist()
+    .then(() => Promise.all([
+        articleDatabase.open().then(articleDatabase.init()),
+        usersDatabase.open().then(usersDatabase.init()),
+        queryDatabase.open().then(queryDatabase.init()),
+        viewsDatabase.open().then(viewsDatabase.init()),
+    ]))
     .then(() => logger.info("database open ok"))
     .then(() => updateMainPage())
     .then(() => {

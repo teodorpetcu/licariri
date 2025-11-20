@@ -1,4 +1,6 @@
 const fs = require("fs");
+const { logger } = require("../services/logger.js");
+const CONFIG = require("../config.js");
 
 /**
  * @param {string} path
@@ -7,7 +9,7 @@ const fs = require("fs");
 const fileExists = async (path) => {
     return fs.promises.access(path, fs.constants.F_OK)
         .then(() => true)
-        .catch(() => false)
+        .catch(() => false);
 }
 
 /**
@@ -21,7 +23,37 @@ const formatDate = (date) => {
     return `${yyyy}-${mm}-${dd}`;
 }
 
+/**
+ * @param {String} dir - directory to create
+ */
+const mkdirIfDoesntExist = async (dir) => {
+    if(! await fileExists(dir)) {
+        logger.info(`mkdir ${dir}`);
+        await fs.promises.mkdir(dir, {recursive: true});
+    }
+}
+
+/**
+ * Side effect: creates all directories explicitly defined in config.js
+ */
+const createDataDirectoriesIfTheyDontExist = async () => {
+    await Promise.all([
+        mkdirIfDoesntExist(CONFIG.DATABASES_DIRECTORY),
+        mkdirIfDoesntExist(CONFIG.PUBLIC_ARTICLE_CONTENTS_PATH),
+        mkdirIfDoesntExist(CONFIG.DRAFT_ARTICLE_CONTENTS_PATH),
+        mkdirIfDoesntExist(CONFIG.TRASH_ARTICLE_CONTENTS_PATH),
+        mkdirIfDoesntExist(CONFIG.PUBLIC_ARTICLE_IMAGES_PATH),
+        mkdirIfDoesntExist(CONFIG.DRAFT_ARTICLE_IMAGES_PATH),
+        mkdirIfDoesntExist(CONFIG.TRASH_ARTICLE_IMAGES_PATH),
+        mkdirIfDoesntExist(CONFIG.MAGAZINES_PATH),
+        mkdirIfDoesntExist(CONFIG.MAGAZINE_THUMBNAILS_PATH),
+        mkdirIfDoesntExist(CONFIG.QUERY_PRERENDERS),
+    ])
+}
+
 module.exports = {
     fileExists,
     formatDate,
+    mkdirIfDoesntExist,
+    createDataDirectoriesIfTheyDontExist,
 }
