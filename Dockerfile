@@ -1,18 +1,31 @@
-# Use official Node.js image
-FROM node:20
+# first build to see if it passes all tests
+FROM node:25 AS build
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files and install dependencies
 COPY app/package*.json ./
 RUN npm install
 
-# Copy app code
 COPY app/ ./
+COPY tests-data/ /data
+COPY tests/ /tests
 
-# Expose port your app listens on
+ENV NODE_ENV="development"
+
+# jest localstorage has to be set since otherwise it may send a warning
+RUN NODE_OPTIONS="--localstorage-file=/tests/jest-storage" npm test
+
+# production build
+FROM node:25 AS production
+
+WORKDIR /app
+
+COPY --from=build app/ ./
+
+ENV NODE_ENV="production"
+
+RUN npm prune --omit=dev
+
 EXPOSE 8000
 
-# Run the app
 CMD ["node", "server.js"]
