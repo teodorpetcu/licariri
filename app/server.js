@@ -16,6 +16,7 @@ const {
     get_articlePage,
 
     post_adminAddArticle,
+    post_adminArticlePreview,
     //post_adminRemoveArticle,
     post_adminAddMagazine,
     post_adminRemoveMagazine,
@@ -67,6 +68,7 @@ app.get("/sitemap.xml", requestLogger, (_, res) => res.sendFile(SITEMAP_FILE_PAT
 app.set("view engine", "ejs");
 
 app.use(fileUpload());
+app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true, }));
 app.use(cookieParser());
 
@@ -97,19 +99,20 @@ if (process.env.ALLOW_QUERY_ROUTES == "true") {
 
 if (process.env.ALLOW_ADMIN_ROUTES == "true") {
     logger.info("/login, /admin routes FUNCTIONAL");
-    app.get("/css/login.css", requestLogger, (_, res) => res.sendFile(__dirname + "/views/css/login.css"));
+    app.get("/css/login.css", requestLogger, (_, res) => res.sendFile(__dirname + "/public/css/login.css"));
     app.get("/login", requestLogger, get_adminLoginPage);
     app.post("/login", requestLogger, post_adminLoginCheck);
 
     app.use(["/admin", "/admin/*", "/css/admin.css"], identifyAuthorisedUser, forbidUnauthorised);
 
-    app.get("/css/admin.css", requestLogger, (_, res) => res.sendFile(__dirname + "/views/css/admin.css"));
+    app.get("/css/admin.css", requestLogger, (_, res) => res.sendFile(__dirname + "/public/css/admin.css"));
     app.get("/admin", requestLogger, get_adminPannelPage);
 
     app.get("/admin/activity", requestLogger, get_adminActivitiesPage);
 
     app.get("/admin/articles/new", requestLogger, get_adminAddArticle);
     app.get("/admin/articles/:articleID", requestLogger, get_adminAddArticle);
+    app.post("/admin/articles/article-preview", requestLogger, post_adminArticlePreview);
 
     app.post("/admin/logout", requestLogger, post_adminLogout);
     app.post("/admin/articles/stage", requestLogger, post_updateArticleStage);

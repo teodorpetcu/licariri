@@ -1,9 +1,9 @@
 const fs = require("fs");
 
-const { articleDatabase } = require("./models/articles.js");
-const { usersDatabase } = require("./models/admin.js");
-const { viewsDatabase } = require("./models/view-count.js");
-const { renderArticlePage } = require("./controllers/articles.js");
+const { articleDatabase } = require("../models/articles.js");
+const { usersDatabase } = require("../models/admin.js");
+const { viewsDatabase } = require("../models/view-count.js");
+const { renderArticlePage } = require("../controllers/articles.js");
 const { logger } = require("./logger.js");
 const { ARTICLES_DIRECTORY } = require("../config.js");
 

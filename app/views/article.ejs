@@ -13,28 +13,29 @@
     <div id="article-headline">
         <img id="article-thumbnail" src="/articles/images/<%= article.id %>.webp" class="no-select">
         <div id="thumbnail-text-container" class="center">
-        <%_ if (articleStyle.title_position == "thumbnail") { _%>
+        <%_ if (articleStyle.title.position == "thumbnail") { _%>
             <h1 id="article-title" style="font-family: <%=
-                articleStyle.title_font %>; font-size: <%=
-                articleStyle.title_fontsize_article %>rem; font-weight: <%=
-            articleStyle.title_fontweight %>; color: <%=
-            articleStyle.title_color %>" <%_ if (articleStyle.title_fill_style
+                articleStyle.title.font %>; font-size: <%=
+                articleStyle.title.fontsizeArticle %>rem; font-weight: <%=
+            articleStyle.title.fontweight %>; color: <%=
+            articleStyle.title.color %>" <%_ if (articleStyle.title.fillStyle
             === 'on') { %> class="colour-complement-background"<%_ } _%>><%= article.title _%></h1>
             <%_ } _%>
-            <%_ if (article.subtitle && articleStyle.subtitle_position == "thumbnail") { _%>
-            <h2 id="article-subtitle" style="font-family: <%= articleStyle.subtitle_font %>; font-size: <%= articleStyle.subtitle_fontsize %>rem; font-weight: <%= articleStyle.subtitle_fontweight %>; color: <%= articleStyle.subtitle_color %>"><%= article.subtitle %></h2>
+            <%_ if (article.subtitle && articleStyle.subtitle.position == "thumbnail") { _%>
+            <h2 id="article-subtitle" style="font-family: <%= articleStyle.subtitle.font %>; font-size: <%= articleStyle.subtitle.fontsize %>rem; font-weight: <%= articleStyle.subtitle.fontweight %>; color: <%= articleStyle.subtitle.color %>"><%= article.subtitle %></h2>
         <%_ } _%>
         </div>
     </div>
     <div class="article-info">
-        <%_ if (articleStyle.title_position == "article") { _%>
+        <%_ if (articleStyle.title.position == "article") { _%>
         <div style="text-align: center">
-            <h1 id="article-title" style="font-family: <%= articleStyle.title_font %>; font-size: <%= articleStyle.title_fontsize_article %>rem; font-weight: <%= articleStyle.title_fontweight %>; color: <%= articleStyle.title_color %>"><%= article.title %></h1>
+            <h1 id="article-title" style="font-family: <%=
+                articleStyle.title.font %>; font-size: <%= articleStyle.title.fontsizeArticle %>rem; font-weight: <%= articleStyle.title.fontweight %>; color: <%= articleStyle.title.color %>"><%= article.title %></h1>
         </div>
         <%_ } _%>
-        <%_ if (article.subtitle && articleStyle.subtitle_position == "article") { _%>
+        <%_ if (article.subtitle && articleStyle.subtitle.position == "article") { _%>
         <div style="text-align: center">
-            <h2 id="article-subtitle" style="font-family: <%= articleStyle.subtitle_font %>; font-size: <%= articleStyle.subtitle_fontsize %>rem; font-weight: <%= articleStyle.subtitle_fontweight %>; color: <%= articleStyle.subtitle_color %>"><%= article.subtitle %></h2>
+            <h2 id="article-subtitle" style="font-family: <%= articleStyle.subtitle.font %>; font-size: <%= articleStyle.subtitle.fontsize %>rem; font-weight: <%= articleStyle.subtitle.fontweight %>; color: <%= articleStyle.subtitle.color %>"><%= article.subtitle %></h2>
         </div>
         <%_ } _%>
         <%_ if (article.authors.length) { _%>
@@ -46,11 +47,11 @@
         <%_ } _%>
         <%_ if (article.authors.length) { _%>
         <ul class="article-authors">
-            <%_ for (let author of article.authors) { _%>
+            <%_ for (author of article.authors) { _%>
             <%_ if (QUERY_ROUTES_ALLOWED) { _%>
-            <li><a href="/query/?author=<%= author.name _%>"><%= author.name _%></a></li>
+            <li><a href="/query/?author=<%= author_%>"><%= author _%></a></li>
             <%_ } else { _%>
-            <li><%= author.name _%></li>
+            <li><%= author _%></li>
             <%_ } _%>
             <%_ } _%>
         </ul>

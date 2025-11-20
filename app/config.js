@@ -1,4 +1,5 @@
-const APPDATA_DIR = "/data";
+const path = require("path");
+const APPDATA_DIR = path.resolve("../data");
 const DATABASES_DIRECTORY = APPDATA_DIR + "/databases";
 const ARTICLES_DIRECTORY = APPDATA_DIR + "/articles";
 

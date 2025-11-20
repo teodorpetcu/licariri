@@ -101,6 +101,32 @@ const get_articlePage = async (req, res) => {
     }
 }
 
+const post_adminArticlePreview = async (req, res) => {
+    if (!req.body) {
+        res.status(404).send(undefined);
+        return;
+    }
+    let article = req.body.article;
+    article.id = req.body.originalID;
+    article.date = req.body.originalDate;
+    article.contents = marked.parse(req.body.contents).trim();
+    if (!article.authors) article.authors = [];
+    if (!article.tags) article.tags = [];
+    let credits = req.body.article.credits;
+    let articleStyle = req.body.style;
+    const QUERY_ROUTES_ALLOWED = process.env.ALLOW_QUERY_ROUTES == "true";
+
+    ejs.renderFile(__dirname + "/../views/article.ejs", {article, articleStyle,
+                    credits, QUERY_ROUTES_ALLOWED}, {async: true})
+        .then((renderedPage) => {
+            res.set("Content-Type", "text/html").send(renderedPage);
+        })
+}
+
+const get_adminArticleThumbnailPreview = async (req, res) => {
+    // res.send(res.render()) some ejs for rendering just article thumbnails
+}
+
 const post_adminAddArticle = async (req, res) => {
     const articleID = req.params.articleID;
 
@@ -357,5 +383,6 @@ module.exports = {
     post_adminAddMagazine,
     post_adminRemoveMagazine,
     post_updateArticleStage,
+    post_adminArticlePreview,
     renderArticlePage,
 };

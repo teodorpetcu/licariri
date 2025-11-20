@@ -13,21 +13,18 @@
         <button id="button-edit-dtp">Tehnoredactare</button>
         <button id="button-preview">Previzualizare</button>
     </div>
-    <form action="/admin/articles/<%= defaults.id %>" method="post" autocomplete="off" enctype="multipart/form-data">
+    <form id="inputform" action="/admin/articles/<%= defaults.id %>" method="post" autocomplete="off" enctype="multipart/form-data">
         <div id="edit-article-content">
             <div id="left">
                 <h1>Editează articol</h1>
                 <label>Titlu:</label>
-                <input required id="input-title" type="text"
-                    name="title" value="<%= defaults.title %>">
+                <input required type="text" name="article.title" value="<%= defaults.title %>">
 
                 <label>Subtitlu:</label>
-                <input id="input-subtitle" type="text"
-                    name="subtitle" value="<%= defaults.subtitle %>">
+                <input type="text" name="article.subtitle" value="<%= defaults.subtitle %>">
 
                 <label>Limba articolului:</label>
-                <select required id="input-article-language"
-                    name="language">
+                <select required name="article.language">
                     <option value="ro">Română</option>
                     <option value="en">Engleză</option>
                     <option value="de">Germană</option>
@@ -47,140 +44,108 @@
                 </div>
 
                 <label>Redactor(i):</label>
-                <input id="input-article-editorial-credit" type="text" name="credit_editorial" value="<%= defaults.credits.editorial.join(', ') %>">
+                <input type="text" name="article.credits.editorial" value="<%= defaults.credits.editorial.join(', ') %>">
 
                 <label>Tehnoredactor(i):</label>
-                <input id="input-article-dtp-credit" type="text" name="credit_dtp" value="<%= defaults.credits.dtp.join(', ') %>">
+                <input type="text" name="article.credits.dtp" value="<%= defaults.credits.dtp.join(', ') %>">
 
                 <label>Realizator(i) grafică/thumbnail:</label>
-                <input id="input-article-thumbnail-credit" type="text" name="credit_thumbnail" value="<%= defaults.credits.thumbnail.join(', ') %>">
+                <input type="text" name="article.credits.thumbnail" value="<%= defaults.credits.thumbnail.join(', ') %>">
             </div>
             <div id="right">
-                <textarea required id="input-article-contents"
-                    name="content"><%= defaults.content %></textarea>
+                <textarea required name="contents"><%= defaults.content %></textarea>
             </div>
         </div>
         <div id="edit-article-dtp">
-            <div class="article-thumbnail no-select" style="width: 300px; position: absolute; right:
-                100px; top: 300px; transform: translateY(-50%);">
-                <h1 id="preview-minified-thumbnail-title" class="center"></h1>
-                <img id="preview-minified-thumbnail-image" src="">
+            <div id="preview-minified-thumbnail" class="article-thumbnail no-select" style="width: 300px; position: absolute; right: 100px; top: 300px; transform: translateY(-50%);">
             </div>
 
             <label>Thumbnail:</label>
-            <input id="input-article-thumbnail"
-                type="file" accept="image/*" name="thumbnail">
+            <input type="file" accept="image/*" name="thumbnail">
             <button type="button" id="reset-thumbnail-button">RESETARE</button>
 
             <label>Ascunde titlul din thumbnail:</label>
-            <input id="input-title-hide-on-thumbnail"
-                type="checkbox" name="hide_title_in_thumbnail"
+            <input type="checkbox" name="style.hideTitleInThumbnail"
                 <% if (defaults.style.hide_title_in_thumbnail) { %>
                 checked
                 <% } %>>
 
             <label>Fontul titlului:</label>
-            <select id="input-title-font" name="title_font">
+            <select name="style.title.font">
                 <option value="Baskervville">Baskervville</option>
                 <option value="Kameron" <% if (defaults.style.title_font == "Kameron") { %>selected<% } %>>Kameron</option>
             </select>
 
             <label>Mărimea fontului titlului din thumbnail:</label>
-            <input id="input-title-thumbnail-font-size"
-                name="title_fontsize_thumbnail"
+            <input name="style.title.fontsizeThumbnail"
                 value="<%= defaults.style.title_fontsize_thumbnail %>"
                 type="range" min="1.5" max="2.5" step="0.1" >
 
             <label>Mărimea fontului titlului din articol:</label>
-            <input id="input-title-article-font-size"
-                name="title_fontsize_article"
+            <input name="style.title.fontsizeArticle"
                 value="<%= defaults.style.title_fontsize_article %>"
                 type="range" min="2" max="5" step="0.1" >
 
             <label>Grosimea fontului titlului:</label>
-            <input id="input-title-fontweight"
-                name="title_fontweight"
+            <input name="style.title.fontweight"
                 value="<%= defaults.style.title_fontweight %>"
                 type="range" min="400" max="800" step="50">
 
             <!--TITLE FILL STYLE == <select>-->
             <label>Titlul contrastează cu fundalul (ignoră culoarea):</label>
-            <input id="input-title-contrast-background"
-                type="checkbox" name="title_fill_style"
+            <input type="checkbox" name="style.title.fillStyle"
                 <% if (defaults.style.title_fill_style) { %>
                 checked
                 <% } %>>
 
             <label>Culoarea titlului:</label>
-            <input id="input-title-color" name="title_color"
+            <input name="style.title.color"
                 value="<%= defaults.style.title_color %>"
                 type="color">
 
             <label>Poziția titlului în articol:</label>
-            <select id="input-title-position" name="title_position">
+            <select name="style.title.position">
                 <option value="thumbnail">Pe thumbnail</option>
                 <option value="article" <% if (defaults.style.title_position == "article") { %>selected<% } %>>Sub thumbnail</option>
 
             </select>
 
             <label>Fontul subtitlului:</label>
-            <select id="input-subtitle-font" name="subtitle_font">
+            <select name="style.subtitle.font">
                 <option value="Baskervville">Baskervville</option>
                 <option value="Kameron" <% if (defaults.style.subtitle_font == "Kameron") { %>selected<% } %>>Kameron</option>
             </select>
 
             <label>Mărimea fontului subtitlului din articol:</label>
-            <input id="input-subtitle-font-size" name="subtitle_fontsize"
+            <input name="style.subtitle.fontsize"
                 value="<%= defaults.style.subtitle_fontsize %>"
                 type="range" min="1" max="2" step="0.1" >
 
             <label>Grosimea fontului subtitlului:</label>
-            <input id="input-subtitle-fontweight" name="subtitle_fontweight"
+            <input name="style.subtitle.fontweight"
                 value="<%= defaults.style.subtitle_fontweight %>"
                 type="range" min="400" max="800" step="50">
 
             <label>Culoarea subtitlului:</label>
-            <input id="input-subtitle-color"
+            <input name="style.subtitle.color"
                 value="<%= defaults.style.subtitle_color %>"
-                type="color" name="subtitle_color">
+                type="color">
 
             <label>Poziția subtitlului în articol:</label>
-            <select id="input-subtitle-position" name="subtitle_position">
+            <select name="style.subtitle.position">
                 <option value="thumbnail">Pe thumbnail</option>
                 <option value="article" <% if (defaults.style.subtitle_position == "article") { %>selected<% } %>>Sub thumbnail</option>
             </select>
 
             <label>Stilul primei litere din text:</label>
-            <select id="input-first-letter-style" name="dropcap">
+            <select name="style.article.firstLetter">
                 <option value="default">Fără stil</option>
                 <option value="dropcap" <% if (defaults.style.dropcap == "dropcap") { %>selected<% } %>>Dropcap cu border</option>
             </select>
         </div>
         <input id="article-submit-button" type="submit" value="Trimite">
     </form>
-    <div id="preview-page">
-        <div id="article-headline">
-            <img id="article-thumbnail" src="" class="no-select">
-            <h1 id="article-title"></h1>
-            <h2 id="article-subtitle"></h2>
-        </div>
-        <div id="article-contributors">
-            <h5 id="article-editorial-credit"></h5>
-            <h5 id="article-dtp-credit"></h5>
-            <h5 id="article-thumbnail-credit"></h5>
-        </div>
-        <div id="article-info">
-            <div id="article-alternate-title-position"></div>
-            <h3 id="article-authors-title"></h3>
-            <ul class="article-authors" id="article-authors-list">
-            </ul>
-            <b id="article-date"><%= defaults.date %></b>
-            <ul class="article-tags" id="article-tags-list">
-            </ul>
-        </div>
-        <hr style="width: 18%">
-        <div id="article-contents"></div>
-    <%- include("copyright") _%>
+    <div id="article-page">
     </div>
 </body>
 
@@ -195,7 +160,7 @@
         field.classList.add(type);
 
         let fieldInput = document.createElement("input");
-        fieldInput.name = type + "s[]";
+        fieldInput.name = "article" + "." + type + "s" + "." + fieldsContainer.childElementCount;
         if (type == "image") {
             fieldInput.type = "file";
             fieldInput.accept = "image/*";
@@ -232,125 +197,10 @@
 <script type="text/javascript">
     const contentPage = document.getElementById("edit-article-content");
     const dtpPage = document.getElementById("edit-article-dtp");
-    const previewPage = document.getElementById("preview-page");
+    const previewPage = document.getElementById("article-page");
+    const articleInputForm = document.getElementById("inputform");
 
-    // on Content page
-    const inputTitle = document.getElementById("input-title");
-    const inputSubtitle = document.getElementById("input-subtitle");
-    const inputAuthors = document.getElementsByName("authors[]");
-    const inputTags = document.getElementsByName("tags[]");
-    const inputContents = document.getElementById("input-article-contents");
-
-    // on DTP page
-    const inputThumbnail = document.getElementById("input-article-thumbnail");
-    const inputEditorialCredits = document.getElementById("input-article-editorial-credit");
-    const inputDTPCredits = document.getElementById("input-article-dtp-credit");
-    const inputThumbnailCredits = document.getElementById("input-article-thumbnail-credit");
-    const inputThumbnailReset = document.getElementById("reset-thumbnail-button");
-    const inputTitleContrastBackground = document.getElementById("input-title-contrast-background");
-    const inputTitleHideOnThumbnail = document.getElementById("input-title-hide-on-thumbnail");
-    const inputTitleColor = document.getElementById("input-title-color");
-    const inputTitleFont = document.getElementById("input-title-font");
-    const inputTitleThumbnailFontSize = document.getElementById("input-title-thumbnail-font-size");
-    const inputTitleArticleFontSize = document.getElementById("input-title-article-font-size");
-    const inputTitleFontWeight = document.getElementById("input-title-fontweight");
-    const inputTitlePosition = document.getElementById("input-title-position");
-    const inputSubtitleColor = document.getElementById("input-subtitle-color");
-    const inputSubtitleFont = document.getElementById("input-subtitle-font");
-    const inputSubtitlePosition = document.getElementById("input-subtitle-position");
-    const inputSubtitleFontSize = document.getElementById("input-subtitle-font-size");
-    const inputSubtitleFontWeight = document.getElementById("input-subtitle-fontweight");
-    const inputfirstLetterStyle = document.getElementById("input-first-letter-style");
-
-    const previewMinifiedThumbnailImage = document.getElementById("preview-minified-thumbnail-image");
-    const previewMinifiedThumbnailTitle = document.getElementById("preview-minified-thumbnail-title");
-
-    // on Preview page
-    const previewArticleThumbnail = document.getElementById("article-thumbnail");
-    const previewArticleEditorialCredits = document.getElementById("article-editorial-credit");
-    const previewArticleDTPCredits = document.getElementById("article-dtp-credit");
-    const previewArticleThumbnailCredits = document.getElementById("article-thumbnail-credit");
-    const previewArticleTitle = document.getElementById("article-title");
-    const previewArticleSubtitle = document.getElementById("article-subtitle");
-    const previewArticleContents = document.getElementById("article-contents");
-    const previewArticleAuthors = document.getElementById("article-authors-list");
-    const previewArticleAuthorsTitle = document.getElementById("article-authors-title");
-    const previewArticleTags = document.getElementById("article-tags-list");
-
-    const previewArticleDefaultTitlePosition = document.getElementById("article-headline");
-    const previewArticleAlternateTitlePosition = document.getElementById("article-alternate-title-position");
-
-    inputThumbnailReset.addEventListener("click", () => {
-        inputThumbnail.value = '';
-        inputThumbnail.dispatchEvent(new Event("change"));
-    });
-
-    const setFont = (elem, font) => {
-        elem.style.fontFamily = font;
-    }
-
-    const setFontSizeREM = (elem, fontSize) => {
-        elem.style.fontSize = fontSize + "rem";
-    }
-
-    setFont(previewArticleTitle, inputTitleFont.value);
-    setFont(previewMinifiedThumbnailTitle, inputTitleFont.value);
-
-    inputTitleFont.addEventListener("change", () => {
-        setFont(previewArticleTitle, inputTitleFont.value);
-        setFont(previewMinifiedThumbnailTitle, inputTitleFont.value);
-    })
-
-    inputTitleThumbnailFontSize.addEventListener("change", () => {
-        setFontSizeREM(previewMinifiedThumbnailTitle, inputTitleThumbnailFontSize.value);
-    })
-    setFontSizeREM(previewMinifiedThumbnailTitle, inputTitleThumbnailFontSize.value);
-
-    inputTitleFontWeight.addEventListener("change", () => {
-        previewMinifiedThumbnailTitle.style.fontWeight = inputTitleFontWeight.value;
-        previewArticleTitle.style.fontWeight = inputTitleFontWeight.value;
-    })
-
-    const updateTitleColourMode = () => {
-        if (inputTitleContrastBackground.checked) {
-            previewArticleTitle.classList.add("colour-complement-background");
-            previewMinifiedThumbnailTitle.classList.add("colour-complement-background");
-        } else {
-            previewArticleTitle.classList.remove("colour-complement-background");
-            previewMinifiedThumbnailTitle.classList.remove("colour-complement-background");
-        }
-    }
-    updateTitleColourMode();
-
-    inputTitleContrastBackground.addEventListener("click", updateTitleColourMode);
-
-    const updateThumbnail = (imgObj) => {
-        const [thumbnail] = inputThumbnail.files;
-        if (thumbnail) {
-            imgObj.src = URL.createObjectURL(thumbnail)
-        } else {
-            imgObj.src = "/admin/articles/images/<%= defaults.id %>.webp"
-        }
-    }
-    updateThumbnail(previewMinifiedThumbnailImage);
-
-    inputThumbnail.addEventListener("change", () => {
-        updateThumbnail(previewMinifiedThumbnailImage);
-    });
-    inputTitleColor.addEventListener("change", () => {
-        previewMinifiedThumbnailTitle.style.color = inputTitleColor.value;
-    });
-    previewMinifiedThumbnailTitle.style.color = inputTitleColor.value;
-
-    const actionHideThumbnailTitle = () => {
-        if (inputTitleHideOnThumbnail.checked) {
-            previewMinifiedThumbnailTitle.style.display = "none";
-        } else {
-            previewMinifiedThumbnailTitle.style.display = "block";
-        }
-    }
-    actionHideThumbnailTitle();
-    inputTitleHideOnThumbnail.addEventListener("change", actionHideThumbnailTitle);
+    const previewMinifiedThumbnail = document.getElementById("preview-minified-thumbnail");
 
     const showContentPage = () => {
         contentPage.style.display = "grid";
@@ -362,108 +212,68 @@
         contentPage.style.display = "none";
         dtpPage.style.display = "grid";
         previewPage.style.display = "none";
-        previewMinifiedThumbnailTitle.textContent = inputTitle.value;
+    }
+
+    const htmlFormToNestedJSON = (form) => {
+        const formData = new FormData(form);
+        const nestedJSON = {};
+
+        for (let [field, value] of formData) {
+            const keys = field.split(".");
+            let current = nestedJSON;
+            let parentKey = undefined;
+            keys.forEach((key, nestingIndex) => {
+                if (key == "thumbnail" && parentKey != "credits" && value.size == 0) {
+                    value = undefined;
+                }
+                if (nestingIndex == keys.length - 1) {
+                    if (Array.isArray(current)) {
+                        current.push(value);
+                    } else if (parentKey == "credits" && value) {
+                        current[key] = value.split(",").map((x) => x.trim());
+                    } else {
+                        current[key] = value;
+                    }
+                } else {
+                    if (!current[key]) { // prevent overwrite
+                        if (key == "authors" || key == "tags") {
+                            current[key] = [];
+                        } else {
+                            current[key] = {};
+                        }
+                    }
+                    current = current[key];
+                }
+                parentKey = key;
+            })
+        }
+        return nestedJSON;
     }
 
     const showPreviewPage = () => {
+        let formJSON = htmlFormToNestedJSON(articleInputForm);
+        formJSON.originalID = "<%= defaults.id %>";
+        formJSON.originalDate = "<%= defaults.date %>";
+        fetch("/admin/articles/article-preview", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Accepts': 'text/html'
+            },
+            body: JSON.stringify(formJSON)
+        })
+            .then((response) => {
+                return response.text();
+            })
+            .then((html) => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, "text/html");
+                previewPage.innerHTML = doc.body.innerHTML;
+            });
+
         contentPage.style.display = "none";
         dtpPage.style.display = "none";
-        previewPage.style.display = "block";
-
-        // clear authors and tags, since otherwise they would just pile up
-        while (previewArticleAuthors.childElementCount) {
-            previewArticleAuthors.removeChild(previewArticleAuthors.lastChild);
-        }
-        previewArticleTags.textContent = "";
-
-        let authors = []; inputAuthors.forEach((i) => {if(i.value.trim()) authors.push(i.value.trim())});
-        authors.sort();
-
-        if (authors.length >= 1) {
-            previewArticleAuthorsTitle.textContent = "Autor";
-            if (authors.length > 1) {
-                previewArticleAuthorsTitle.textContent += "i";
-            }
-            previewArticleAuthorsTitle.textContent += ":";
-        }
-
-        for (author of authors) {
-            let authorDiv = document.createElement("li");
-            let authorLink = document.createElement("a");
-            authorLink.href = "#";
-            authorLink.style.display = "inline-block";
-            authorLink.textContent = author;
-
-            authorDiv.appendChild(authorLink);
-            previewArticleAuthors.append(authorDiv);
-        }
-
-        for (inputTag of inputTags) {
-            if (!inputTag.value.trim()) continue;
-            let tagLink= document.createElement("a");
-            tagLink.href = "#";
-            tagLink.textContent = "#" + inputTag.value.trim();
-            let tagDiv = document.createElement("li");
-            tagDiv.append(tagLink)
-            previewArticleTags.append(tagDiv);
-        }
-
-        updateThumbnail(previewArticleThumbnail);
-
-        previewArticleTitle.textContent = inputTitle.value.trim();
-        previewArticleTitle.style.color = inputTitleColor.value;
-        setFontSizeREM(previewArticleTitle, inputTitleArticleFontSize.value);
-
-        previewArticleSubtitle.textContent = inputSubtitle.value.trim();
-        previewArticleSubtitle.style.color = inputSubtitleColor.value;
-        previewArticleSubtitle.style.fontFamily = inputSubtitleFont.value;
-        previewArticleSubtitle.style.fontWeight = inputSubtitleFontWeight.value;
-        setFontSizeREM(previewArticleSubtitle, inputSubtitleFontSize.value);
-
-        previewArticleContents.innerHTML = DOMPurify.sanitize(marked.parse(inputContents.value));
-        <!--const articleDate = document.getElementById("preview-article-date");-->
-        if (inputThumbnailCredits.value) {
-            previewArticleThumbnailCredits.textContent = "Grafică: " + inputThumbnailCredits.value;
-        } else {
-            previewArticleThumbnailCredits.textContent = "";
-        }
-        if (inputEditorialCredits.value) {
-            previewArticleEditorialCredits.textContent = "Redactare: " + inputEditorialCredits.value;
-        } else {
-            previewArticleEditorialCredits.textContent = "";
-        }
-        if (inputDTPCredits.value) {
-            previewArticleDTPCredits.textContent = "Tehnoredactare: " + inputDTPCredits.value;
-        } else {
-            previewArticleDTPCredits.textContent = "";
-        }
-
-        if (inputTitlePosition.value == "article") {
-            previewArticleTitle.classList.remove("center");
-            previewArticleAlternateTitlePosition.append(previewArticleTitle);
-        } else {
-            previewArticleTitle.classList.add("center");
-            previewArticleDefaultTitlePosition.append(previewArticleTitle);
-        }
-        if (inputSubtitlePosition.value == "article") {
-            previewArticleSubtitle.classList.remove("center");
-            previewArticleAlternateTitlePosition.append(previewArticleSubtitle);
-            previewArticleSubtitle.style.marginTop = 0;
-        } else {
-            previewArticleSubtitle.classList.add("center");
-            previewArticleDefaultTitlePosition.append(previewArticleSubtitle);
-            // todo: maybe make this variable somehow
-            previewArticleSubtitle.style.marginTop =
-                (previewArticleTitle.offsetHeight +
-                previewArticleSubtitle.offsetHeight) + "px";
-        }
-
-        previewArticleContents.firstChild.classList.remove("dropcap");
-        switch(inputfirstLetterStyle.value) {
-            case "dropcap":
-                previewArticleContents.firstChild.classList.add("dropcap");
-                break;
-        }
+        previewPage.style.display = "grid";
     }
 
     document.getElementById("button-edit-content").addEventListener("click", showContentPage);
