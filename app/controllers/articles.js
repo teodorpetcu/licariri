@@ -7,7 +7,7 @@ const { exec } = require("child_process")
 const { logger } = require("../services/logger.js")
 const { fileExists } = require("../utils/util.js");
 
-const { Author, Article, ArticleStyle } = require("../models/types.js");
+const { generateArticleID, Article, ArticleStyle } = require("../models/types.js");
 const { prerenderQueryAsFile } = require("./query.js");
 const { Magazine } = require("../models/types.js");
 const { articleDatabase } = require("../models/articles.js");
@@ -131,58 +131,28 @@ const post_adminAddArticle = async (req, res) => {
     const articleID = req.params.articleID;
 
     const [articleWithSameTitle, originalArticle] = await Promise.all([
-        articleDatabase.getArticleMeta(req.body.id),
+        articleDatabase.getArticleMeta(generateArticleID(req.body.article.title)),
         articleDatabase.getArticleMeta(articleID),
     ])
 
     if (!originalArticle) originalArticle = articleWithSameTitle;
 
-    const stage = originalArticle.stage;
-    const timestamp = new Date(originalArticle.timestamp);
-    const title = req.body.title.replace(/\//g, "").trim();
-    const subtitle = req.body.subtitle.trim();
-    const language = req.body.language;
-    const category = req.body.category;
-    const authors = Array.isArray(req.body["authors[]"])
-                    // two maps may seem redundant, but it's to ensure proper sorting
-                    ? req.body["authors[]"].map((a) => a.trim()).sort().map((a) => new Author(a))
-                    : (typeof req.body["authors[]"] === "string"
-                        ? [new Author(req.body["authors[]"].trim())]
-                        : []);
-    const tags = Array.isArray(req.body["tags[]"])
-                    ? req.body["tags[]"].map((t) => t.trim()).sort()
-                    : (typeof req.body["tags[]"] === "string"
-                        ? [req.body["tags[]"].trim()]
-                        : []);
-    const content = req.body.content//.replace(/([<>\\])/g, "\\$1");
-    const credits = {
-        editorial: req.body.credit_editorial.split(", ").map((name) => name.trim()).sort().filter((a) => a),
-        dtp: req.body.credit_dtp.split(", ").map((name) => name.trim()).sort().filter((a) => a),
-        thumbnail: req.body.credit_thumbnail.split(", ").map((name) => name.trim()).sort().filter((a) => a),
-    }
+    req.body.article.stage = originalArticle.stage;
+    req.body.article.timestamp = new Date(originalArticle.timestamp);
+    req.body.article.title = req.body.article.title.replace(/\//g, "").trim();
+    req.body.article.subtitle = req.body.article.subtitle.trim();
+    if (req.body.article.authors) req.body.article.authors = req.body.article.authors.sort();
+    if (req.body.article.tags) req.body.article.tags = req.body.article.tags.sort();
+    const content = req.body.contents//.replace(/([<>\\])/g, "\\$1");
     // TODO: improve description selection
     //const description = content.slice(0, 250);
     const description = "";
+    const articleStyle = req.body.style;
 
     let thumbnail = req.files ? req.files.thumbnail : undefined;
 
-    const article = new Article({ stage: stage, timestamp, title, subtitle, language, category, description, authors, tags });
-    const articleStyle = new ArticleStyle({
-        hide_title_in_thumbnail: req.body.hide_title_in_thumbnail,
-        title_font: req.body.title_font,
-        title_fill_style: req.body.title_fill_style,
-        title_color: req.body.title_color,
-        title_fontsize_thumbnail: req.body.title_fontsize_thumbnail,
-        title_fontsize_article: req.body.title_fontsize_article,
-        title_fontweight: req.body.title_fontweight,
-        title_position: req.body.title_position,
-        subtitle_font: req.body.subtitle_font,
-        subtitle_fontsize: req.body.subtitle_fontsize,
-        subtitle_fontweight: req.body.subtitle_fontweight,
-        subtitle_color: req.body.subtitle_color,
-        subtitle_position: req.body.subtitle_position,
-        dropcap: req.body.dropcap
-    });
+    let article = new Article(req.body.article);
+    article.credits = req.body.article.credits;
 
     if ((article.id != originalArticle.id && articleWithSameTitle)
         || !article.id) {
@@ -199,7 +169,7 @@ const post_adminAddArticle = async (req, res) => {
         articleDatabase.removeAllCredits(originalArticle.id);
     }
 
-    let renderStatus = await renderArticlePage(article, content, articleStyle, credits);
+    let renderStatus = await renderArticlePage(article, content, articleStyle, article.credits);
     if (renderStatus) {
         // if the article happens to be renamed, then its ID changes, and
         // its leftover files which won't be used anymore must be destroyed
@@ -244,13 +214,13 @@ const post_adminAddArticle = async (req, res) => {
         }
 
         articleDatabase.removeAllCredits(articleID);
-        for (let credit of credits.editorial) {
+        for (let credit of article.credits.editorial) {
             articleDatabase.addArticleCredit(articleID, credit, "editorial");
         }
-        for (let credit of credits.dtp) {
+        for (let credit of article.credits.dtp) {
             articleDatabase.addArticleCredit(articleID, credit, "dtp");
         }
-        for (let credit of credits.thumbnail) {
+        for (let credit of article.credits.thumbnail) {
             articleDatabase.addArticleCredit(articleID, credit, "thumbnail");
         }
         queryDatabase.unindexArticle(originalArticle.id)
@@ -258,7 +228,7 @@ const post_adminAddArticle = async (req, res) => {
         articleDatabase.updateMetadata(originalArticle.id, article)
             .finally(() => Promise.all(
                     article.authors.map((author) =>
-                        prerenderQueryAsFile({author: author.name})
+                        prerenderQueryAsFile({author: author})
                     ).concat(article.tags.map((tag) =>
                         prerenderQueryAsFile({tag: tag})
                     ))

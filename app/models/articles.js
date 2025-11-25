@@ -32,25 +32,8 @@ class ArticleDatabase extends Database {
             );
             CREATE TABLE IF NOT EXISTS article_styles
             (
-                id                          TEXT NOT NULL,
-
-                hide_title_in_thumbnail     INT,
-                title_font                  TEXT,
-                title_fill_style            TEXT,
-                title_color                 TEXT,
-                title_fontsize_thumbnail    INT,
-                title_fontsize_article      INT,
-                title_fontweight            INT,
-                title_position              TEXT,
-
-                subtitle_font               TEXT,
-                subtitle_fontsize           INT,
-                subtitle_fontweight         INT,
-                subtitle_color              TEXT,
-                subtitle_position           TEXT,
-
-                dropcap                     TEXT,
-
+                id      TEXT NOT NULL,
+                style   TEXT NOT NULL,
                 FOREIGN KEY (id) REFERENCES articles (id)
             );
             CREATE TABLE IF NOT EXISTS article_tags
@@ -138,7 +121,7 @@ class ArticleDatabase extends Database {
 
             this.run('DELETE from article_authors WHERE id = ?', [originalArticleID])
                 .then(() => Promise.all(article.authors.map((author) => {
-                    return this.run('INSERT INTO article_authors VALUES(?, ?)', [article.id, author.name]);
+                    return this.run('INSERT INTO article_authors VALUES(?, ?)', [article.id, author]);
                 }))),
 
             this.run('DELETE from article_tags WHERE id = ?', [originalArticleID])
@@ -170,53 +153,14 @@ class ArticleDatabase extends Database {
             /* This INSERT statement is pure madness. */
             .then(() => this.run(`INSERT INTO article_styles (
                     id,
-                    hide_title_in_thumbnail,
-                    title_font,
-                    title_fill_style,
-                    title_color,
-                    title_fontsize_thumbnail,
-                    title_fontsize_article,
-                    title_fontweight,
-                    title_position,
-                    subtitle_font,
-                    subtitle_fontsize,
-                    subtitle_fontweight,
-                    subtitle_color,
-                    subtitle_position,
-                    dropcap
+                    style
                 )
                 VALUES (
                     $id,
-                    $hide_title_in_thumbnail,
-                    $title_font,
-                    $title_fill_style,
-                    $title_color,
-                    $title_fontsize_thumbnail,
-                    $title_fontsize_article,
-                    $title_fontweight,
-                    $title_position,
-                    $subtitle_font,
-                    $subtitle_fontsize,
-                    $subtitle_fontweight,
-                    $subtitle_color,
-                    $subtitle_position,
-                    $dropcap
+                    $style
                 )`, {
                     $id: article.id,
-                    $hide_title_in_thumbnail: articleStyle.hide_title_in_thumbnail,
-                    $title_font: articleStyle.title_font,
-                    $title_fill_style: articleStyle.title_fill_style,
-                    $title_color: articleStyle.title_color,
-                    $title_fontsize_thumbnail: articleStyle.title_fontsize_thumbnail,
-                    $title_fontsize_article: articleStyle.title_fontsize_article,
-                    $title_fontweight: articleStyle.title_fontweight,
-                    $title_position: articleStyle.title_position,
-                    $subtitle_font: articleStyle.subtitle_font,
-                    $subtitle_fontsize: articleStyle.subtitle_fontsize,
-                    $subtitle_fontweight: articleStyle.subtitle_fontweight,
-                    $subtitle_color: articleStyle.subtitle_color,
-                    $subtitle_position: articleStyle.subtitle_position,
-                    $dropcap: articleStyle.dropcap,
+                    $style: JSON.stringify(articleStyle),
                 }
             ))
             .catch((err) => this.dbLogger.error(`updating article styles`, err));
@@ -230,22 +174,7 @@ class ArticleDatabase extends Database {
      */
     getArticleStyle = async (articleID) => {
         return this.get('SELECT * FROM article_styles WHERE id = ?', [articleID])
-            .then((row) => new ArticleStyle({
-                hide_title_in_thumbnail: row.hide_title_in_thumbnail,
-                title_font: row.title_font,
-                title_fill_style: row.title_fill_style,
-                title_color: row.title_color,
-                title_fontsize_thumbnail: row.title_fontsize_thumbnail,
-                title_fontsize_article: row.title_fontsize_article,
-                title_fontweight: row.title_fontweight,
-                title_position: row.title_position,
-                subtitle_font: row.subtitle_font,
-                subtitle_fontsize: row.subtitle_fontsize,
-                subtitle_fontweight: row.subtitle_fontweight,
-                subtitle_color: row.subtitle_color,
-                subtitle_position: row.subtitle_position,
-                dropcap: row.dropcap
-            }))
+            .then((row) => new ArticleStyle(JSON.parse(row.style)))
             .catch((err) => {
                 this.dbLogger.error(`getting article style`, err);
                 return new ArticleStyle({});
@@ -372,12 +301,12 @@ class ArticleDatabase extends Database {
     /**
      * Return the array of 'Author's that are associated with the given article ID
      * @param {string} id
-     * @returns {Promise<Author[]>}
+     * @returns {Promise<string[]>}
      */
     // TODO: return undefined if article is nonexistent
     getArticleAuthors = async (id) => {
         return this.all('SELECT author FROM article_authors WHERE id = ? ORDER BY author ASC', [id])
-            .then((rows) => rows.map((row) => new Author(row.author)))
+            .then((rows) => rows.map((row) => row.author))
             .catch((err) => {this.dbLogger.error(`getting article authors`, err); return []});
     }
 

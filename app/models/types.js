@@ -1,13 +1,13 @@
 const { formatDate } = require("../utils/util.js");
 
-class Author {
-    /**
-     * @param {string} name
-     */
-    constructor(name) {
-        this.name = name;
-    }
+/**
+ * @params {string} title
+ * @returns {string}
+ */
+generateArticleID = (title) => {
+    return title.toLowerCase().replaceAll(/[,.?*!:;"'<>]/g, "").replaceAll(/\s/g, "-");
 }
+
 
 class Article {
     /**
@@ -20,14 +20,14 @@ class Article {
      * @param {string} obj.language
      * @param {string} obj.category
      * @param {string} obj.descripion
-     * @param {Author[]} obj.authors
+     * @param {string[]} obj.authors
      * @param {string[]} obj.tags
      */
     constructor({stage, timestamp = new Date(), title, subtitle, language = "", category, description, authors = [], tags = []}) {
         language = language.toLowerCase();
         if (! ["ro", "en", "fr", "de"].includes(language)) language = "ro";
 
-        this.id = title.toLowerCase().replaceAll(/[,.?*!:;"'<>]/g, "").replaceAll(/\s/g, "-");
+        this.id = generateArticleID(title)
         this.timestamp = timestamp.valueOf();
         this.stage = stage;
         this.date = formatDate(timestamp);
@@ -55,35 +55,28 @@ class Article {
 class ArticleStyle {
     /**
      * @param {Object} obj
-     * @param {number} obj.hide_title_in_thumbnail
-     * @param {string} obj.title_font
-     * @param {string} obj.title_fill_style
-     * @param {string} obj.title_color
-     * @param {number} obj.title_fontsize_thumbnail
-     * @param {number} obj.title_fontsize_article
-     * @param {number} obj.title_fontweight
-     * @param {string} obj.title_position
-     * @param {string} obj.subtitle_font
-     * @param {number} obj.subtitle_fontsize
-     * @param {number} obj.subtitle_fontweight
-     * @param {string} obj.subtitle_position
-     * @param {string} obj.dropcap
+     * @param {number} obj.hideTitleInThumbnail
+     * @param {number} obj.title
+     * @param {string} obj.title.font
+     * @param {string} obj.title.color
+     * @param {string} obj.title.position
+     * @param {string} obj.title.fontsizeArticle
+     * @param {string} obj.title.fontsizeThumbnail
+     * @param {string} obj.title.fontweight
+     * @param {string} obj.subtitle
+     * @param {string} obj.subtitle.font
+     * @param {string} obj.subtitle.color
+     * @param {string} obj.subtitle.position
+     * @param {string} obj.subtitle.fontsize
+     * @param {string} obj.subtitle.fontweight
+     * @param {string} obj.article
+     * @param {string} obj.article.firstLetter
      */
-    constructor({hide_title_in_thumbnail, title_font, title_fill_style, title_color, title_fontsize_thumbnail, title_fontsize_article, title_fontweight, title_position, subtitle_font, subtitle_fontsize, subtitle_fontweight, subtitle_color, subtitle_position, dropcap}) {
-        this.hide_title_in_thumbnail  = hide_title_in_thumbnail;
-        this.title_font               = title_font;
-        this.title_fill_style         = title_fill_style
-        this.title_color              = title_color;
-        this.title_fontsize_thumbnail = title_fontsize_thumbnail;
-        this.title_fontsize_article   = title_fontsize_article;
-        this.title_fontweight         = title_fontweight;
-        this.title_position           = title_position;
-        this.subtitle_font            = subtitle_font;
-        this.subtitle_fontsize        = subtitle_fontsize;
-        this.subtitle_fontweight      = subtitle_fontweight;
-        this.subtitle_color           = subtitle_color;
-        this.subtitle_position        = subtitle_position;
-        this.dropcap                  = dropcap;
+    constructor({hideTitleInThumbnail, title, subtitle, article}) {
+        this.hideTitleInThumbnail = hideTitleInThumbnail;
+        this.title = title;
+        this.subtitle = subtitle;
+        this.article = article;
     }
 }
 
@@ -101,7 +94,7 @@ class Magazine {
 }
 
 module.exports = {
-    Author,
+    generateArticleID,
     Article,
     ArticleStyle,
     Magazine,

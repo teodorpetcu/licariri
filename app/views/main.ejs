@@ -37,8 +37,7 @@
             <%_ for (article of articles) { _%>
                 <a href="/articles/<%= article.id %>">
                     <div class="article-thumbnail">
-                        <%_ if (article.style.hide_title_in_thumbnail !== 'on') { _%>
-                        <h1 style="font-family: <%= article.style.title_font %>; font-size: <%= article.style.title_fontsize_thumbnail %>rem; font-weight: <%= article.style.title_fontweight %>; color: <%= article.style.title_color %>" class="center<% if (article.style.title_fill_style === 'on') { %> colour-complement-background<%_ } _%>"><%= article.title %></h1>
+                        <%_ if (article.style.hideTitleInThumbnail !== 'on') { _%> <h1 style="font-family: <%= article.style.title.font %>; font-size: <%= article.style.title.fontsizeThumbnail %>rem; font-weight: <%= article.style.title.fontweight %>; color: <%= article.style.title.color %>" class="center<% if (article.style.title.fillStyle === 'on') { %> colour-complement-background<%_ } _%>"><%= article.title %></h1>
                         <%_ } _%>
                         <img src="/articles/images/<%= article.id %>.webp">
                     </div>

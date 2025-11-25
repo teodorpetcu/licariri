@@ -66,81 +66,81 @@
 
             <label>Ascunde titlul din thumbnail:</label>
             <input type="checkbox" name="style.hideTitleInThumbnail"
-                <% if (defaults.style.hide_title_in_thumbnail) { %>
+                <% if (defaults.style.hideTitleInThumbnail) { %>
                 checked
                 <% } %>>
 
             <label>Fontul titlului:</label>
             <select name="style.title.font">
                 <option value="Baskervville">Baskervville</option>
-                <option value="Kameron" <% if (defaults.style.title_font == "Kameron") { %>selected<% } %>>Kameron</option>
+                <option value="Kameron" <% if (defaults.style.title.font == "Kameron") { %>selected<% } %>>Kameron</option>
             </select>
 
             <label>Mărimea fontului titlului din thumbnail:</label>
             <input name="style.title.fontsizeThumbnail"
-                value="<%= defaults.style.title_fontsize_thumbnail %>"
+                value="<%= defaults.style.title.fontsizeThumbnail %>"
                 type="range" min="1.5" max="2.5" step="0.1" >
 
             <label>Mărimea fontului titlului din articol:</label>
             <input name="style.title.fontsizeArticle"
-                value="<%= defaults.style.title_fontsize_article %>"
+                value="<%= defaults.style.title.fontsizeArticle %>"
                 type="range" min="2" max="5" step="0.1" >
 
             <label>Grosimea fontului titlului:</label>
             <input name="style.title.fontweight"
-                value="<%= defaults.style.title_fontweight %>"
+                value="<%= defaults.style.title.fontweight %>"
                 type="range" min="400" max="800" step="50">
 
             <!--TITLE FILL STYLE == <select>-->
             <label>Titlul contrastează cu fundalul (ignoră culoarea):</label>
             <input type="checkbox" name="style.title.fillStyle"
-                <% if (defaults.style.title_fill_style) { %>
+                <% if (defaults.style.title.fillStyle) { %>
                 checked
                 <% } %>>
 
             <label>Culoarea titlului:</label>
             <input name="style.title.color"
-                value="<%= defaults.style.title_color %>"
+                value="<%= defaults.style.title.color %>"
                 type="color">
 
             <label>Poziția titlului în articol:</label>
             <select name="style.title.position">
                 <option value="thumbnail">Pe thumbnail</option>
-                <option value="article" <% if (defaults.style.title_position == "article") { %>selected<% } %>>Sub thumbnail</option>
+                <option value="article" <% if (defaults.style.title.position == "article") { %>selected<% } %>>Sub thumbnail</option>
 
             </select>
 
             <label>Fontul subtitlului:</label>
             <select name="style.subtitle.font">
                 <option value="Baskervville">Baskervville</option>
-                <option value="Kameron" <% if (defaults.style.subtitle_font == "Kameron") { %>selected<% } %>>Kameron</option>
+                <option value="Kameron" <% if (defaults.style.subtitle.font == "Kameron") { %>selected<% } %>>Kameron</option>
             </select>
 
             <label>Mărimea fontului subtitlului din articol:</label>
             <input name="style.subtitle.fontsize"
-                value="<%= defaults.style.subtitle_fontsize %>"
+                value="<%= defaults.style.subtitle.fontsize %>"
                 type="range" min="1" max="2" step="0.1" >
 
             <label>Grosimea fontului subtitlului:</label>
             <input name="style.subtitle.fontweight"
-                value="<%= defaults.style.subtitle_fontweight %>"
+                value="<%= defaults.style.subtitle.fontweight %>"
                 type="range" min="400" max="800" step="50">
 
             <label>Culoarea subtitlului:</label>
             <input name="style.subtitle.color"
-                value="<%= defaults.style.subtitle_color %>"
+                value="<%= defaults.style.subtitle.color %>"
                 type="color">
 
             <label>Poziția subtitlului în articol:</label>
             <select name="style.subtitle.position">
                 <option value="thumbnail">Pe thumbnail</option>
-                <option value="article" <% if (defaults.style.subtitle_position == "article") { %>selected<% } %>>Sub thumbnail</option>
+                <option value="article" <% if (defaults.style.subtitle.position == "article") { %>selected<% } %>>Sub thumbnail</option>
             </select>
 
             <label>Stilul primei litere din text:</label>
             <select name="style.article.firstLetter">
                 <option value="default">Fără stil</option>
-                <option value="dropcap" <% if (defaults.style.dropcap == "dropcap") { %>selected<% } %>>Dropcap cu border</option>
+                <option value="dropcap" <% if (defaults.style.article.firstLetter == "dropcap") { %>selected<% } %>>Dropcap cu border</option>
             </select>
         </div>
         <input id="article-submit-button" type="submit" value="Trimite">
@@ -184,7 +184,7 @@
     }
 
     <% for (author of defaults.authors) { %>
-        addField("author", "<%= author.name %>");
+        addField("author", "<%= author %>");
     <% } %>
     <% for (tag of defaults.tags) { %>
         addField("tag", "<%= tag %>");
@@ -202,18 +202,6 @@
 
     const previewMinifiedThumbnail = document.getElementById("preview-minified-thumbnail");
 
-    const showContentPage = () => {
-        contentPage.style.display = "grid";
-        dtpPage.style.display = "none";
-        previewPage.style.display = "none";
-    }
-
-    const showDTPPage = () => {
-        contentPage.style.display = "none";
-        dtpPage.style.display = "grid";
-        previewPage.style.display = "none";
-    }
-
     const htmlFormToNestedJSON = (form) => {
         const formData = new FormData(form);
         const nestedJSON = {};
@@ -229,8 +217,12 @@
                 if (nestingIndex == keys.length - 1) {
                     if (Array.isArray(current)) {
                         current.push(value);
-                    } else if (parentKey == "credits" && value) {
-                        current[key] = value.split(",").map((x) => x.trim());
+                    } else if (parentKey == "credits") {
+                        if (value) {
+                            current[key] = value.split(",").map((x) => x.trim());
+                        } else {
+                            current[key] = [];
+                        }
                     } else {
                         current[key] = value;
                     }
@@ -248,6 +240,18 @@
             })
         }
         return nestedJSON;
+    }
+
+    const showContentPage = () => {
+        contentPage.style.display = "grid";
+        dtpPage.style.display = "none";
+        previewPage.style.display = "none";
+    }
+
+    const showDTPPage = () => {
+        contentPage.style.display = "none";
+        dtpPage.style.display = "grid";
+        previewPage.style.display = "none";
     }
 
     const showPreviewPage = () => {
@@ -284,6 +288,19 @@
         event.preventDefault();
         event.returnValue = true;
     });
+
+    articleInputForm.addEventListener("submit", async (evt) => {
+        evt.preventDefault();
+        let formJSON = htmlFormToNestedJSON(articleInputForm);
+        fetch("/admin/articles/<%= defaults.id %>", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Accepts': 'text/html'
+            },
+            body: JSON.stringify(formJSON)
+        });
+    })
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
