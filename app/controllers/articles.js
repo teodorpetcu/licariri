@@ -117,14 +117,10 @@ const post_adminArticlePreview = async (req, res) => {
     const QUERY_ROUTES_ALLOWED = process.env.ALLOW_QUERY_ROUTES == "true";
 
     ejs.renderFile(__dirname + "/../views/article.ejs", {article, articleStyle,
-                    credits, QUERY_ROUTES_ALLOWED}, {async: true})
+                    credits, QUERY_ROUTES_ALLOWED, preview: true}, {async: true})
         .then((renderedPage) => {
             res.set("Content-Type", "text/html").send(renderedPage);
         })
-}
-
-const get_adminArticleThumbnailPreview = async (req, res) => {
-    // res.send(res.render()) some ejs for rendering just article thumbnails
 }
 
 const post_adminAddArticle = async (req, res) => {

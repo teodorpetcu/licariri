@@ -9,7 +9,9 @@
 </head>
 
 <body id="article-page">
+<%_ if (! preview) { _%>
 <%- await include("nav"); _%>
+<%_ } _%>
     <div id="article-headline">
         <img id="article-thumbnail" src="/articles/images/<%= article.id %>.webp" class="no-select">
         <div id="thumbnail-text-container" class="center">
