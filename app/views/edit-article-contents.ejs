@@ -58,11 +58,13 @@
         </div>
         <div id="edit-article-dtp">
             <div id="preview-minified-thumbnail" class="article-thumbnail no-select" style="width: 300px; position: absolute; right: 100px; top: 300px; transform: translateY(-50%);">
+                <h1 id="preview-minified-thumbnail-title" class="center"></h1>
+                <img id="preview-minified-thumbnail-img" src="">
             </div>
 
             <label>Thumbnail:</label>
-            <input type="file" accept="image/*" name="thumbnail">
-            <button type="button" id="reset-thumbnail-button">RESETARE</button>
+            <input type="file" accept="image/*" name="thumbnail" id="input-thumbnail">
+            <button type="button" id="reset-input-thumbnail-button">RESETARE</button>
 
             <label>Ascunde titlul din thumbnail:</label>
             <input type="checkbox" name="style.hideTitleInThumbnail"
@@ -200,7 +202,10 @@
     const previewPage = document.getElementById("article-page");
     const articleInputForm = document.getElementById("inputform");
 
-    const previewMinifiedThumbnail = document.getElementById("preview-minified-thumbnail");
+    const resetInputThumbnailButton = document.getElementById("reset-input-thumbnail-button");
+    const inputThumbnail = document.getElementById("input-thumbnail");
+    const previewMinifiedThumbnailTitle = document.getElementById("preview-minified-thumbnail-title");
+    const previewMinifiedThumbnailImage = document.getElementById("preview-minified-thumbnail-img");
 
     const htmlFormToNestedJSON = (form) => {
         const formData = new FormData(form);
@@ -242,6 +247,32 @@
         return nestedJSON;
     }
 
+    const updatePreviewThumbnail = () => {
+        let [uploadedThumbnail] = inputThumbnail.files;
+        if (uploadedThumbnail) {
+            previewMinifiedThumbnailImage.src = URL.createObjectURL(uploadedThumbnail);
+        } else {
+            previewMinifiedThumbnailImage.src = "/articles/images/<%= defaults.id %>.webp";
+        }
+        const formJSON = htmlFormToNestedJSON(articleInputForm);
+        if (formJSON.style.hideTitleInThumbnail) {
+            previewMinifiedThumbnailTitle.innerText = "";
+        } else {
+            previewMinifiedThumbnailTitle.innerText = formJSON.article.title;
+        }
+        previewMinifiedThumbnailTitle.style.fontFamily = formJSON.style.title.font;
+        previewMinifiedThumbnailTitle.style.fontSize = formJSON.style.title.fontsizeThumbnail + "rem";
+        previewMinifiedThumbnailTitle.style.fontWeight = formJSON.style.title.fontweight;
+        previewMinifiedThumbnailTitle.style.color = formJSON.style.title.color;
+        if (formJSON.style.title.fillStyle == "on") {
+            previewMinifiedThumbnailTitle.classList.add("colour-complement-background");
+        } else {
+            previewMinifiedThumbnailTitle.classList.remove("colour-complement-background");
+        }
+    }
+
+    updatePreviewThumbnail(); // to initialise it
+
     const showContentPage = () => {
         contentPage.style.display = "grid";
         dtpPage.style.display = "none";
@@ -272,6 +303,11 @@
             .then((html) => {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, "text/html");
+                const previewPageArticleThumbnail = doc.getElementById("article-thumbnail");
+                let [newThumbnail] = inputThumbnail.files;
+                if (newThumbnail) {
+                    previewPageArticleThumbnail.src = URL.createObjectURL(newThumbnail);
+                }
                 previewPage.innerHTML = doc.body.innerHTML;
             });
 
@@ -288,6 +324,13 @@
         event.preventDefault();
         event.returnValue = true;
     });
+
+    articleInputForm.addEventListener("change", updatePreviewThumbnail);
+
+    resetInputThumbnailButton.addEventListener("click", () => {
+        inputThumbnail.value = "";
+        updatePreviewThumbnail(); // because changes due to JS don't trigger a form change event
+    })
 
     articleInputForm.addEventListener("submit", async (evt) => {
         evt.preventDefault();
