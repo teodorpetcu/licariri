@@ -3,7 +3,7 @@ const crypto = require("crypto"); // for randomBytes
 
 const { Database } = require("./database.js");
 
-const { HASH_COST, SESSION_TOKEN_LENGTH, USERS_DATABASE_PATH } = require("../config.js");
+const { HASH_COST, SESSION_TOKEN_LENGTH, DATABASE_PATH } = require("../config.js");
 
 /**
  * Hash the given plain-text password using bcrypt
@@ -294,7 +294,7 @@ class UsersDatabase extends Database {
     }
 }
 
-const usersDatabase = new UsersDatabase(USERS_DATABASE_PATH);
+const usersDatabase = new UsersDatabase(DATABASE_PATH);
 
 module.exports = {
     usersDatabase,

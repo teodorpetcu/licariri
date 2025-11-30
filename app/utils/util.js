@@ -38,7 +38,6 @@ const mkdirIfDoesntExist = async (dir) => {
  */
 const createDataDirectoriesIfTheyDontExist = async () => {
     await Promise.all([
-        mkdirIfDoesntExist(CONFIG.DATABASES_DIRECTORY),
         mkdirIfDoesntExist(CONFIG.PUBLIC_ARTICLE_CONTENTS_PATH),
         mkdirIfDoesntExist(CONFIG.DRAFT_ARTICLE_CONTENTS_PATH),
         mkdirIfDoesntExist(CONFIG.TRASH_ARTICLE_CONTENTS_PATH),

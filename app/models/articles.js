@@ -1,6 +1,6 @@
-const { Author, Article, ArticleStyle, Magazine } = require("./types.js");
+const { Article, ArticleStyle, Magazine } = require("./types.js");
 const { Database } = require("./database.js");
-const { ARTICLE_DATABASE_PATH } = require("../config.js");
+const { DATABASE_PATH } = require("../config.js");
 
 class ArticleDatabase extends Database {
     /**
@@ -32,27 +32,27 @@ class ArticleDatabase extends Database {
             );
             CREATE TABLE IF NOT EXISTS article_styles
             (
-                id      TEXT NOT NULL,
-                style   TEXT NOT NULL,
+                id                  TEXT NOT NULL,
+                style               TEXT NOT NULL,
                 FOREIGN KEY (id) REFERENCES articles (id)
             );
             CREATE TABLE IF NOT EXISTS article_tags
             (
-                id      TEXT NOT NULL,
-                tag     TEXT NOT NULL,
+                id                  TEXT NOT NULL,
+                tag                 TEXT NOT NULL,
                 FOREIGN KEY (id) REFERENCES articles (id)
             );
             CREATE TABLE IF NOT EXISTS article_authors
             (
-                id      TEXT NOT NULL,
-                author  TEXT NOT NULL,
+                id                  TEXT NOT NULL,
+                author              TEXT NOT NULL,
                 FOREIGN KEY (id) REFERENCES articles (id)
             );
             CREATE TABLE IF NOT EXISTS article_credits
             (
-                id              TEXT NOT NULL,
-                name            TEXT NOT NULL,
-                credited_for    TEXT NOT NULL,
+                id                  TEXT NOT NULL,
+                name                TEXT NOT NULL,
+                credited_for        TEXT NOT NULL,
                 FOREIGN KEY (id) REFERENCES articles (id)
             );
             CREATE TABLE IF NOT EXISTS magazines
@@ -399,7 +399,7 @@ class ArticleDatabase extends Database {
     }
 }
 
-const articleDatabase = new ArticleDatabase(ARTICLE_DATABASE_PATH);
+const articleDatabase = new ArticleDatabase(DATABASE_PATH);
 
 module.exports = {
     articleDatabase,
