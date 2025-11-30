@@ -12,7 +12,6 @@ const { prerenderQueryAsFile } = require("./query.js");
 const { Magazine } = require("../models/types.js");
 const { articleDatabase } = require("../models/articles.js");
 const { queryDatabase } = require("../models/query.js");
-const { viewsDatabase } = require("../models/view-count.js");
 const { usersDatabase } = require("../models/admin.js")
 
 const { generateSitemapFile } = require("../services/sitemap-generator.js");
@@ -93,7 +92,6 @@ const get_mainPage = async (_, res) => {
 
 const get_articlePage = async (req, res) => {
     const articleID = req.params.articleID;
-    viewsDatabase.logRequest(Date.now(), req.ip, articleID);
     if (await fileExists(`${PUBLIC_ARTICLE_CONTENTS_PATH}/${articleID}.html`)) {
         res.sendFile(`${PUBLIC_ARTICLE_CONTENTS_PATH}/${articleID}.html`);
     } else {
@@ -161,7 +159,6 @@ const post_adminAddArticle = async (req, res) => {
 
     // to keep consistent with other databases
     if (article.id != originalArticle.id) {
-        viewsDatabase.renameArticle(originalArticle.id, article.id);
         articleDatabase.removeAllCredits(originalArticle.id);
     }
 

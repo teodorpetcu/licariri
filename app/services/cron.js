@@ -2,7 +2,6 @@ const fs = require("fs");
 
 const { articleDatabase } = require("../models/articles.js");
 const { usersDatabase } = require("../models/admin.js");
-const { viewsDatabase } = require("../models/view-count.js");
 const { renderArticlePage } = require("../controllers/articles.js");
 const { logger } = require("./logger.js");
 const { ARTICLES_DIRECTORY } = require("../config.js");
@@ -55,11 +54,8 @@ const removeOldSessionsFromDatabase = async () => {
 
 const dailyUpdateJob = async () => {
     logger.info("running daily update job...");
-    await viewsDatabase.open();
     return Promise.all([
         removeOldSessionsFromDatabase(),
-        viewsDatabase.updateArticleViews()
-            .then(() => updateAllArticles()),
     ])
         .then(() => logger.info("successfully ran daily update job"))
         .catch((err) => logger.error(`during daily update job`, err))

@@ -7,7 +7,6 @@ const fileUpload = require("express-fileupload");
 const { createDataDirectoriesIfTheyDontExist } = require("./utils/util.js");
 const { usersDatabase } = require("./models/admin.js");
 const { articleDatabase } = require("./models/articles.js");
-const { viewsDatabase } = require("./models/view-count.js");
 const { queryDatabase } = require("./models/query.js");
 
 const {
@@ -141,7 +140,6 @@ createDataDirectoriesIfTheyDontExist()
         articleDatabase.open().then(articleDatabase.init()),
         usersDatabase.open().then(usersDatabase.init()),
         queryDatabase.open().then(queryDatabase.init()),
-        viewsDatabase.open().then(viewsDatabase.init()),
     ]))
     .then(() => logger.info("database open ok"))
     .then(() => updateMainPage())
@@ -159,7 +157,6 @@ const gracefulShutdown = async (signal) => {
         articleDatabase.close(),
         usersDatabase.close(),
         queryDatabase.close(),
-        viewsDatabase.close(),
     ])
         .then(() => {
             logger.info("database close ok")
