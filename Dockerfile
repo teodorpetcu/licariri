@@ -1,5 +1,5 @@
 # first build to see if it passes all tests
-FROM node:25 AS build
+FROM node:25-slim AS build
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ ENV NODE_ENV="development"
 RUN NODE_OPTIONS="--localstorage-file=/tests/jest-storage" npm test
 
 # production build
-FROM node:25 AS production
+FROM node:25-slim AS production
 
 WORKDIR /app
 
