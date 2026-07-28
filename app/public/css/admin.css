@@ -1,52 +1,36 @@
 #admin-page {
-    background-color: #046044;
+    background-color: #eaeaea;
     width: 100%;
+    display: grid;
+    grid-template-columns: 300px auto;
 
     font-family: "Hind";
     #panels, #content {
-        position: absolute;
-        background-color: #ffffff80;
-        height: 95%;
-        top: 50%;
-        transform: translateY(-50%);
-        border: 1px solid black;
+        position: relative;
     }
 
     #panels {
         padding: 10px;
-        left: 20px;
-        border-radius: 12px;
         font-size: 1.2rem;
-        width: 300px;
+        border-left: 2px solid black;
 
         #userinfo {
             text-align: center;
-            p, img {
+            position: relative;
+            p {
                 display: inline-block;
                 vertical-align: middle;
-            }
-            p {
                 font-family: "Baskervville";
                 font-size: 1.2em;
                 -webkit-text-stroke-color: black;
                 -webkit-text-stroke-width: 1px;
             }
-            img {
-                width: 32px;
-                aspect-ratio: 1;
-                margin-right: 10px;
-            }
         }
 
-        button {
-            text-transform: uppercase;
-            width: 100%;
-            border-radius: 10px;
-            font-size: 1rem;
-        }
-
-        .active-button {
-            background-color: lightgreen;
+        a {
+            text-align: center;
+            display: block;
+            padding: 5px;
         }
 
         hr {
@@ -55,83 +39,12 @@
     }
 
     #content {
-        > div {
-            position: absolute;
-            display: none;
+        table {
+            width: auto;
         }
-        > .active-tab {
-            display: initial !important;
-        }
-        padding: 30px;
-        left: 340px;
-        border-radius: 12px;
-        width: calc(100% - 340px - 20px);
-        font-size: 1.2rem;
-        .article-list {
-            height: calc(100% - 60px);
-            text-align: center;
-            width: calc(100% - 2 * 30px);
-            .article-row {
-                display: grid;
-                grid-template-columns: 1.2rem 4fr 1fr 1fr 1fr 1fr;
-                padding-bottom: 15px;
-                a {
-                    color: darkblue;
-                    transition: color 0.2s;
-                }
-                a:hover {
-                    color: #007080;
-                }
-                p {
-                    margin: 0;
-                }
-                form {
-                    display: inline-block;
-                }
-            }
-        }
-        .article-page:not(.active-page) {
-            display: none !important;
-        }
-        .active-page-button {
-            background-color: lightgreen;
-        }
-        .page-selector {
-            bottom: 10px;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            h5 {
-                margin-bottom: 0;
-            }
-        }
-        .magazine-row {
-            display: grid;
-            grid-template-columns: 1.2rem 1fr 1fr 1fr !important;
-            margin: 0 auto !important;
-            width: 60% !important;
-        }
-        #tab-articlesDrafts {
-            text-align: center;
-            #add-article-form {
-                margin-left: 1.2rem;
-                button {
-                    width: 40px;
-                    aspect-ratio: 1;
-                    line-height: 40px;
-                    border-radius: 50%;
-                    font-size: 2rem;
-                    padding: 0;
-                    margin: 0;
-                }
-            }
-        }
-        #tab-changePassword, #tab-addmagazine, #tab-addUser {
-            text-align: center;
-            border-radius: 10px;
-            padding: 15px;
-            background-color: #ffffff50;
-            border: 1px solid black;
+
+        input {
+            display: block;
         }
     }
 }

@@ -9,3 +9,5 @@ services:
       - ./data:/data
     environment:
       - NODE_ENV=production
+      - ALLOW_QUERY_ROUTES=false
+      - ALLOW_ADMIN_ROUTES=false

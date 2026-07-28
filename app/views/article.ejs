@@ -6,6 +6,9 @@
     <meta name="description" content="<%= article.description %>">
     <meta property="og:image" content="https://licariri.ro/articles/images/<%= article.id %>.webp"/>
 <%- await include("meta"); _%>
+<%_ if (! preview) { _%>
+    <script type="text/javascript" src="/js/main-nav.js" defer></script>
+<%_ } _%>
 </head>
 
 <body id="article-page">
@@ -100,7 +103,5 @@
     articleContents.firstChild.classList.add("dropcap");
 </script>
 <%_ } _%>
-
-<%- await include("nav-script"); _%>
 
 </html>

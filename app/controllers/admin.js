@@ -64,26 +64,19 @@ const get_adminLoginPage = async (req, res) => {
     }
 }
 
-const get_adminPannelPage = async (req, res) => {
+const get_adminPage = async (req, res) => {
     if (req.user) {
-        let usersPagesPromise = Promise.resolve([[]]);
+        let canManageOtherUsers = false;
         if (req.user.privilege >= USER_PRIVILEGES["SUPERUSER"]) {
-            usersPagesPromise = usersDatabase.getAllUsers().then((users) => paginate(users, 12));
+            canManageOtherUsers = true;
         }
-        const [publicArticlesPages, draftArticlesPages, trashArticlesPages, magazines, usersPages] = await Promise.all([
-            articleDatabase.searchArticles("stage", "public").then((articles) => paginate(articles, 12)),
-            articleDatabase.searchArticles("stage", "draft").then((articles) => paginate(articles, 12)),
-            articleDatabase.searchArticles("stage", "trash").then((articles) => paginate(articles, 12)),
-            articleDatabase.getAllMagazinesSorted().then((magazines) => paginate(magazines, 12)),
-            usersPagesPromise,
-        ]).catch((err) => logger.error(`fetching pages for admin pannel`, err));
-        res.render("admin", {publicArticlesPages, draftArticlesPages, trashArticlesPages, magazines, user: req.user, usersPages});
+        res.render("admin", {user: req.user, canManageOtherUsers});
     } else {
         res.redirect("login");
     }
 }
 
-const post_adminLoginCheck = async (req, res) => {
+const post_adminAPI_loginCheck = async (req, res) => {
     const id = req.body.username;
     const pass = req.body.password;
     const rememberMe = req.body.remember_me;
@@ -103,13 +96,13 @@ const post_adminLoginCheck = async (req, res) => {
     }
 }
 
-const post_adminLogout = async(req, res) => {
+const post_adminAPI_logout = async(req, res) => {
     usersDatabase.removeSession(req.cookies.session);
     res.clearCookie("session");
     res.redirect("/login")
 }
 
-const get_adminAddArticle = async (req, res) => {
+const get_adminAddArticlePage = async (req, res) => {
     let article = await articleDatabase.getArticle(req.params.articleID);
     if (article) {
         article.credits = { editorial: [], dtp: [], thumbnail: [] };
@@ -141,7 +134,7 @@ const get_adminAddArticle = async (req, res) => {
     res.render("edit-article-contents", {defaults: article});
 }
 
-const post_adminAddUser = async (req, res) => {
+const post_adminAPI_addUser = async (req, res) => {
     if (req.user.privilege < USER_PRIVILEGES["SUPERUSER"]) {
         res.sendStatus(401);
     } else {
@@ -153,7 +146,7 @@ const post_adminAddUser = async (req, res) => {
     }
 }
 
-const post_adminChangeUserPassword = async (req, res) => {
+const post_adminAPI_changeUserPassword = async (req, res) => {
     if (await usersDatabase.isCorrectLoginCombo(req.user.id, req.body.original)) {
         await Promise.all([
             usersDatabase.changePassword(req.user, req.body.password),
@@ -165,7 +158,7 @@ const post_adminChangeUserPassword = async (req, res) => {
     }
 }
 
-const post_adminSuspendUser = async (req, res) => {
+const post_adminAPI_suspendUser = async (req, res) => {
     let userID = req.body.id;
     let suspend = req.body.suspend;
     // TODO: check server-side if the user requesting suspension's privilege is
@@ -221,22 +214,40 @@ const activityToHumanReadable = async (activity) => {
     return activity;
 }
 
-const get_adminActivitiesPage = async (_, res) => {
-    let activities = await usersDatabase.getAllActivities();
-    activities = await Promise.all(activities.map((activity) => activityToHumanReadable(activity)));
-    res.render("activities", {activities});
+const get_adminAPI_users = async (_, res) => {
+    let users = await usersDatabase.getAllUsers();
+    res.send(users)
+}
+
+const get_adminAPI_activity = async (_, res) => {
+    let activity = await usersDatabase.getAllActivities();
+    let human_readable = await Promise.all(activity.filter((a) => a.action != "changepassword").map((a) => activityToHumanReadable(a)));
+    res.send(human_readable);
+}
+
+const get_adminAPI_articles = async (_, res) => {
+    let articles = await articleDatabase.searchArticles(undefined);
+    res.send(articles)
+}
+
+const get_adminAPI_magazines = async (_, res) => {
+    let magazines = await articleDatabase.getAllMagazinesSorted();
+    res.send(magazines)
 }
 
 module.exports = {
     identifyAuthorisedUser,
     forbidUnauthorised,
-    get_adminPannelPage,
+    get_adminPage,
     get_adminLoginPage,
-    get_adminAddArticle,
-    get_adminActivitiesPage,
-    post_adminLoginCheck,
-    post_adminLogout,
-    post_adminAddUser,
-    post_adminChangeUserPassword,
-    post_adminSuspendUser,
+    get_adminAddArticlePage,
+    get_adminAPI_users,
+    get_adminAPI_activity,
+    get_adminAPI_articles,
+    get_adminAPI_magazines,
+    post_adminAPI_loginCheck,
+    post_adminAPI_logout,
+    post_adminAPI_addUser,
+    post_adminAPI_changeUserPassword,
+    post_adminAPI_suspendUser,
 }

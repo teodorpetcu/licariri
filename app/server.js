@@ -11,15 +11,16 @@ const { queryDatabase } = require("./models/query.js");
 
 const {
     updateMainPage,
+
     get_mainPage,
     get_articlePage,
 
-    post_adminAddArticle,
-    post_adminArticlePreview,
-    //post_adminRemoveArticle,
-    post_adminAddMagazine,
-    post_adminRemoveMagazine,
-    post_updateArticleStage,
+    post_adminAPI_addArticle,
+    post_adminAPI_articlePreview,
+    //post_adminAPI_RemoveArticle,
+    post_adminAPI_addMagazine,
+    post_adminAPI_removeMagazine,
+    post_adminAPI_updateArticleStage,
 } = require("./controllers/articles.js")
 
 const {
@@ -31,15 +32,18 @@ const {
     forbidUnauthorised,
 
     get_adminLoginPage,
-    get_adminPannelPage,
-    get_adminAddArticle,
-    get_adminActivitiesPage,
+    get_adminPage,
+    get_adminAddArticlePage,
 
-    post_adminAddUser,
-    post_adminLoginCheck,
-    post_adminLogout,
-    post_adminChangeUserPassword,
-    post_adminSuspendUser,
+    get_adminAPI_users,
+    get_adminAPI_activity,
+    get_adminAPI_articles,
+    get_adminAPI_magazines,
+    post_adminAPI_loginCheck,
+    post_adminAPI_logout,
+    post_adminAPI_addUser,
+    post_adminAPI_changeUserPassword,
+    post_adminAPI_suspendUser,
 } = require("./controllers/admin.js")
 
 const {
@@ -78,6 +82,7 @@ app.use((err, _req, res, _next) => {
 
 app.get("/favicon.ico", requestLogger, (_, res) => res.sendFile(__dirname + "/public/favicon.ico"));
 app.get("/css/licariri.css", requestLogger, (_, res) => res.sendFile(__dirname + "/public/css/licariri.css"));
+app.get("/js/main-nav.js", requestLogger, (_, res) => res.sendFile(__dirname + "/public/js/main-nav.js"));
 app.get("/squiggly-line.svg", requestLogger, (_, res) => res.sendFile(__dirname + "/public/squiggly-line.svg"));
 app.get("/logo-mesota.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/public/logo-mesota.webp"));
 app.get("/logo-website.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/public/logo-website.webp"));
@@ -99,32 +104,40 @@ if (process.env.ALLOW_QUERY_ROUTES == "true") {
 if (process.env.ALLOW_ADMIN_ROUTES == "true") {
     logger.info("/login, /admin routes FUNCTIONAL");
     app.get("/css/login.css", requestLogger, (_, res) => res.sendFile(__dirname + "/public/css/login.css"));
+    app.get("/js/admin.js", requestLogger, (_, res) => res.sendFile(__dirname + "/public/js/admin.js"));
     app.get("/login", requestLogger, get_adminLoginPage);
-    app.post("/login", requestLogger, post_adminLoginCheck);
+    app.post("/login", requestLogger, post_adminAPI_loginCheck);
+    app.post("/admin/logout", requestLogger, post_adminAPI_logout);
 
     app.use(["/admin", "/admin/*", "/css/admin.css"], identifyAuthorisedUser, forbidUnauthorised);
 
     app.get("/css/admin.css", requestLogger, (_, res) => res.sendFile(__dirname + "/public/css/admin.css"));
-    app.get("/admin", requestLogger, get_adminPannelPage);
+    app.get("/admin", requestLogger, get_adminPage);
 
-    app.get("/admin/activity", requestLogger, get_adminActivitiesPage);
+    app.get("/admin/activity", requestLogger, get_adminAPI_activity);
 
-    app.get("/admin/articles/new", requestLogger, get_adminAddArticle);
-    app.get("/admin/articles/:articleID", requestLogger, get_adminAddArticle);
-    app.post("/admin/articles/article-preview", requestLogger, post_adminArticlePreview);
+    app.get("/admin/articles", requestLogger, get_adminAPI_articles);
+    app.get("/admin/articles/new", requestLogger, get_adminAddArticlePage);
+    app.get("/admin/articles/:articleID", requestLogger, get_adminAddArticlePage);
+    app.post("/admin/articles/article-preview", requestLogger, post_adminAPI_articlePreview);
+    app.post("/admin/articles/stage", requestLogger, post_adminAPI_updateArticleStage);
+    app.post("/admin/articles/:articleID", requestLogger, post_adminAPI_addArticle);
+    //app.post("/admin/articles/remove", requestLogger, post_adminAPI_removeArticle);
 
-    app.post("/admin/logout", requestLogger, post_adminLogout);
-    app.post("/admin/articles/stage", requestLogger, post_updateArticleStage);
-    app.post("/admin/articles/:articleID", requestLogger, post_adminAddArticle);
-    //app.post("/admin/articles/remove", requestLogger, post_adminRemoveArticle);
-    app.post("/admin/user/add", requestLogger, post_adminAddUser);
-    app.post("/admin/user/suspend", requestLogger, post_adminSuspendUser);
-    app.post("/admin/user/password", requestLogger, post_adminChangeUserPassword);
-    app.post("/admin/magazines/add", requestLogger, post_adminAddMagazine);
-    app.post("/admin/magazines/remove", requestLogger, post_adminRemoveMagazine);
+    app.get("/admin/magazines", requestLogger, get_adminAPI_magazines);
+    app.post("/admin/magazines/add", requestLogger, post_adminAPI_addMagazine);
+    app.post("/admin/magazines/remove", requestLogger, post_adminAPI_removeMagazine);
 
     app.use("/admin/articles/images", requestLogger);
     app.use("/admin/articles/images", express.static(PUBLIC_ARTICLE_IMAGES_PATH), express.static(DRAFT_ARTICLE_IMAGES_PATH), express.static(TRASH_ARTICLE_IMAGES_PATH));
+
+    // TODO: implement a single function to handle authorisation at the
+    // middleware level (not all users are allowed to manage other users)
+    app.get("/admin/users", requestLogger, get_adminAPI_users);
+    app.post("/admin/users/add", requestLogger, post_adminAPI_addUser);
+    app.post("/admin/users/suspend", requestLogger, post_adminAPI_suspendUser);
+    app.post("/admin/change-password", requestLogger, post_adminAPI_changeUserPassword);
+
 } else {
     logger.info("/login, /admin routes NONFUNCTIONAL");
 }

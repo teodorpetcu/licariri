@@ -99,7 +99,7 @@ const get_articlePage = async (req, res) => {
     }
 }
 
-const post_adminArticlePreview = async (req, res) => {
+const post_adminAPI_articlePreview = async (req, res) => {
     if (!req.body) {
         res.status(404).send(undefined);
         return;
@@ -121,7 +121,7 @@ const post_adminArticlePreview = async (req, res) => {
         })
 }
 
-const post_adminAddArticle = async (req, res) => {
+const post_adminAPI_addArticle = async (req, res) => {
     const articleID = req.params.articleID;
 
     const [articleWithSameTitle, originalArticle] = await Promise.all([
@@ -246,7 +246,7 @@ const post_adminAddArticle = async (req, res) => {
     }
 }
 
-const post_updateArticleStage = async (req, res) => {
+const post_adminAPI_updateArticleStage = async (req, res) => {
     const article = await articleDatabase.getArticleMeta(req.body.id);
     const originalStage = article.stage;
     article.failsafe_setStage(req.body.stage)
@@ -290,7 +290,7 @@ const post_updateArticleStage = async (req, res) => {
     }
 }
 
-const post_adminRemoveArticle = async (req, res) => {
+const post_adminAPI_removeArticle = async (req, res) => {
     let articleID = req.body.id;
     await Promise.all([
         articleDatabase.removeArticle(articleID),
@@ -299,7 +299,7 @@ const post_adminRemoveArticle = async (req, res) => {
     res.redirect("/admin");
 }
 
-const post_adminAddMagazine = async (req, res) => {
+const post_adminAPI_addMagazine = async (req, res) => {
     let timestamp = new Date(req.body.date).getTime();
     let description = req.body.description.replace(/\//g, "").trim();
     let pdffile = req.files ? req.files.pdffile : undefined;
@@ -329,7 +329,7 @@ const post_adminAddMagazine = async (req, res) => {
     }
 }
 
-const post_adminRemoveMagazine = async (req, res) => {
+const post_adminAPI_removeMagazine = async (req, res) => {
     let magazineDescription = req.body.description;
     articleDatabase.removeMagazine(magazineDescription);
     usersDatabase.addActivity(req.user, "rmmagazine", magazineDescription)
@@ -341,11 +341,11 @@ module.exports = {
     updateMainPage,
     get_mainPage,
     get_articlePage,
-    post_adminAddArticle,
-    post_adminRemoveArticle,
-    post_adminAddMagazine,
-    post_adminRemoveMagazine,
-    post_updateArticleStage,
-    post_adminArticlePreview,
+    post_adminAPI_addArticle,
+    post_adminAPI_removeArticle,
+    post_adminAPI_addMagazine,
+    post_adminAPI_removeMagazine,
+    post_adminAPI_updateArticleStage,
+    post_adminAPI_articlePreview,
     renderArticlePage,
 };
