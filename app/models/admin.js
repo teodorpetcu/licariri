@@ -27,12 +27,12 @@ const validatePassword = async (password, hash) => {
 class User {
     /**
      * @param {string} id
-     * @param {number} privilege
+     * @param {string} role
      * @param {bool} suspended
      */
-    constructor(id, privilege, suspended = 0) {
+    constructor(id, role, suspended = 0) {
         this.id = id;
-        this.privilege = privilege;
+        this.role = role;
         this.suspended = suspended;
     }
 }
@@ -86,7 +86,7 @@ class UsersDatabase extends Database {
             `CREATE TABLE IF NOT EXISTS users
             (
                 id          TEXT NOT NULL,
-                privilege   INT,
+                role        TEXT NOT NULL,
                 suspended   INT,
                 password    TEXT NOT NULL,
                 UNIQUE (id)
@@ -121,7 +121,7 @@ class UsersDatabase extends Database {
      */
     addUser = async (user, pass) => {
         let hash = await hashPassword(pass);
-        return this.run('INSERT INTO users VALUES(?, ?, ?, ?)', [user.id, user.privilege, user.suspended, hash])
+        return this.run('INSERT INTO users VALUES(?, ?, ?, ?)', [user.id, user.role, user.suspended, hash])
             .catch((err) => this.dbLogger.error(`adding user '${user}'`, err));
     }
 
@@ -179,7 +179,7 @@ class UsersDatabase extends Database {
     getSessionUser = async (token) => {
         return this.get('SELECT * FROM users WHERE id IN (SELECT user FROM sessions WHERE token = ?)', [token])
             .then((row) => {
-                return new User(row.id, row.privilege, row.suspended);
+                return new User(row.id, row.role, row.suspended);
             })
             .catch((err) => {
                 this.dbLogger.error(`getting user matching session token`, err);
@@ -251,14 +251,14 @@ class UsersDatabase extends Database {
     }
 
     /**
-     * Return all users in the database, sorted from highest to lowest privilege
+     * Return all users in the database, ordered by role
      * @param {string} token - Token of the session
      * @returns {Promise<User|undefined>}
      */
     getAllUsers = async () => {
-        return this.all('SELECT * FROM users ORDER BY privilege DESC', [])
+        return this.all('SELECT * FROM users ORDER BY role', [])
             .then((rows)  => {
-                return rows.map((row) => new User(row.id, row.privilege, row.suspended));
+                return rows.map((row) => new User(row.id, row.role, row.suspended));
             })
             .catch((err) => {
                 if (err === undefined) {

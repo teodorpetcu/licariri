@@ -34,7 +34,7 @@ const renderArticlePage = async (article, plainTextContent, articleStyle, credit
     // TODO: use another function to write markdown contents
     article.contents = marked.parse(plainTextContent).trim();
     const QUERY_ROUTES_ALLOWED = process.env.ALLOW_QUERY_ROUTES == "true";
-    let renderedPage = await ejs.renderFile(__dirname + "/../views/article.ejs", {article, articleStyle, credits, QUERY_ROUTES_ALLOWED}, {async: true});
+    let renderedPage = await ejs.renderFile(__dirname + "/../views/article.ejs", {article, articleStyle, credits, QUERY_ROUTES_ALLOWED, preview: false}, {async: true});
 
     return fs.promises.writeFile(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, plainTextContent)
         .then(fs.promises.writeFile(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`, renderedPage))
@@ -46,7 +46,7 @@ const reRenderArticle = async (article) => {
     let plainTextContent = await fs.promises.readFile(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, {encoding: "utf-8"});
     article.contents = marked.parse(plainTextContent).trim();
     const QUERY_ROUTES_ALLOWED = process.env.ALLOW_QUERY_ROUTES == "true";
-    let renderedPage = await ejs.renderFile(__dirname + "/../views/article.ejs", {article, articleStyle: article.style, credits: article.credits, QUERY_ROUTES_ALLOWED}, {async: true});
+    let renderedPage = await ejs.renderFile(__dirname + "/../views/article.ejs", {article, articleStyle: article.style, credits: article.credits, QUERY_ROUTES_ALLOWED, preview: false}, {async: true});
     return fs.promises.writeFile(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.html`, renderedPage);
 }
 
@@ -216,9 +216,9 @@ const post_adminAPI_addArticle = async (req, res) => {
         for (let credit of article.credits.thumbnail) {
             articleDatabase.addArticleCredit(articleID, credit, "thumbnail");
         }
-        queryDatabase.unindexArticle(originalArticle.id)
+        await queryDatabase.unindexArticle(originalArticle.id)
             .finally(() => queryDatabase.indexArticle(article.id, content));
-        articleDatabase.updateMetadata(originalArticle.id, article)
+        await articleDatabase.updateMetadata(originalArticle.id, article)
             .finally(() => Promise.all(
                     article.authors.map((author) =>
                         prerenderQueryAsFile({author: author})
@@ -227,7 +227,7 @@ const post_adminAPI_addArticle = async (req, res) => {
                     ))
                 )
             );
-        articleDatabase.updateArticleStyles(originalArticle.id, article, articleStyle);
+        await articleDatabase.updateArticleStyles(originalArticle.id, article, articleStyle);
         updateMainPage();
         if (article.id != originalArticle.id) {
             usersDatabase.changeActivityTarget("modify", originalArticle.id, article.id);
@@ -242,12 +242,12 @@ const post_adminAPI_addArticle = async (req, res) => {
         res.redirect(`/articles/${article.id}`);
     } else {
         // display a success message somewhere
-        res.redirect(`/admin`);
+        res.redirect("/admin");
     }
 }
 
 const post_adminAPI_updateArticleStage = async (req, res) => {
-    const article = await articleDatabase.getArticleMeta(req.body.id);
+    const article = await articleDatabase.getArticleMeta(req.params.articleID);
     const originalStage = article.stage;
     article.failsafe_setStage(req.body.stage)
     // TODO: ensure the article has a thumbnail, etc. before publishing

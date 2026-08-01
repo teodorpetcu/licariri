@@ -28,11 +28,6 @@ class QueryDatabase extends Database {
             (
                 word            TEXT NOT NULL,
                 UNIQUE (word)
-            );
-            CREATE TABLE IF NOT EXISTS articles
-            (
-                article_id      TEXT NOT NULL,
-                UNIQUE (article_id)
             );`
         )
     }
@@ -46,28 +41,24 @@ class QueryDatabase extends Database {
         let lowercase = contents.toLowerCase();
         let validWords = lowercase.replace(/[^0-9A-z\-'ăîâșțéèÿùüïôœàæêëûîâç]/g, " ").split(/\s+/);
         let uniqueWords = [... new Set(validWords.filter((word) => word))];
-        return this.run("INSERT INTO articles VALUES (?)", [id])
-            .then(async () => {
-                this.get("SELECT rowid as num FROM articles WHERE article_id = ?", [id])
-                    .then((row) => {
-                        let rowid = row.num;
-                        let words_stmt = this.db.prepare("INSERT OR IGNORE INTO words VALUES (?)");
-                        let stmt = this.db.prepare("INSERT INTO mappings VALUES (?, (SELECT rowid FROM words WHERE word = ?))");
-                        for (let word of uniqueWords) {
-                            words_stmt.run([word], this.dbLogger.error);
-                            stmt.run([rowid, word], this.dbLogger.error);
-                        }
-                        words_stmt.finalize((err) => {
-                            if (err) {
-                                Promise.reject(err);
-                            } else {
-                                stmt.finalize(this.dbLogger.error);
-                            }
-                        });
-                    })
-                    .catch((err) => this.dbLogger.error(`indexing article`, err));
+        this.get("SELECT rowid as num FROM articles WHERE id = ?", [id])
+            .then((row) => {
+                let rowid = row.num;
+                let words_stmt = this.db.prepare("INSERT OR IGNORE INTO words VALUES (?)");
+                let stmt = this.db.prepare("INSERT INTO mappings VALUES (?, (SELECT rowid FROM words WHERE word = ?))");
+                for (let word of uniqueWords) {
+                    words_stmt.run([word], this.dbLogger.error);
+                    stmt.run([rowid, word], this.dbLogger.error);
+                }
+                words_stmt.finalize((err) => {
+                    if (err) {
+                        Promise.reject(err);
+                    } else {
+                        stmt.finalize(this.dbLogger.error);
+                    }
+                });
             })
-            .catch((err) => this.dbLogger.error(`adding article to query database`, err));
+            .catch((err) => this.dbLogger.error(`indexing article`, err));
     }
 
     /**
@@ -76,11 +67,10 @@ class QueryDatabase extends Database {
      *
      * Note that this does not remove the words, even if they remain unmapped to
      * anything.
-     * @param {string} article_id
+     * @param {string} id
      */
-    unindexArticle = async (article_id) => {
-        return this.run("DELETE FROM mappings WHERE rowid IN (SELECT rowid FROM articles WHERE article_id = ?)", [article_id])
-            .then(() => this.run("DELETE FROM articles WHERE article_id = ?", [article_id]))
+    unindexArticle = async (id) => {
+        return this.run("DELETE FROM mappings WHERE rowid IN (SELECT rowid FROM articles WHERE id = ?)", [id])
             .catch((err) => this.dbLogger.error(`UNindexing article`, err));
     }
 
@@ -98,7 +88,7 @@ class QueryDatabase extends Database {
             if (i != 0) {
                 stmt += `INTERSECT\n`;
             }
-            stmt += `SELECT article_id FROM articles
+            stmt += `SELECT id FROM articles
                 WHERE rowid IN
                     (SELECT article FROM mappings
                         WHERE word IN
@@ -106,7 +96,7 @@ class QueryDatabase extends Database {
         }
 
         return this.all(stmt, words)
-            .then((rows) => rows.map((row) => row.article_id))
+            .then((rows) => rows.map((row) => row.id))
             .catch((err) => this.dbLogger.error(`finding articles`, err));
     }
 }

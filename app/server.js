@@ -120,7 +120,7 @@ if (process.env.ALLOW_ADMIN_ROUTES == "true") {
     app.get("/admin/articles/new", requestLogger, get_adminAddArticlePage);
     app.get("/admin/articles/:articleID", requestLogger, get_adminAddArticlePage);
     app.post("/admin/articles/article-preview", requestLogger, post_adminAPI_articlePreview);
-    app.post("/admin/articles/stage", requestLogger, post_adminAPI_updateArticleStage);
+    app.post("/admin/articles/:articleID/stage", requestLogger, post_adminAPI_updateArticleStage);
     app.post("/admin/articles/:articleID", requestLogger, post_adminAPI_addArticle);
     //app.post("/admin/articles/remove", requestLogger, post_adminAPI_removeArticle);
 
@@ -134,7 +134,7 @@ if (process.env.ALLOW_ADMIN_ROUTES == "true") {
     // TODO: implement a single function to handle authorisation at the
     // middleware level (not all users are allowed to manage other users)
     app.get("/admin/users", requestLogger, get_adminAPI_users);
-    app.post("/admin/users/add", requestLogger, post_adminAPI_addUser);
+    app.post("/admin/users/new", requestLogger, post_adminAPI_addUser);
     app.post("/admin/users/suspend", requestLogger, post_adminAPI_suspendUser);
     app.post("/admin/change-password", requestLogger, post_adminAPI_changeUserPassword);
 

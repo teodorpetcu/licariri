@@ -16,10 +16,9 @@ const CONFIG = {
     MAGAZINES_PATH: APPDATA_DIR + "/magazines/public",
     MAGAZINE_THUMBNAILS_PATH: APPDATA_DIR + "/magazines/public",
     QUERY_PRERENDERS: APPDATA_DIR + "/query",
-    USER_PRIVILEGES: {
-        SUPERUSER: 100,
-        COORDINATOR: 50,
-        USER: 10,
+    USER_ROLES: {
+        ADMINISTRATOR: "administrator",
+        EDITOR: "editor",
     },
     SITEMAP_FILE_PATH: APPDATA_DIR + "/sitemap.xml",
     MAIN_PAGE_HTML_FILE_PATH: APPDATA_DIR + "/main.html",

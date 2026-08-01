@@ -1,6 +1,6 @@
 const {
     COOKIE_OPTIONS,
-    USER_PRIVILEGES,
+    USER_ROLES,
     ARTICLES_DIRECTORY,
 } = require("../config.js");
 const { usersDatabase, User, Session, Activity } = require("../models/admin.js");
@@ -67,12 +67,12 @@ const get_adminLoginPage = async (req, res) => {
 const get_adminPage = async (req, res) => {
     if (req.user) {
         let canManageOtherUsers = false;
-        if (req.user.privilege >= USER_PRIVILEGES["SUPERUSER"]) {
+        if (req.user.role == USER_ROLES["ADMINISTRATOR"]) {
             canManageOtherUsers = true;
         }
         res.render("admin", {user: req.user, canManageOtherUsers});
     } else {
-        res.redirect("login");
+        res.redirect("/login");
     }
 }
 
@@ -123,23 +123,51 @@ const get_adminAddArticlePage = async (req, res) => {
                 .then((credits) => article.credits = credits),
         ])
     } else {
+        // TODO: the counting system could break if some untitled articles get
+        // deleted
+        // i.e. if there's 10 untitled articles, but the first two get deleted,
+        // then the system thinks the next untitled article should be (8), which
+        // would cause a conflict due to it already existing
         article = new Article({
             stage: "draft",
             title: `Articol fără titlu (${await articleDatabase.getUntitledArticleCount() + 1})`,
         });
-        article.style = {};
+        // TODO: THIS IS A VERY BAD SOLUTION
+        article.style = {
+            hideTitleInThumbnail: false,
+            title: {
+                font: "",
+                color: "",
+                position: "",
+                fontSizeArticle: "",
+                fontSizeThumbnail: "",
+                fontweight: 500,
+            },
+            subtitle: {
+                font: "",
+                color: "",
+                position: "",
+                fontsize: "",
+                fontweight: 500,
+            },
+            article: {
+                firstLetter: "",
+            },
+        };
         article.credits = { editorial: [], dtp: [], thumbnail: [] };
         await articleDatabase.saveArticle(article);
+        await articleDatabase.updateArticleStyles(article.id, article, article.style);
     }
     res.render("edit-article-contents", {defaults: article});
 }
 
 const post_adminAPI_addUser = async (req, res) => {
-    if (req.user.privilege < USER_PRIVILEGES["SUPERUSER"]) {
+    if (req.user.role != USER_ROLES["ADMINISTRATOR"]) {
         res.sendStatus(401);
     } else {
-        let privilege = USER_PRIVILEGES[req.body.privilege];
-        let user = new User(req.body.id, privilege);
+        let role = USER_ROLES[req.body.role];
+        if (typeof role == undefined) role = USER_ROLES["EDITOR"];
+        let user = new User(req.body.id, role);
         usersDatabase.addUser(user, req.body.password);
         usersDatabase.addActivity(req.user, "adduser", user.id); // NOTE: req.user =/= user
         res.sendStatus(200);
@@ -161,10 +189,7 @@ const post_adminAPI_changeUserPassword = async (req, res) => {
 const post_adminAPI_suspendUser = async (req, res) => {
     let userID = req.body.id;
     let suspend = req.body.suspend;
-    // TODO: check server-side if the user requesting suspension's privilege is
-    // less than or equal to the user to be suspended, and abort if that's the
-    // case
-    if (req.user.privilege < USER_PRIVILEGES["SUPERUSER"]) {
+    if (req.user.role != USER_ROLES["ADMINISTRATOR"]) {
         res.status(404).render("404");
     } else {
         if (suspend == 1) {

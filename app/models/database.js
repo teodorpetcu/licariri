@@ -2,6 +2,8 @@ const sqlite3 = require("sqlite3");
 
 const { logger } = require("../services/logger.js");
 
+const BUSY_TIMEOUT_MS = 3000; // 3 seconds
+
 class Database {
     /**
      * Open an SQLITE connection to the given path
@@ -21,6 +23,7 @@ class Database {
                 if (err) {
                     reject(err);
                 } else {
+                    this.db.configure("busyTimeout", BUSY_TIMEOUT_MS);
                     resolve(undefined);
                 }
             })
