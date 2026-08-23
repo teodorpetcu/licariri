@@ -320,10 +320,11 @@
     document.getElementById("button-edit-dtp").addEventListener("click", showDTPPage);
     document.getElementById("button-preview").addEventListener("click", showPreviewPage);
 
-    window.addEventListener("beforeunload", (event) => {
+    const warnOnLeave = (evt) => {
         event.preventDefault();
         event.returnValue = true;
-    });
+    }
+    window.addEventListener("beforeunload", warnOnLeave);
 
     articleInputForm.addEventListener("change", updatePreviewThumbnail);
 
@@ -341,7 +342,13 @@
                 'Content-Type': 'application/json',
                 'Accepts': 'text/html'
             },
-            body: JSON.stringify(formJSON)
+            body: JSON.stringify(formJSON),
+            redirect: "follow"
+        }).then((response) => {
+            if (response.redirected) {
+                window.removeEventListener("beforeunload", warnOnLeave);
+                window.location.href = response.url;
+            }
         });
     })
 </script>
