@@ -216,9 +216,16 @@ const post_adminAPI_addArticle = async (req, res) => {
         for (let credit of article.credits.thumbnail) {
             articleDatabase.addArticleCredit(articleID, credit, "thumbnail");
         }
-        await queryDatabase.unindexArticle(originalArticle.id)
-            .finally(() => queryDatabase.indexArticle(article.id, content));
-        await articleDatabase.updateMetadata(originalArticle.id, article)
+        // TODO PROBLEM: this queryDatabase call singlehandedly locks the entire
+        // database and makes it busy... FOR SEVERAL SECONDS. No more database
+        // reads or writes FOR SEVERAL SECONDS afterwards.
+        // TODO SOLUTION: maybe move the query database to a different file, so
+        // that it doesn't lock up the main database. Maybe migrate from SQLite
+        // to PostgreSQL
+        //queryDatabase.unindexArticle(originalArticle.id)
+            //.finally(() => queryDatabase.indexArticle(article.id, content));
+
+        articleDatabase.updateMetadata(originalArticle.id, article)
             .finally(() => Promise.all(
                     article.authors.map((author) =>
                         prerenderQueryAsFile({author: author})
@@ -227,7 +234,7 @@ const post_adminAPI_addArticle = async (req, res) => {
                     ))
                 )
             );
-        await articleDatabase.updateArticleStyles(originalArticle.id, article, articleStyle);
+        articleDatabase.updateArticleStyles(originalArticle.id, article, articleStyle);
         updateMainPage();
         if (article.id != originalArticle.id) {
             usersDatabase.changeActivityTarget("modify", originalArticle.id, article.id);
