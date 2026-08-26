@@ -19,21 +19,7 @@
     <div id="home-page-contents">
         <span class="squiggly-line"></span>
         <div id="introduction">
-            <h4>anul trecut, ne-am propus doar trei cuvinte:</h4>
-            <h1>Nostalgie și vis</h1>
-            <h4>și cu toate lucrările primite de la elevi, am ajuns la</h4>
-            <h1>peste 100 de pagini de text.</h1>
-            <div class="magazine-highlight-container">
-                <div class="magazine-thumbnail">
-                    <a href="/magazines/Licăriri%202024-2025.pdf"><img src="/magazines/thumbnails/Licăriri%202024-2025.webp"></a>
-                    <br>
-                    <a class="magazine-description"
-                        href="/magazines/Licăriri%202024-2025.pdf">Licăriri 2024-2025</a>
-                </div>
-            </div>
-
             <a name="articole"></a>
-            <h4>Cu câteva articole disponibile exclusiv aici, digital.</h4>
             <div class="article-thumbnail-grid">
             <%_ for (article of articles) { _%>
                 <a href="/articles/<%= article.id %>">
@@ -44,6 +30,21 @@
                     </div>
                 </a>
             <%_ } _%>
+            </div>
+
+            <%_ if (articles.length) { _%>
+            <span class="squiggly-line"></span>
+            <%_ } _%>
+
+            <h4>anul trecut, ne-am propus numai trei cuvinte:</h4>
+            <h1>Dimensiuni și perspective</h1>
+            <div class="magazine-highlight-container">
+                <div class="magazine-thumbnail">
+                    <a href="/magazines/Licăriri%202025-2026.pdf"><img src="/magazines/thumbnails/Licăriri%202025-2026.webp"></a>
+                    <br>
+                    <a class="magazine-description"
+                        href="/magazines/Licăriri%202025-2026.pdf">Licăriri 2025-2026</a>
+                </div>
             </div>
 
             <span class="squiggly-line"></span>

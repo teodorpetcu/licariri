@@ -235,7 +235,7 @@ const renderArticles = async (articleJSON) => {
     const panel = createContentPanelHeading("Articole", "/admin/articles/new");
 
     const table = document.createElement("table");
-    const headerRow = createRow(["Titlu", "Autori", "Stadiu", "Data publicării", "Acțiuni"]);
+    const headerRow = createRow(["Titlu", "Autor(i)", "Stadiu", "Data publicării", "Acțiuni"]);
     table.appendChild(headerRow);
 
     for (article of articleJSON) {

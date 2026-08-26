@@ -70,6 +70,7 @@ const updateMainPage = async () => {
         articleDatabase.searchArticles("stage", "public"),
         articleDatabase.getAllMagazinesSorted(),
     ]).catch((err) => logger.error(`searching articles & magazines for main page`, err));
+    articles = articles.filter(a => a.timestamp > 1767218400000); // ignore everything before 2026
     await Promise.all(articles.map(async (article) => {
         return articleDatabase.getArticleStyle(article.id).then((style) => article.style = style);
     })).catch((err) => logger.error(`fetching article styles for main page`, err));

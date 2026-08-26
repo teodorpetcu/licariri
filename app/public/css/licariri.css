@@ -309,7 +309,7 @@ body.open * {
         margin: 0;
         padding: 0;
     }
-    margin-top: 1.6rem;
+    margin-top: 0;
     > h1 {
         font-family: "Kameron";
         margin: 0;
