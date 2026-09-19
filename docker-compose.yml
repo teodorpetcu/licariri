@@ -8,6 +8,7 @@ services:
     volumes:
       - ./data:/data
     environment:
+      - TZ=Europe/Bucharest
       - NODE_ENV=production
       - ALLOW_QUERY_ROUTES=false
       - ALLOW_ADMIN_ROUTES=true
