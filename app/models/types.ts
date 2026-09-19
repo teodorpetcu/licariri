@@ -56,7 +56,7 @@ export interface ArticleCredit {
 const newArticleMeta = (data: Partial<ArticleMeta> & Pick<ArticleMeta, "title">): ArticleMeta => {
     const timestamp = data.timestamp ?? Date.now();
     return {
-        id: generateArticleID(data.title),
+        id: data.id ?? generateArticleID(data.title),
         title: data.title,
         timestamp: timestamp,
         date: formatDate(timestamp),

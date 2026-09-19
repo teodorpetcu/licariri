@@ -355,6 +355,7 @@ export class ArticleDatabase extends Database {
     public getArticleMeta = async (id: string): Promise<ArticleMeta|undefined> => {
         return await this.get<ArticleMeta>('SELECT * FROM articles WHERE id = ?', [id])
             .then((row) => newArticle({
+                id: row.id,
                 stage: row.stage,
                 timestamp: row.timestamp,
                 title: row.title,
@@ -396,11 +397,16 @@ export class ArticleDatabase extends Database {
     }
 
     /**
-     * Return the number of articles with the default title. This is used to
-     * prevent `UNIQUE (id)` conflicts when creating new articles.
+     * Default title scheme: `Articol fără titlu (N)`, where `N` is a number
+     * Equivalent ID: `articol-fără-titlu-(N)`
      */
-    public getUntitledArticleCount = async (): Promise<number> => {
-        return (await this.searchArticleIDs("title", "Articol fără titlu", false)).length;
+    public getNextNewArticleTitle = async (): Promise<string> => {
+        return await this.get<{next_n: number}>(`SELECT COALESCE(MAX(CAST(REPLACE(REPLACE(id, 'articol-fără-titlu-(', ''), ')', '') AS INTEGER)), 0) + 1 AS next_n FROM articles WHERE id LIKE 'articol-fără-titlu-(%'`)
+            .then((row) => "Articol fără titlu (" + row.next_n + ")")
+            .catch((err) => {
+                this.dbLogger.error(err, "getting next new article title");
+                return Promise.reject();
+            });
     }
 
     /**

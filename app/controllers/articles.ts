@@ -427,24 +427,23 @@ export const get_adminAddArticlePage = async (req: Request, res: Response): Prom
             })
             .catch((err) => {
                 logger.error(err, "getting admin add article page")
-                res.sendStatus(500)
+                return res.sendStatus(500)
             })
     } else {
-        // TODO: the counting system could break if some untitled articles get
-        // deleted
-        // i.e. if there's 10 untitled articles, but the first two get deleted,
-        // then the system thinks the next untitled article should be (8), which
-        // would cause a conflict due to it already existing
+        const newArticleTitle = await articleDatabase.getNextNewArticleTitle().catch((err) => {
+            logger.error(err, "getting admin add article page")
+            return res.sendStatus(500);
+        })
         article = newArticle({
             stage: "draft",
-            title: `Articol fără titlu (${await articleDatabase.getUntitledArticleCount() + 1})`,
+            title: newArticleTitle,
         });
         const markdownContents = "";
         await renderEditArticlePageTemplate(article, markdownContents, "post")
             .then((renderedPage) => res.send(renderedPage))
             .catch((err) => {
                 logger.error(err, "getting admin add article page");
-                res.sendStatus(500);
+                return res.sendStatus(500);
             })
     }
 }
