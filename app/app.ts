@@ -14,55 +14,58 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-const express = require("express");
-const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
-const fileUpload = require("express-fileupload");
+import express, { type Request, type Response, type NextFunction, type Application } from "express";
+import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
+import fileUpload from "express-fileupload";
 
 // for ensuring that the databases are loaded before the server starts listening
-const { createDataDirectoriesIfTheyDontExist } = require("./utils/util.js");
-const { usersDatabase } = require("./models/admin.js");
-const { articleDatabase } = require("./models/articles.js");
-const { queryDatabase } = require("./models/query.js");
+import { createDataDirectoriesIfTheyDontExist } from "./utils/util.ts";
+import usersDatabase from "./models/admin.ts";
+import articleDatabase from "./models/articles.ts";
+import queryDatabase from "./models/query.ts";
 
-const {
+import {
     updateMainPage,
 
     get_mainPage,
     get_articlePage,
 
+    get_adminAddArticlePage,
+
+    get_adminAPI_articles,
+    get_adminAPI_magazines,
+    validateArticleModificationRequestBody,
     post_adminAPI_addArticle,
+    put_adminAPI_modifyArticle,
     post_adminAPI_articlePreview,
     //post_adminAPI_RemoveArticle,
     post_adminAPI_addMagazine,
     post_adminAPI_removeMagazine,
     post_adminAPI_updateArticleStage,
-} = require("./controllers/articles.js")
+} from "./controllers/articles.ts";
 
-const {
+import {
     get_queryPage,
-} = require("./controllers/query.js");
+} from "./controllers/query.ts";
 
-const {
+import {
     identifyAuthorisedUser,
     forbidUnauthorised,
 
     get_adminLoginPage,
     get_adminPage,
-    get_adminAddArticlePage,
 
     get_adminAPI_users,
     get_adminAPI_activity,
-    get_adminAPI_articles,
-    get_adminAPI_magazines,
     post_adminAPI_loginCheck,
     post_adminAPI_logout,
     post_adminAPI_addUser,
     post_adminAPI_changeUserPassword,
     post_adminAPI_suspendUser,
-} = require("./controllers/admin.js")
+} from "./controllers/admin.ts";
 
-const {
+import {
     LISTENING_PORT,
     MAGAZINES_PATH,
     MAGAZINE_THUMBNAILS_PATH,
@@ -70,9 +73,9 @@ const {
     DRAFT_ARTICLE_IMAGES_PATH,
     TRASH_ARTICLE_IMAGES_PATH,
     SITEMAP_FILE_PATH,
-} = require("./config.js");
+} from "./config.ts";
 
-const { logger, requestLogger } = require("./services/logger.js");
+import { logger, requestLogger } from "./services/logger.ts";
 
 const app = express();
 
@@ -80,9 +83,8 @@ app.set("trust proxy", ["loopback"]);
 app.disable("x-powered-by");
 
 // putting this before other `app.use()` calls makes it not use other middleware
-app.get("/robots.txt", requestLogger, (_, res) => res.sendFile(__dirname + "/public/robots.txt"));
-// REMEMBER TO ADD `Sitemap` CLAUSE TO robots.txt !!!!
-app.get("/sitemap.xml", requestLogger, (_, res) => res.sendFile(SITEMAP_FILE_PATH));
+app.get("/robots.txt", requestLogger, (_: Request, res: Response) => res.sendFile(import.meta.dirname + "/public/robots.txt"));
+app.get("/sitemap.xml", requestLogger, (_: Request, res: Response) => res.sendFile(SITEMAP_FILE_PATH));
 
 app.set("view engine", "ejs");
 
@@ -91,18 +93,19 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true, }));
 app.use(cookieParser());
 
-app.use((err, _req, res, _next) => {
-    logger.error("express route", err);
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+    logger.error(err, "express route");
     res.status(500).send("Ceva s-a stricat! (Eroare HTTP 500)");
 });
 
-app.get("/favicon.ico", requestLogger, (_, res) => res.sendFile(__dirname + "/public/favicon.ico"));
-app.get("/css/licariri.css", requestLogger, (_, res) => res.sendFile(__dirname + "/public/css/licariri.css"));
-app.get("/js/main-nav.js", requestLogger, (_, res) => res.sendFile(__dirname + "/public/js/main-nav.js"));
-app.get("/squiggly-line.svg", requestLogger, (_, res) => res.sendFile(__dirname + "/public/squiggly-line.svg"));
-app.get("/logo-mesota.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/public/logo-mesota.webp"));
-app.get("/logo-website.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/public/logo-website.webp"));
-app.get("/logo-mic.webp", requestLogger, (_, res) => res.sendFile(__dirname + "/public/logo-mic.webp"));
+// assets
+app.get("/favicon.ico", requestLogger, (_: Request, res: Response) => res.sendFile(import.meta.dirname + "/public/favicon.ico"));
+app.get("/css/licariri.css", requestLogger, (_: Request, res: Response) => res.sendFile(import.meta.dirname + "/public/css/licariri.css"));
+app.get("/js/main-nav.js", requestLogger, (_: Request, res: Response) => res.sendFile(import.meta.dirname + "/public/js/main-nav.js"));
+app.get("/squiggly-line.svg", requestLogger, (_: Request, res: Response) => res.sendFile(import.meta.dirname + "/public/squiggly-line.svg"));
+app.get("/logo-mesota.webp", requestLogger, (_: Request, res: Response) => res.sendFile(import.meta.dirname + "/public/logo-mesota.webp"));
+app.get("/logo-website.webp", requestLogger, (_: Request, res: Response) => res.sendFile(import.meta.dirname + "/public/logo-website.webp"));
+app.get("/logo-mic.webp", requestLogger, (_: Request, res: Response) => res.sendFile(import.meta.dirname + "/public/logo-mic.webp"));
 app.use("/articles/images", requestLogger, express.static(PUBLIC_ARTICLE_IMAGES_PATH));
 app.use("/magazines", requestLogger, express.static(MAGAZINES_PATH));
 app.use("/magazines/thumbnails", requestLogger, express.static(MAGAZINE_THUMBNAILS_PATH));
@@ -119,15 +122,18 @@ if (process.env.ALLOW_QUERY_ROUTES == "true") {
 
 if (process.env.ALLOW_ADMIN_ROUTES == "true") {
     logger.info("/login, /admin routes FUNCTIONAL");
-    app.get("/css/login.css", requestLogger, (_, res) => res.sendFile(__dirname + "/public/css/login.css"));
-    app.get("/js/admin.js", requestLogger, (_, res) => res.sendFile(__dirname + "/public/js/admin.js"));
+    app.get("/css/login.css", requestLogger, (_: Request, res: Response) => res.sendFile(import.meta.dirname + "/public/css/login.css"));
+    app.get("/js/admin.js", requestLogger, identifyAuthorisedUser, forbidUnauthorised,
+            (_: Request, res: Response) => res.sendFile(import.meta.dirname + "/public/js/admin.js"));
+    app.get("/js/edit-article.js", requestLogger, identifyAuthorisedUser, forbidUnauthorised,
+            (_: Request, res: Response) => res.sendFile(import.meta.dirname + "/public/js/edit-article.js"));
     app.get("/login", requestLogger, get_adminLoginPage);
     app.post("/login", requestLogger, post_adminAPI_loginCheck);
     app.post("/admin/logout", requestLogger, post_adminAPI_logout);
 
     app.use(["/admin", "/admin/*", "/css/admin.css"], identifyAuthorisedUser, forbidUnauthorised);
 
-    app.get("/css/admin.css", requestLogger, (_, res) => res.sendFile(__dirname + "/public/css/admin.css"));
+    app.get("/css/admin.css", requestLogger, (_: Request, res: Response) => res.sendFile(import.meta.dirname + "/public/css/admin.css"));
     app.get("/admin", requestLogger, get_adminPage);
 
     app.get("/admin/activity", requestLogger, get_adminAPI_activity);
@@ -135,16 +141,19 @@ if (process.env.ALLOW_ADMIN_ROUTES == "true") {
     app.get("/admin/articles", requestLogger, get_adminAPI_articles);
     app.get("/admin/articles/new", requestLogger, get_adminAddArticlePage);
     app.get("/admin/articles/:articleID", requestLogger, get_adminAddArticlePage);
-    app.post("/admin/articles/article-preview", requestLogger, post_adminAPI_articlePreview);
+    // NOTE: preview route must be before the POST /admin/articles/:articleID
+    // route, to avoid :articleID matching to 'article-preview'
+    app.post("/admin/articles/article-preview", requestLogger, validateArticleModificationRequestBody, post_adminAPI_articlePreview);
+    app.post("/admin/articles/:articleID", requestLogger, validateArticleModificationRequestBody, post_adminAPI_addArticle);
+    app.put("/admin/articles/:articleID", requestLogger, validateArticleModificationRequestBody, put_adminAPI_modifyArticle);
     app.post("/admin/articles/:articleID/stage", requestLogger, post_adminAPI_updateArticleStage);
-    app.post("/admin/articles/:articleID", requestLogger, post_adminAPI_addArticle);
     //app.post("/admin/articles/remove", requestLogger, post_adminAPI_removeArticle);
 
     app.get("/admin/magazines", requestLogger, get_adminAPI_magazines);
     app.post("/admin/magazines/add", requestLogger, post_adminAPI_addMagazine);
     app.post("/admin/magazines/remove", requestLogger, post_adminAPI_removeMagazine);
 
-    app.use("/admin/articles/images", requestLogger);
+    app.use("/admin/articles/images", requestLogger, identifyAuthorisedUser, forbidUnauthorised);
     app.use("/admin/articles/images", express.static(PUBLIC_ARTICLE_IMAGES_PATH), express.static(DRAFT_ARTICLE_IMAGES_PATH), express.static(TRASH_ARTICLE_IMAGES_PATH));
 
     // TODO: implement a single function to handle authorisation at the
@@ -158,17 +167,16 @@ if (process.env.ALLOW_ADMIN_ROUTES == "true") {
     logger.info("/login, /admin routes NONFUNCTIONAL");
 }
 
-app.get("*", requestLogger, (req, res) => res.status(404).render("404", {url: req.url}));
+app.get("*", requestLogger, (req: Request, res: Response) => res.status(404).render("404", {url: req.url}));
 
-let httpServer = undefined;
+let httpServer: Application = undefined;
 
-logger.info("connecting to databases...");
 logger.info("connecting to databases...");
 createDataDirectoriesIfTheyDontExist()
     .then(() => Promise.all([
-        articleDatabase.open().then(articleDatabase.init()),
-        usersDatabase.open().then(usersDatabase.init()),
-        queryDatabase.open().then(queryDatabase.init()),
+        articleDatabase.open().then(() => articleDatabase.init()),
+        usersDatabase.open().then(() => usersDatabase.init()),
+        queryDatabase.open().then(() => queryDatabase.init()),
     ]))
     .then(() => logger.info("database open ok"))
     .then(() => updateMainPage())
@@ -176,11 +184,11 @@ createDataDirectoriesIfTheyDontExist()
         httpServer = app.listen(LISTENING_PORT, () => logger.info(`web server up`));
     })
     .catch((err) => {
-        logger.error(`failed to start server`, err);
+        logger.error(err, "failed to start server");
         process.exit(1);
     });
 
-const gracefulShutdown = async (signal) => {
+const gracefulShutdown = async (signal: string) => {
     logger.info(`received ${signal} signal; terminating...`);
     await Promise.all([
         articleDatabase.close(),
@@ -192,7 +200,7 @@ const gracefulShutdown = async (signal) => {
         })
         .then(() => {
             if (httpServer) {
-                httpServer.close((err) => {
+                httpServer.close((err: Error) => {
                     logger.info("web server down");
                     process.exit(err ? 1 : 0);
                 })
@@ -201,10 +209,11 @@ const gracefulShutdown = async (signal) => {
             }
         })
         .catch((err) => {
-            logger.error("closing database", err)
+            logger.error(err, "closing database")
+            process.exit(1);
         })
 }
 
-process.on("SIGINT", () => gracefulShutdown("SIGINT"));
-process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
-process.on("SIGQUIT", () => gracefulShutdown("SIGQUIT"));
+["SIGINT", "SIGTERM", "SIGQUIT"].forEach((signal) => {
+    process.on(signal, () => gracefulShutdown(signal))
+});

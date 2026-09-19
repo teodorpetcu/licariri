@@ -14,25 +14,24 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-const { Database } = require("./database.js");
-const { DATABASE_PATH } = require("../config.js");
+import { Database } from "./database.ts";
+import { Article } from "./types.ts";
+import { DATABASE_PATH } from "../config.ts";
 
-class QueryDatabase extends Database {
+export class QueryDatabase extends Database {
     /**
      * Interpret the database at the given path as a query database
-     * @param {string} path
      */
-    constructor(path) {
+    constructor(path: string) {
         super(path);
         this.name = "query";
     }
 
     /**
      * Create the database tables if they don't exist already.
-     * @returns {Promise<undefined>}
      */
-    init = async () => {
-        return this.exec(
+    public init = async (): Promise<void> => {
+        return await this.exec(
             `CREATE TABLE IF NOT EXISTS mappings
             (
                 article     INT,
@@ -50,19 +49,18 @@ class QueryDatabase extends Database {
 
     /**
      * Associate every unique word in the `contents` field with the provided ID
-     * @param {string} id - Article ID
-     * @param {string} contents - Contents of the article
      */
-    indexArticle = async (id, contents) => {
-        let lowercase = contents.toLowerCase();
-        let validWords = lowercase.replace(/[^0-9A-z\-'ăîâșțéèÿùüïôœàæêëûîâç]/g, " ").split(/\s+/);
-        let uniqueWords = [... new Set(validWords.filter((word) => word))];
-        this.get("SELECT rowid as num FROM articles WHERE id = ?", [id])
+    public indexArticle = async (id: string, contents: string): Promise<void> => {
+        const lowercase = contents.toLowerCase();
+        const validWords = lowercase.replace(/[^0-9A-z\-'ăîâșțéèÿùüïôœàæêëûîâç]/g, " ").split(/\s+/);
+        const uniqueWords = [... new Set(validWords.filter((word) => word))];
+        return await this.get<{num: number}>("SELECT rowid as num FROM articles WHERE id = ?", [id])
             .then((row) => {
-                let rowid = row.num;
-                let words_stmt = this.db.prepare("INSERT OR IGNORE INTO words VALUES (?)");
-                let stmt = this.db.prepare("INSERT INTO mappings VALUES (?, (SELECT rowid FROM words WHERE word = ?))");
-                for (let word of uniqueWords) {
+                if (!this.db) return Promise.reject(undefined);
+                const rowid = row.num;
+                const words_stmt = this.db.prepare("INSERT OR IGNORE INTO words VALUES (?)");
+                const stmt = this.db.prepare("INSERT INTO mappings VALUES (?, (SELECT rowid FROM words WHERE word = ?))");
+                for (const word of uniqueWords) {
                     words_stmt.run([word], this.dbLogger.error);
                     stmt.run([rowid, word], this.dbLogger.error);
                 }
@@ -74,7 +72,10 @@ class QueryDatabase extends Database {
                     }
                 });
             })
-            .catch((err) => this.dbLogger.error(`indexing article`, err));
+            .catch((err) => {
+                this.dbLogger.error(err, "indexing article");
+                return Promise.reject(err);
+            });
     }
 
     /**
@@ -83,22 +84,21 @@ class QueryDatabase extends Database {
      *
      * Note that this does not remove the words, even if they remain unmapped to
      * anything.
-     * @param {string} id
      */
-    unindexArticle = async (id) => {
-        return this.run("DELETE FROM mappings WHERE rowid IN (SELECT rowid FROM articles WHERE id = ?)", [id])
-            .catch((err) => this.dbLogger.error(`UNindexing article`, err));
+    public unindexArticle = async (id: string): Promise<void> => {
+        return await this.run("DELETE FROM mappings WHERE rowid IN (SELECT rowid FROM articles WHERE id = ?)", [id])
+            .catch((err) => {
+                this.dbLogger.error(err, "UNindexing article");
+                return Promise.reject(err);
+            });
     }
 
     /**
      * Return a list of the article IDs that contain *all* the given
      * words/patterns (delimited by whitespace) in their text
-     *
-     * @param {string} words
-     * @returns {Promise<string[]>}
      */
-    findArticles = async (words) => {
-        words = words.split(" ").map((word) => `%${word}%`);
+    public findArticles = async (str: string): Promise<string[]|void> => {
+        const words = str.split(" ").map((word) => `%${word}%`);
         let stmt = "";
         for (let i = 0; i < words.length; i++) {
             if (i != 0) {
@@ -111,14 +111,14 @@ class QueryDatabase extends Database {
                             (SELECT rowid FROM words WHERE word LIKE ?))\n`;
         }
 
-        return this.all(stmt, words)
+        return await this.all<Article>(stmt, words)
             .then((rows) => rows.map((row) => row.id))
-            .catch((err) => this.dbLogger.error(`finding articles`, err));
+            .catch((err) => {
+                this.dbLogger.error(err, "finding articles");
+                return Promise.reject(err);
+            });
     }
 }
 
 const queryDatabase = new QueryDatabase(DATABASE_PATH);
-
-module.exports = {
-    queryDatabase
-};
+export default queryDatabase;

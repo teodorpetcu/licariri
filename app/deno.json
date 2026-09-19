@@ -1,0 +1,32 @@
+{
+    "author": "Teodor Petcu",
+    "license": "AGPL-3.0-or-later",
+    "version": "0.0.0",
+    "description": "",
+    "compilerOptions": {
+        "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"]
+    },
+    "tasks": {
+        "build:client": "deno bundle client/admin.ts -o public/js/admin.js && deno bundle client/main-nav.ts -o public/js/main-nav.js && deno bundle client/edit-article.ts -o public/js/edit-article.js"
+    },
+    "nodeModulesDir": "auto",
+    "imports": {
+        "bcrypt": "npm:bcrypt@^5.1.1",
+        "body-parser": "npm:body-parser@^1.20.2",
+        "cookie-parser": "npm:cookie-parser@^1.4.6",
+        "ejs": "npm:ejs@^3.1.9",
+        "express": "npm:express@^4.18.2",
+        "express-fileupload": "npm:express-fileupload@^1.4.3",
+        "marked": "npm:marked@^9.1.3",
+        "sharp": "npm:sharp@0.33.5",
+        "sqlite3": "npm:sqlite3@^5.1.6 ",
+        "winston": "npm:winston@^3.11.0",
+        "@std/expect": "jsr:@std/expect@^1.0.20"
+    },
+    "allowScripts": [
+        "npm:bcrypt@5.1.1",
+        "npm:sharp@0.33.5",
+        "npm:sqlite3@5.1.7",
+        "npm:unrs-resolver@1.12.2"
+    ]
+}

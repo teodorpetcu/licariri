@@ -1,5 +1,13 @@
 <!DOCTYPE html>
 <html lang="<%= article.language %>">
+<%_
+const getArticleCredits = (credited_for) => {
+    if (! article.credits) return [];
+    return article.credits
+        .filter((c) => c.credited_for == credited_for)
+        .map((c) => c.name);
+}
+_%>
 
 <head>
     <title><%= article.title %></title>
@@ -16,31 +24,28 @@
 <%- await include("nav"); _%>
 <%_ } _%>
     <div id="article-headline">
+        <%_ if (preview) { _%>
+        <img id="article-thumbnail" src="/admin/articles/images/<%= article.id %>.webp" class="no-select">
+        <%_ } else { %>
         <img id="article-thumbnail" src="/articles/images/<%= article.id %>.webp" class="no-select">
-        <div id="thumbnail-text-container" class="center">
-        <%_ if (articleStyle.title.position == "thumbnail") { _%>
-            <h1 id="article-title" style="font-family: <%=
-                articleStyle.title.font %>; font-size: <%=
-                articleStyle.title.fontsizeArticle %>rem; font-weight: <%=
-            articleStyle.title.fontweight %>; color: <%=
-            articleStyle.title.color %>" <%_ if (articleStyle.title.fillStyle
-            === 'on') { %> class="colour-complement-background"<%_ } _%>><%= article.title _%></h1>
-            <%_ } _%>
-            <%_ if (article.subtitle && articleStyle.subtitle.position == "thumbnail") { _%>
-            <h2 id="article-subtitle" style="font-family: <%= articleStyle.subtitle.font %>; font-size: <%= articleStyle.subtitle.fontsize %>rem; font-weight: <%= articleStyle.subtitle.fontweight %>; color: <%= articleStyle.subtitle.color %>"><%= article.subtitle %></h2>
+        <%_ } _%>
+        <div id="thumbnail-text-container" class="center-flex">
+        <%_ if (article.style.title.position == "thumbnail") { _%>
+            <h1 id="article-title" style="font-family: <%= article.style.title.font %>; font-size: <%= article.style.title.fontSizeArticle %>rem; font-weight: <%= article.style.title.fontWeight %>; color: <%= article.style.title.color %>" <%_ if (article.style.title.fillStyle) { %> class="colour-complement-background"<%_ } _%>><%= article.title _%><%_ } _%></h1>
+            <%_ if (article.subtitle && article.style.subtitle.position == "thumbnail") { _%>
+            <h2 id="article-subtitle" style="font-family: <%= article.style.subtitle.font %>; font-size: <%= article.style.subtitle.fontSize %>rem; font-weight: <%= article.style.subtitle.fontWeight %>; color: <%= article.style.subtitle.color %>"><%= article.subtitle %></h2>
         <%_ } _%>
         </div>
     </div>
     <div class="article-info">
-        <%_ if (articleStyle.title.position == "article") { _%>
+        <%_ if (article.style.title.position == "article") { _%>
         <div style="text-align: center">
-            <h1 id="article-title" style="font-family: <%=
-                articleStyle.title.font %>; font-size: <%= articleStyle.title.fontsizeArticle %>rem; font-weight: <%= articleStyle.title.fontweight %>; color: <%= articleStyle.title.color %>"><%= article.title %></h1>
+            <h1 id="article-title" style="font-family: <%= article.style.title.font %>; font-size: <%= article.style.title.fontSizeArticle %>rem; font-weight: <%= article.style.title.fontWeight %>; color: <%= article.style.title.color %>"><%= article.title %></h1>
         </div>
         <%_ } _%>
-        <%_ if (article.subtitle && articleStyle.subtitle.position == "article") { _%>
+        <%_ if (article.subtitle && article.style.subtitle.position == "article") { _%>
         <div style="text-align: center">
-            <h2 id="article-subtitle" style="font-family: <%= articleStyle.subtitle.font %>; font-size: <%= articleStyle.subtitle.fontsize %>rem; font-weight: <%= articleStyle.subtitle.fontweight %>; color: <%= articleStyle.subtitle.color %>"><%= article.subtitle %></h2>
+            <h2 id="article-subtitle" style="font-family: <%= article.style.subtitle.font %>; font-size: <%= article.style.subtitle.fontSize %>rem; font-weight: <%= article.style.subtitle.fontWeight %>; color: <%= article.style.subtitle.color %>"><%= article.subtitle %></h2>
         </div>
         <%_ } _%>
         <%_ if (article.authors.length) { _%>
@@ -73,28 +78,28 @@
             </ul>
             <b class="article-date"><%= article.date %></b>
         </div>
-        <%_ if (credits) { _%>
+        <%_ if (article.credits) { _%>
         <div id="article-contributors">
-            <%_ if (credits.editorial.length) { _%>
-            <h5>Redactare: <%= credits.editorial.sort().join(", ") %></h5>
+            <%_ if (getArticleCredits("editorial").length) { _%>
+            <h5>Redactare: <%= getArticleCredits("editorial").join(", ") %></h5>
             <%_ } _%>
-            <%_ if (credits.dtp.length) { _%>
-            <h5>Tehnoredactare: <%= credits.dtp.sort().join(", ") %></h5>
+            <%_ if (getArticleCredits("dtp").length) { _%>
+            <h5>Tehnoredactare: <%= getArticleCredits("dtp").join(", ") %></h5>
             <%_ } _%>
-            <%_ if (credits.thumbnail.length) { _%>
-            <h5>Grafică: <%= credits.thumbnail.sort().join(", ") %></h5>
+            <%_ if (getArticleCredits("thumbnail").length) { _%>
+            <h5>Grafică: <%= getArticleCredits("thumbnail").join(", ") %></h5>
             <%_ } _%>
         </div>
         <%_ } _%>
     </div>
     <span class="squiggly-line"></span>
     <div id="article-contents">
-<%- article.contents _%>
+<%- contents _%>
     </div>
 <%- await include("copyright") _%>
 </body>
 
-<%_ if (articleStyle.dropcap == "dropcap") { _%>
+<%_ if (article.style.dropcap == "dropcap") { _%>
 <script>
     articleContents = document.getElementById("article-contents");
     while(articleContents.firstChild.nodeName == "#text") {

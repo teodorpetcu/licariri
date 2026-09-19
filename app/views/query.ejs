@@ -25,8 +25,8 @@
         <div class="article-queried">
             <a href="/articles/<%= article.id %>">
                 <div class="article-thumbnail">
-                    <%_ if (article.style.hideTitleInThumbnail !== 'on') { _%>
-                    <h1 style="font-family: <%= article.style.title.font %>; font-size: <%= article.style.title.fontsizeThumbnail %>rem; font-weight: <%= article.style.title.fontweight %>; color: <%= article.style.title.color %>" class="center<% if (article.style.title.fillStyle === 'on') { %> colour-complement-background<%_ } _%>"><%= article.title %></h1>
+                    <%_ if (article.style.hideTitleInThumbnail) { _%>
+                    <h1 style="font-family: <%= article.style.title.font %>; font-size: <%= article.style.title.fontsizeThumbnail %>rem; font-weight: <%= article.style.title.fontweight %>; color: <%= article.style.title.color %>" class="center<% if (article.style.title.fillStyle) { %> colour-complement-background<%_ } _%>"><%= article.title %></h1>
                     <%_ } _%>
                     <img src="/articles/images/<%= article.id %>.webp">
                 </div>

@@ -14,15 +14,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-const fs = require("fs");
+import { type ArticleMeta } from "../models/types.ts";
+import { logger } from "./logger.ts";
+import { formatDate, writeFile } from "../utils/util.ts";
+import { WEBSITE_URL, SITEMAP_FILE_PATH } from "../config.ts";
+import articleDatabase from "../models/articles.ts";
+import usersDatabase from "../models/admin.ts";
 
-const { logger } = require("./logger.js");
-const { formatDate } = require("../utils/util.js");
-const { WEBSITE_URL, SITEMAP_FILE_PATH } = require("../config.js");
-const { articleDatabase } = require("../models/articles.js");
-const { usersDatabase } = require("../models/admin.js");
-
-const escapeStringForXML = (str) => {
+const escapeStringForXML = (str: string): string => {
     return str.replaceAll("&", "&amp;")
                 .replaceAll("<", "&lt;")
                 .replaceAll(">", "&gt;")
@@ -31,12 +30,12 @@ const escapeStringForXML = (str) => {
                 .replaceAll(" ", "%20");
 }
 
-const generateSitemapFile = async () => {
+const generateSitemapFile = async (): Promise<void> => {
     await Promise.all([
         articleDatabase.open(),
         usersDatabase.open(),
     ])
-    let [articles, magazines] = await Promise.all([
+    const [articles, magazines] = await Promise.all([
         articleDatabase.searchArticles("stage", "public"),
         articleDatabase.getAllMagazinesSorted(),
     ])
@@ -53,28 +52,27 @@ const generateSitemapFile = async () => {
     // TODO: add other main pages here when the time comes
 
     // populate every article with a `lastmod` property
-    await Promise.all(articles.map(async (article) => {
-        article.lastmod = article.timestamp;
-        return usersDatabase.getArticleModifications(article.id)
+    await Promise.all(articles.map(async (article: ArticleMeta) => {
+        return await usersDatabase.getArticleModifications(article.id)
             .then((activities) => {
                 if (activities.length) {
                     article.lastmod = activities[0].timestamp;
                 }
             })
-            .catch((err) => logger.error(`getting article modifications for sitemap`, err));
+            .catch((err) => logger.error(err, "getting article modifications for sitemap"));
     }))
 
-    for (let article of articles) {
+    for (const article of articles) {
     sitemapXML += `
     <url>
         <loc>${WEBSITE_URL}/articles/${escapeStringForXML(article.id)}</loc>
-        <lastmod>${formatDate(new Date(article.lastmod))}</lastmod>
+        <lastmod>${formatDate(article.lastmod ?? article.timestamp)}</lastmod>
         <priority>0.7</priority>
         <changefreq>yearly</changefreq>
     </url>`
     }
 
-    for (let magazine of magazines) {
+    for (const magazine of magazines) {
         let date;
         if (magazine.timestamp >= 946684800) { // year 2000 in unix time
             date = new Date(magazine.timestamp);
@@ -90,11 +88,14 @@ const generateSitemapFile = async () => {
     }
     sitemapXML += `\n</urlset>`
 
-    return fs.promises.writeFile(SITEMAP_FILE_PATH, sitemapXML, { encoding: "utf-8" })
-        .then(() => logger.info("updated sitemap.xml"))
-        .catch((err) => logger.error(`writing sitemap.xml file`, err));
+    return writeFile(SITEMAP_FILE_PATH, sitemapXML)
+        .then(() => {
+            logger.info("updated sitemap.xml")
+        })
+        .catch((err) => {
+            logger.error(err, "writing sitemap.xml file");
+            return Promise.reject();
+        });
 }
 
-module.exports = {
-    generateSitemapFile,
-};
+export default generateSitemapFile;

@@ -14,12 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-const winston = require("winston");
+import winston, { type Logger } from "winston";
+import { type Request, type Response, type NextFunction } from "express";
 
 const logFormat = winston.format.combine(
     winston.format.errors({stack: true}),
     winston.format.timestamp({format: 'YYYY-MM-DD HH:mm:ss'}),
-    winston.format.printf((info) => `[${info.timestamp}] ${info.level}: ${info.message}`)
+    winston.format.printf(({timestamp, level, message}) => `[${timestamp}] ${level}: ${message}`)
 );
 
 const consoleTransport = new winston.transports.Console({
@@ -28,7 +29,7 @@ const consoleTransport = new winston.transports.Console({
     )
 });
 
-const _logger = winston.createLogger({
+const _logger: Logger = winston.createLogger({
     level: "info",
     format: logFormat,
     transports: [
@@ -36,14 +37,14 @@ const _logger = winston.createLogger({
     ],
 });
 
-const logger = {
-    info: async (msg) => _logger.info(msg),
-    security: async (msg) => _logger.info(msg),
+export const logger = {
+    info: (msg: string) => _logger.info(msg),
+    security: (msg: string) => _logger.info(msg),
     // having a context makes it easier to locate the whereabouts of the error,
     // as well as not logging false positives (after a promise, the error itself
     // may be undefined, even if it is caught; if simply appending the error to
     // the context, an undefined error may get printed out)
-    error: async (context, err) => {
+    error: (err: Error, context?: string) => {
         if (err) {
             _logger.error(`${context}: ${err}`);
         }
@@ -53,12 +54,7 @@ const logger = {
 /**
  * Middleware: log where this request came from, and what it wants
  */
-const requestLogger = async (req, _res, next) => {
+export const requestLogger = (req: Request, _res: Response, next: NextFunction) => {
     logger.info(`${req.ip} ${req.method} ${req.url}`);
     next();
 }
-
-module.exports = {
-    logger,
-    requestLogger,
-};

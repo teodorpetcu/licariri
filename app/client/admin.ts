@@ -1,30 +1,42 @@
-const panels = [
-    "change-password",
-    "users",
-    "activity",
-    "articles",
-    "magazines",
-];
+// Copyright (C) 2026  Teodor Petcu  <petcuteodor03@gmail.com>
+// This file is part of licariri.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-const mainContent = document.getElementById("content");
+import type { Activity, Article, ArticleMeta, Magazine, User } from "../models/types.ts";
 
-const render = (...elements) => {
+type adminDashboardPanelNames = "change-password" | "users" | "activity" | "articles" | "magazines";
+
+const mainContent: HTMLElement = document.getElementById("content")!;
+
+const render = (...elements: HTMLElement[]): void => {
     mainContent.replaceChildren(...elements);
 }
 
-const addTextCellToRow = (text, row) => {
+const addTextCellToRow = (text: string, row: HTMLTableRowElement): void => {
     const td = document.createElement("td");
     td.textContent = text;
     row.appendChild(td);
 }
 
-const addHTMLElementToRow = (element, row) => {
+const addHTMLElementToRow = (element: HTMLElement, row: HTMLTableRowElement): void => {
     const td = document.createElement("td");
     td.appendChild(element);
     row.appendChild(td);
 }
 
-const createRow = (valuesList) => {
+const createRow = (valuesList: (HTMLElement | string)[]): HTMLTableRowElement => {
     const row = document.createElement("tr");
     valuesList.forEach(value => {
         if (value instanceof HTMLElement) {
@@ -36,11 +48,11 @@ const createRow = (valuesList) => {
     return row;
 }
 
-const confirmPopup = () => {
+const confirmPopup = (): boolean => {
     return confirm("Ești sigur?!");
 }
 
-const createActionButton = (target, text, askForConfirmation=false) => {
+const createActionButton = (target: string, text: string, askForConfirmation=false): HTMLAnchorElement => {
     const button = document.createElement("a");
     button.textContent = text;
     button.href = target;
@@ -50,21 +62,21 @@ const createActionButton = (target, text, askForConfirmation=false) => {
     return button;
 }
 
-const createLabelForInput = (text, htmlFor) => {
+const createLabelForInput = (text: string, htmlFor: string): HTMLLabelElement => {
     const label = document.createElement("label");
     label.textContent = text;
     label.htmlFor = htmlFor;
     return label;
 }
 
-const createInputField = (type, name=undefined) => {
+const createInputField = (type: string, name?: string): HTMLInputElement => {
     const inputField = document.createElement("input");
     inputField.type = type;
     if (name != undefined) inputField.name = name;
     return inputField
 }
 
-const createSubmitButtonWithIcon = (title, fa_icon) => {
+const createSubmitButtonWithIcon = (title: string, fa_icon: string): HTMLButtonElement => {
     const button = document.createElement("button");
     button.type = "submit";
     button.title = title;
@@ -75,7 +87,7 @@ const createSubmitButtonWithIcon = (title, fa_icon) => {
     return button;
 }
 
-const createPostForm = (action) => {
+const createPostForm = (action: string): HTMLFormElement => {
     const form = document.createElement("form");
     form.method = "post";
     form.action = action;
@@ -83,7 +95,7 @@ const createPostForm = (action) => {
     return form;
 }
 
-const createContentPanelHeading = (sectionTitle, buttonAction=undefined) => {
+const createContentPanelHeading = (sectionTitle: string, buttonAction?: string): HTMLDivElement => {
     const panel = document.createElement("div");
     panel.classList.add("panel-heading")
     const titleHeader = document.createElement("h1");
@@ -96,11 +108,11 @@ const createContentPanelHeading = (sectionTitle, buttonAction=undefined) => {
     return panel;
 }
 
-const appendChildren = (parentElem, childrenElems) => {
+const appendChildren = (parentElem: HTMLElement, childrenElems: HTMLElement[]): void => {
     childrenElems.forEach(child => parentElem.appendChild(child));
 }
 
-const renderChangePassword = async () => {
+const renderChangePassword = (): void => {
     const panel = createContentPanelHeading("Schimbare parolă");
     const form = createPostForm("/admin/change-password");
 
@@ -113,14 +125,14 @@ const renderChangePassword = async () => {
     const submitButton = createInputField("submit");
     submitButton.value = "Schimbă";
 
-    const validateSamePassword = () => {
+    const validateSamePassword = (): void => {
         if (passwordInput.value != confirmPasswordInput.value) {
             confirmPasswordInput.setCustomValidity("Parolele sunt diferite");
         } else {
             confirmPasswordInput.setCustomValidity("");
         }
     }
-    const validateValues = () => {
+    const validateValues = (): boolean => {
         [originalPasswordInput, passwordInput, confirmPasswordInput].forEach((input) => {
             if (! input.value) {
                 input.setCustomValidity("Câmp obligatoriu");
@@ -141,7 +153,7 @@ const renderChangePassword = async () => {
     render(panel, form);
 }
 
-const createAddUserDiv = () => {
+const createAddUserDiv = (): HTMLDivElement => {
     const addUserDiv = document.createElement("div");
     const formTitle = document.createElement("h3");
     formTitle.textContent = "Adaugă utilizator";
@@ -153,17 +165,16 @@ const createAddUserDiv = () => {
     const roleLabel = createLabelForInput("Statut:", "role");
     const roleInput = document.createElement("select");
     roleInput.name = "role";
-    ["editor", "administrator"].forEach((role) => {
+    for (const role of ["editor", "administrator"]) {
         const option = document.createElement("option");
-        option.value = role.toUpperCase();
         option.innerHTML = role;
         roleInput.appendChild(option);
-    });
+    }
     usernameInput.onchange = () => {if (! usernameInput.value) usernameInput.setCustomValidity("Numele de utilizator trebuie completat")};
     passwordInput.onchange = () => {if (! passwordInput.value) passwordInput.setCustomValidity("Parola trebuie completată")};
     const submitButton = createInputField("submit");
     submitButton.value = "Adaugă"
-    const validateValues = () => {
+    const validateValues = (): boolean => {
         [usernameInput, passwordInput].forEach((input) => {
             if (! input.value) {
                 input.setCustomValidity("Câmp obligatoriu");
@@ -180,7 +191,7 @@ const createAddUserDiv = () => {
     return addUserDiv;
 }
 
-const renderUsers = async (usersJSON) => {
+const renderUsers = (usersJSON: User[]): void => {
     const panel = createContentPanelHeading("Utilizatori");
     const addUserDiv = createAddUserDiv();
     panel.appendChild(addUserDiv);
@@ -188,7 +199,7 @@ const renderUsers = async (usersJSON) => {
     const table = document.createElement("table");
     const headerRow = createRow(["Nume", "Rol", "Acțiuni"]);
     table.appendChild(headerRow);
-    for (user of usersJSON) {
+    for (const user of usersJSON) {
         const row = createRow([user.id, user.role]);
         table.appendChild(row);
     }
@@ -196,19 +207,19 @@ const renderUsers = async (usersJSON) => {
     render(panel, table)
 }
 
-const renderActivity = async (activityJSON) => {
+const renderActivity = (activityJSON: Activity[]): void => {
     const panel = createContentPanelHeading("Activitate");
     const table = document.createElement("table");
     const headerRow = createRow(["Data", "Utilizator", "Acțiune", "Obiect"]);
     table.appendChild(headerRow);
-    for (activity of activityJSON) {
-        const row = createRow([activity.timestamp, activity.user_id, activity.action, activity.target]);
+    for (const activity of activityJSON) {
+        const row = createRow([String(activity.timestamp), activity.user, activity.action, activity.target]);
         table.appendChild(row);
     }
     render(panel, table)
 }
 
-const articleStageButtons = async (article) => {
+const articleStageButtons = (article: ArticleMeta): HTMLDivElement => {
     const elem = document.createElement("div");
     elem.classList.add("article-stages");
     [["public", "fa-trophy"], ["draft", "fa-pencil"], ["trash", "fa-trash"]].forEach(([stage, icon]) => {
@@ -231,27 +242,33 @@ const articleStageButtons = async (article) => {
     return elem;
 }
 
-const renderArticles = async (articleJSON) => {
+const renderArticles = (articleJSON: Article[]): void => {
     const panel = createContentPanelHeading("Articole", "/admin/articles/new");
 
     const table = document.createElement("table");
     const headerRow = createRow(["Titlu", "Autor(i)", "Stadiu", "Data publicării", "Acțiuni"]);
     table.appendChild(headerRow);
 
-    for (article of articleJSON) {
-        const titleLink = document.createElement("a");
-        titleLink.textContent = article.title;
-        titleLink.href = "/articles/" + article.id;
-        const modifyButton = createActionButton("/admin/articles/" + article.id, "modifică", askForConfirmation=false);
-        const articleStage = await articleStageButtons(article);
+    for (const article of articleJSON) {
+        let title: HTMLAnchorElement | string;
+        if (article.stage == "public") {
+            const titleLink = document.createElement("a");
+            titleLink.textContent = article.title;
+            titleLink.href = "/articles/" + article.id;
+            title = titleLink;
+        } else {
+            title = article.title;
+        }
+        const modifyButton = createActionButton("/admin/articles/" + article.id, "modifică", false);
+        const articleStage = articleStageButtons(article);
 
-        const row = createRow([titleLink, article.authors.join(", "), articleStage, article.date, modifyButton]);
+        const row = createRow([title, article.authors.join(", "), articleStage, article.date, modifyButton]);
         table.appendChild(row);
     }
     render(panel, table);
 }
 
-const createAddMagazineDiv = () => {
+const createAddMagazineDiv = (): HTMLDivElement => {
     const addMagazineDiv = document.createElement("div");
     const formTitle = document.createElement("h3");
     formTitle.textContent = "Adaugă revistă (PDF)";
@@ -285,18 +302,18 @@ const createAddMagazineDiv = () => {
     return addMagazineDiv;
 }
 
-const renderMagazines = async (magazinesJSON) => {
+const renderMagazines = (magazinesJSON: Magazine[]): void => {
     const panel = createContentPanelHeading("Reviste arhivate");
     const addMagazineDiv = createAddMagazineDiv();
 
     const table = document.createElement("table");
     const headerRow = createRow(["Revistă", "Acțiuni"]);
     table.appendChild(headerRow);
-    for (magazine of magazinesJSON) {
+    for (const magazine of magazinesJSON) {
         const titleLink = document.createElement("a");
         titleLink.textContent = magazine.description;
         titleLink.href = "/magazines/" + magazine.filename;
-        const removeButton = createActionButton("/admin/magazines/" + magazine.description, "", askForConfirmation=true);
+        const removeButton = createActionButton("/admin/magazines/" + magazine.description, "", true);
         removeButton.classList.add("delete-button");
         removeButton.classList.add("fa");
         removeButton.classList.add("fa-trash-o");
@@ -307,12 +324,12 @@ const renderMagazines = async (magazinesJSON) => {
     render(panel, table);
 }
 
-const loadPanel = async (panel) => {
+const loadPanel = async (panel: adminDashboardPanelNames | string): Promise<void> => {
     if (panel == "change-password") {
         renderChangePassword();
     } else {
-        let response = await fetch("/admin/" + panel);
-        let jsonData = await response.json();
+        const response = await fetch("/admin/" + panel);
+        const jsonData = await response.json();
         switch(panel) {
             case "users":
                 renderUsers(jsonData);
@@ -327,12 +344,12 @@ const loadPanel = async (panel) => {
                 renderMagazines(jsonData);
                 break;
             default:
-                render(undefined);
+                render();
         }
     }
 }
 
-window.addEventListener("hashchange", () => {
+globalThis.addEventListener("hashchange", () => {
     loadPanel(location.hash.substring(1));
 });
 

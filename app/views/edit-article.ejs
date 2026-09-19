@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ro">
+<%_
+const getArticleCredits = (credited_for) => {
+    if (! defaults.credits) return [];
+    return defaults.credits
+        .filter((c) => c.credited_for == credited_for)
+        .map((c) => c.name);
+}
+_%>
+
+<head>
+    <title>Editează articol</title>
+    <%- await include("meta"); %>
+    <link rel="stylesheet" type="text/css" href="/css/admin.css">
+</head>
+
+<body id="edit-article-page">
+    <div id="editing-stages">
+        <button type="button" id="button-edit-content">Conținut</button>
+        <button id="button-edit-dtp">Tehnoredactare</button>
+        <button id="button-preview">Previzualizare</button>
+    </div>
+    <form id="inputform" action="/admin/articles/<%= defaults.id %>" method="post" autocomplete="off" enctype="multipart/form-data">
+        <input type="hidden" name="_method" value="<%= method %>"/>
+        <div id="edit-article-content">
+            <div id="left">
+                <h1>Editează articol</h1>
+                <label>Titlu:</label>
+                <input required type="text" name="article.title" value="<%= defaults.title %>">
+
+                <label>Subtitlu:</label>
+                <input type="text" name="article.subtitle" value="<%= defaults.subtitle %>">
+
+                <label>Limba articolului:</label>
+                <select required name="article.language">
+                    <option value="ro">Română</option>
+                    <option value="en">Engleză</option>
+                    <option value="de">Germană</option>
+                    <option value="fr">Franceză</option>
+                </select>
+
+                <div class="input-multiple">
+                    <label>Autori:</label>
+                    <div id="input-authors"></div>
+                    <button class="add-button" type="button" id="authors-add-button">Adaugă</button>
+                </div>
+
+                <div class="input-multiple">
+                    <label>Tag-uri:</label>
+                    <div id="input-tags"></div>
+                    <button class="add-button" type="button" id="tags-add-button">Adaugă</button>
+                </div>
+
+                <label>Redactor(i):</label>
+                <input type="text" name="article.credits.editorial" value="<%= getArticleCredits('editorial').join(', ') %>">
+
+                <label>Tehnoredactor(i):</label>
+                <input type="text" name="article.credits.dtp" value="<%= getArticleCredits('dtp').join(', ') %>">
+
+                <label>Realizator(i) grafică/thumbnail:</label>
+                <input type="text" name="article.credits.thumbnail" value="<%= getArticleCredits('thumbnail').join(', ') %>">
+            </div>
+            <div id="right">
+                <textarea required name="contents"><%= contents %></textarea>
+            </div>
+        </div>
+        <div id="edit-article-dtp">
+            <div id="preview-minified-thumbnail" class="article-thumbnail no-select" style="width: 300px; position: absolute; right: 100px; top: 300px; transform: translateY(-50%);">
+                <h1 id="preview-minified-thumbnail-title" class="center"></h1>
+                <img id="preview-minified-thumbnail-img" src="">
+            </div>
+
+            <label>Thumbnail:</label>
+            <input type="file" accept="image/*" name="thumbnail" id="input-thumbnail">
+            <button type="button" id="reset-input-thumbnail-button">RESETARE</button>
+
+            <label>Ascunde titlul din thumbnail:</label>
+            <input type="checkbox" name="article.style.hideTitleInThumbnail" <% if (defaults.style.hideTitleInThumbnail) { %> checked <% } %>>
+
+            <label>Fontul titlului:</label>
+            <select name="article.style.title.font">
+                <option value="Baskervville">Baskervville</option>
+                <option value="Kameron" <% if (defaults.style.title.font == "Kameron") { %>selected<% } %>>Kameron</option>
+            </select>
+
+            <label>Mărimea fontului titlului din thumbnail:</label>
+            <input name="article.style.title.fontSizeThumbnail"
+                value="<%= defaults.style.title.fontSizeThumbnail %>"
+                type="range" min="1.5" max="2.5" step="0.1" >
+
+            <label>Mărimea fontului titlului din articol:</label>
+            <input name="article.style.title.fontSizeArticle"
+                value="<%= defaults.style.title.fontSizeArticle %>"
+                type="range" min="2" max="5" step="0.1" >
+
+            <label>Grosimea fontului titlului:</label>
+            <input name="article.style.title.fontWeight"
+                value="<%= defaults.style.title.fontWeight %>"
+                type="range" min="400" max="800" step="50">
+
+            <!--TITLE FILL STYLE == <select>-->
+            <label>Titlul contrastează cu fundalul (ignoră culoarea):</label>
+            <input type="checkbox" name="article.style.title.fillStyle" <% if (defaults.style.title.fillStyle) { %> checked <% } %>>
+
+            <label>Culoarea titlului:</label>
+            <input name="article.style.title.color"
+                value="<%= defaults.style.title.color %>"
+                type="color">
+
+            <label>Poziția titlului în articol:</label>
+            <select name="article.style.title.position">
+                <option value="thumbnail">Pe thumbnail</option>
+                <option value="article" <% if (defaults.style.title.position == "article") { %>selected<% } %>>Sub thumbnail</option>
+
+            </select>
+
+            <label>Fontul subtitlului:</label>
+            <select name="article.style.subtitle.font">
+                <option value="Baskervville">Baskervville</option>
+                <option value="Kameron" <% if (defaults.style.subtitle.font == "Kameron") { %>selected<% } %>>Kameron</option>
+            </select>
+
+            <label>Mărimea fontului subtitlului din articol:</label>
+            <input name="article.style.subtitle.fontSize"
+                value="<%= defaults.style.subtitle.fontSize %>"
+                type="range" min="1" max="2" step="0.1" >
+
+            <label>Grosimea fontului subtitlului:</label>
+            <input name="article.style.subtitle.fontWeight"
+                value="<%= defaults.style.subtitle.fontWeight %>"
+                type="range" min="400" max="800" step="50">
+
+            <label>Culoarea subtitlului:</label>
+            <input name="article.style.subtitle.color"
+                value="<%= defaults.style.subtitle.color %>"
+                type="color">
+
+            <label>Poziția subtitlului în articol:</label>
+            <select name="article.style.subtitle.position">
+                <option value="thumbnail">Pe thumbnail</option>
+                <option value="article" <% if (defaults.style.subtitle.position == "article") { %>selected<% } %>>Sub thumbnail</option>
+            </select>
+
+            <label>Stilul primei litere din text:</label>
+            <select name="article.style.article.firstLetter">
+                <option value="default">Fără stil</option>
+                <option value="dropcap" <% if (defaults.style.article.firstLetter == "dropcap") { %>selected<% } %>>Dropcap cu border</option>
+            </select>
+        </div>
+        <input id="article-submit-button" type="submit" value="Trimite">
+    </form>
+    <div id="article-page">
+    </div>
+</body>
+
+<script>
+const authorsAddButton = document.getElementById("authors-add-button");
+const tagsAddButton = document.getElementById("tags-add-button");
+
+// `type` may be either "author" or "tag"
+const addField = (type = "", value = "") => {
+    const fieldsContainer = document.getElementById("input-" + type + "s");
+    let field = document.createElement("div");
+    field.classList.add(type);
+
+    let fieldInput = document.createElement("input");
+    fieldInput.name = "article" + "." + type + "s";
+    fieldInput.type = "text";
+    fieldInput.value = value;
+
+    let fieldDeleteButton = document.createElement("button");
+    fieldDeleteButton.type = "button";
+    fieldDeleteButton.classList.add("delete-button");
+    fieldDeleteButton.classList.add("fa");
+    fieldDeleteButton.classList.add("fa-trash-o");
+    fieldDeleteButton.addEventListener("click", () => {
+        fieldsContainer.removeChild(field)
+    })
+
+    field.appendChild(fieldInput);
+    field.appendChild(fieldDeleteButton);
+    fieldsContainer.appendChild(field);
+}
+
+<% for (author of (defaults.authors ? defaults.authors : [])) { %>
+    addField("author", "<%= author %>");
+<% } %>
+<% for (tag of (defaults.tags ? defaults.tags : [])) { %>
+    addField("tag", "<%= tag %>");
+<% } %>
+
+authorsAddButton.addEventListener("click", () => addField("author", ""));
+tagsAddButton.addEventListener("click", () => addField("tag", ""));
+</script>
+
+<script src="/js/edit-article.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+
+</html>

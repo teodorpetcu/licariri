@@ -1,22 +1,21 @@
 # first build to see if it passes all tests
-FROM node:25-slim AS build
+FROM denoland/deno AS build
 
 WORKDIR /app
 
-COPY app/package*.json ./
-RUN npm install
+COPY app/deno.json app/deno.lock app/package*.json /app
+RUN deno ci --prod --skip-types
 
-COPY app/ ./
+COPY app/ /app
 COPY tests-data/ /data
-COPY tests/ /tests
 
 ENV NODE_ENV="development"
 
-# jest localstorage has to be set since otherwise it may send a warning
-RUN NODE_OPTIONS="--localstorage-file=/tests/jest-storage" npm test
+RUN deno task build:client
+RUN deno test -A
 
 # production build
-FROM node:25-slim AS production
+FROM denoland/deno AS production
 
 WORKDIR /app
 
@@ -24,8 +23,8 @@ COPY --from=build app/ ./
 
 ENV NODE_ENV="production"
 
-RUN npm prune --omit=dev
+VOLUME /data
 
 EXPOSE 8000
 
-CMD ["node", "server.js"]
+CMD ["deno", "--cached-only", "-A", "app.ts"]

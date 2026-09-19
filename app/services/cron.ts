@@ -14,33 +14,27 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-const fs = require("fs");
-
-const { articleDatabase } = require("../models/articles.js");
-const { usersDatabase } = require("../models/admin.js");
-const { renderArticlePage } = require("../controllers/articles.js");
-const { logger } = require("./logger.js");
-const { ARTICLES_DIRECTORY } = require("../config.js");
+import { getArticleMarkdownFilePath, type Article } from "../models/types.ts";
+import articleDatabase from "../models/articles.ts";
+import usersDatabase from "../models/admin.ts";
+import { generateArticleTextFiles } from "../controllers/articles.ts";
+import { logger } from "./logger.ts";
+import { readFileIfExists } from "../utils/util.ts";
 
 const MILISECONDS_IN_A_DAY = 24 * 60 * 60 * 1000;
 
 /**
  * Take all articles in the database and re-render their HTML file
- * @returns {Promise<undefined>}
  */
-const updateAllArticles = async () => {
+const updateAllArticles = async (): Promise<void> => {
     await articleDatabase.open();
     const articles = await articleDatabase.searchArticles();
-    return Promise.all(articles.map(async (article) => {
-        return Promise.all([
-            fs.promises.readFile(`${ARTICLES_DIRECTORY}/${article.stage}/${article.id}.md`, {encoding: "utf-8"}),
-            articleDatabase.getArticleStyle(article.id),
-            articleDatabase.getArticleCredits(article.id),
-        ])
-            .then(([content, articleStyle, credits]) => renderArticlePage(article, content, articleStyle, credits))
+    return await Promise.all(articles.map(async (article: Article) => {
+        return await readFileIfExists(getArticleMarkdownFilePath(article))
+            .then((content) => generateArticleTextFiles(article, content))
             .then((_status) => logger.info(`re-rendered article "${article.id}"`))
-            .catch((err) => logger.error(`failed re-rendering article "${article.id}"`, err));
-    }));
+            .catch((err) => logger.error(err, `failed re-rendering article "${article.id}"`));
+    })).then(() => Promise.resolve());
 }
 
 /**
@@ -51,15 +45,15 @@ const updateAllArticles = async () => {
  * The most convenient solution is to prune the database every 24 hours, at
  * midnight.
  */
-const removeOldSessionsFromDatabase = async () => {
+const removeOldSessionsFromDatabase = async (): Promise<void> => {
     await usersDatabase.open();
-    let sessions = await usersDatabase.getAllSessions();
-    let today = new Date();
+    const sessions = await usersDatabase.getAllSessions();
+    const today = new Date().valueOf();
     let numberRemoved = 0;
     // TODO: remove `await` from loop
-    for (let session of sessions) {
-        let timestamp = new Date(session.timestamp);
-        let daysDifference = Math.floor((today - timestamp) / MILISECONDS_IN_A_DAY);
+    for (const session of sessions ?? []) {
+        const timestamp = new Date(session.timestamp).valueOf();
+        const daysDifference = Math.floor((today - timestamp) / MILISECONDS_IN_A_DAY);
         if (daysDifference > 28) {
             await usersDatabase.removeSession(session.token);
             numberRemoved += 1;
@@ -68,21 +62,25 @@ const removeOldSessionsFromDatabase = async () => {
     logger.info(`removed ${numberRemoved} user session(s) from the database older than 28 days`);
 }
 
-const dailyUpdateJob = async () => {
+const dailyUpdateJob = async (): Promise<void> => {
     logger.info("running daily update job...");
-    return Promise.all([
+    return await Promise.all([
         removeOldSessionsFromDatabase(),
     ])
-        .then(() => logger.info("successfully ran daily update job"))
-        .catch((err) => logger.error(`during daily update job`, err))
+        .then(() => {
+            logger.info("successfully ran daily update job");
+        })
+        .catch((err) => {
+            logger.error(err, "during daily update job")
+        });
 }
 
-const dailyUpdateJobTimer = async () => {
-    let midnightDate = new Date(); midnightDate.setHours(24, 0, 0, 0);
-    let milisecondsToNextMidnight = midnightDate.getTime() - Date.now();
-    let seconds = Math.floor((milisecondsToNextMidnight / 1000) % 60);
-    let minutes = Math.floor((milisecondsToNextMidnight / (1000 * 60)) % 60);
-    let hours = Math.floor((milisecondsToNextMidnight / (1000 * 60 * 60)) % 24);
+const dailyUpdateJobTimer = () => {
+    const midnightDate = new Date(); midnightDate.setHours(24, 0, 0, 0);
+    const milisecondsToNextMidnight = midnightDate.getTime() - Date.now();
+    const seconds = Math.floor((milisecondsToNextMidnight / 1000) % 60);
+    const minutes = Math.floor((milisecondsToNextMidnight / (1000 * 60)) % 60);
+    const hours = Math.floor((milisecondsToNextMidnight / (1000 * 60 * 60)) % 24);
     logger.info(`started daily job timer, next ETA: ${hours}h ${minutes}min ${seconds}s`)
     return setTimeout(() => {
         dailyUpdateJob();

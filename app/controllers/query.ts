@@ -14,24 +14,29 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-const ejs = require("ejs");
-const fs = require("fs");
+import ejs from "ejs";
+import { type Request, type Response } from "express";
 
-const { fileExists } = require("../utils/util.js");
-const { logger } = require("../services/logger.js")
-const { queryDatabase } = require("../models/query.js");
-const { articleDatabase } = require("../models/articles.js");
-const { QUERY_PRERENDERS } = require("../config.js");
+import { type Article } from "../models/types.ts";
+import { fileExists, writeFile } from "../utils/util.ts";
+import { logger } from "../services/logger.ts";
+import queryDatabase from "../models/query.ts";
+import articleDatabase  from "../models/articles.ts";
+import { QUERY_PRERENDERS } from "../config.ts";
 
-/**
- * @param {Obj} query
- * @returns {Promise<string>}
- */
-const renderQueryPage = async (query) => {
+type QueryParams = {
+    any?: string,
+    tag?: string,
+    author?: string,
+    text?: string,
+    exactMatch?: boolean,
+}
+
+const renderQueryPage = async (query: QueryParams) => {
     let articleIDs = [];
     let searchResults = [];
 
-    let any = query.any;
+    const any = query.any;
     let author = query.author;
     let tag = query.tag;
     let text = query.text;
@@ -41,10 +46,10 @@ const renderQueryPage = async (query) => {
     let failureMessage = "";
     let searchPageTitle = "Căutare - Revista Licăriri";
 
-    let titlePromise = Promise.resolve([]);
-    let authorPromise = Promise.resolve([]);
-    let tagPromise = Promise.resolve([]);
-    let textPromise = Promise.resolve([]);
+    let titlePromise;
+    let authorPromise
+    let tagPromise;
+    let textPromise;
 
     if (any) {
         failureMessage = `Ne pare rău, nu am putut găsi nimic pentru «${any}»:`;
@@ -95,7 +100,7 @@ const renderQueryPage = async (query) => {
 
     // using Promise.all() is potentially much faster than using `await` on each
     // of them individually
-    let subqueries = await Promise.all([
+    const subqueries = await Promise.all([
         titlePromise,
         authorPromise,
         tagPromise,
@@ -104,21 +109,16 @@ const renderQueryPage = async (query) => {
     articleIDs = [... new Set(subqueries.flat(1))];
 
     if (! any) {
-        for (subquery of subqueries) {
-            if (subquery.length) {
-                articleIDs = articleIDs.filter(id => subquery.includes(id));
+        for (const subquery of subqueries) {
+            if (subquery?.length) {
+                articleIDs = articleIDs.filter(id => subquery.includes(id!));
             }
         }
     }
 
-    searchResults = await Promise.all(articleIDs.map((id) => articleDatabase.getArticle(id)));
+    searchResults = await Promise.all(articleIDs.map((id) => articleDatabase.getArticle(id!)));
     searchResults = searchResults.filter(x => x); // in case of any `undefined`
-    for (let i = 0; i < searchResults.length; i++) {
-        if (searchResults[i] != undefined) {
-            searchResults[i].style = await articleDatabase.getArticleStyle(searchResults[i].id);
-        }
-    }
-    searchResults.sort((a,b) => b.timestamp - a.timestamp);
+    searchResults.sort((a,b) => b!.timestamp - a!.timestamp);
 
     if (searchResults.length) {
         message = successMessage;
@@ -126,13 +126,13 @@ const renderQueryPage = async (query) => {
         message = failureMessage;
     }
 
-    return ejs.renderFile(__dirname + "/../views/query.ejs",
+    return ejs.renderFile(import.meta.dirname + "/../views/query.ejs",
         {articles: searchResults, searchPageTitle, message},
         {async: true})
-        .catch((err) => logger.error(`rendering query page`, err));
+        .catch((err: Error) => logger.error(err, "rendering query page"));
 }
 
-const get_queryPage = async (req, res) => {
+export const get_queryPage = async (req: Request, res: Response) => {
     if (req.query.author && !req.query.tag && !req.query.any && !req.query.text) {
         if (await fileExists(QUERY_PRERENDERS + `/author=${req.query.author}.html`)) {
             res.sendFile(QUERY_PRERENDERS + `/author=${req.query.author}.html`);
@@ -148,11 +148,7 @@ const get_queryPage = async (req, res) => {
     res.send(queryPage);
 }
 
-/**
- * @param {Object} query
- * @returns {Promise<boolean>}
- */
-const prerenderQueryAsFile = async (query) => {
+export const prerenderQueryAsFile = async (query: QueryParams) => {
     let filename = "";
     if (query.author && !query.tag && !query.any && !query.text) {
         filename = QUERY_PRERENDERS + `/author=${query.author}.html`;
@@ -161,16 +157,26 @@ const prerenderQueryAsFile = async (query) => {
     }
 
     if (filename) {
-        return renderQueryPage(query)
-            .then((queryPage) => fs.promises.writeFile(filename, queryPage))
+        return await renderQueryPage(query)
+            .then((queryPage) => writeFile(filename, queryPage))
             .then(() => true)
-            .catch((err) => logger.error(`writing prerendered query page file`, err));
+            .catch((err) => logger.error(err, "writing prerendered query page file"));
     } else {
-        return Promise.resolve(false);
+        return await Promise.resolve(false);
     }
 }
 
-module.exports = {
-    get_queryPage,
-    prerenderQueryAsFile,
-};
+export const prerenderQueryFilesForArticle = async (article: Article) => {
+    return await Promise.all([
+        prerenderQueryAuthorsMentionedInArticle(article),
+        prerenderQueryTagsMentionedInArticle(article),
+    ]);
+}
+
+const prerenderQueryAuthorsMentionedInArticle = async (article: Article) => {
+    return await Promise.all(article.authors.map(author => prerenderQueryAsFile({author: author})));
+}
+
+const prerenderQueryTagsMentionedInArticle = async (article: Article) => {
+    return await Promise.all(article.tags.map(tag => prerenderQueryAsFile({tag: tag})));
+}
