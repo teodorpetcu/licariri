@@ -115,6 +115,7 @@ const appendChildren = (parentElem: HTMLElement, childrenElems: HTMLElement[]): 
 const renderChangePassword = (): void => {
     const panel = createContentPanelHeading("Schimbare parolă");
     const form = createPostForm("/admin/change-password");
+    form.classList.add("form-container");
 
     const originalPasswordLabel = createLabelForInput("Parola actuală:", "original");
     const originalPasswordInput = createInputField("password", "original");
@@ -155,9 +156,10 @@ const renderChangePassword = (): void => {
 
 const createAddUserDiv = (): HTMLDivElement => {
     const addUserDiv = document.createElement("div");
+    addUserDiv.classList.add("form-container");
     const formTitle = document.createElement("h3");
     formTitle.textContent = "Adaugă utilizator";
-    const addUserForm = createPostForm("/admin/change-password");
+    const addUserForm = createPostForm("/admin/users/new");
     const usernameLabel = createLabelForInput("Nume:", "id");
     const usernameInput = createInputField("text", "id");
     const passwordLabel = createLabelForInput("Parola:", "password");
@@ -270,6 +272,7 @@ const renderArticles = (articleJSON: Article[]): void => {
 
 const createAddMagazineDiv = (): HTMLDivElement => {
     const addMagazineDiv = document.createElement("div");
+    addMagazineDiv.classList.add("form-container");
     const formTitle = document.createElement("h3");
     formTitle.textContent = "Adaugă revistă (PDF)";
     const addMagazineForm = createPostForm("/admin/magazines/new");

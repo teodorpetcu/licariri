@@ -37,7 +37,7 @@ export const COOKIE_OPTIONS = {
     httpOnly: true,
     secure: true,
     sameSite: "strict",
-    maxAge: -1, // by default, let the browser choose
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
 };
 export const SESSION_TOKEN_LENGTH = 64;
 export const HASH_COST = 15;

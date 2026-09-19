@@ -40,8 +40,31 @@
     }
 
     #content {
+        display: flex;
+        flex-direction: column;
+        margin-top: 20px;
+        text-align: center;
+        text-rendering: optimizeLegibility;
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            max-width: 400px;
+            margin: 10px auto 30px auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            input {
+                width: 100%;
+                margin-left: 0px;
+                margin-right: 0px;
+            }
+            input[type="submit"] {
+                margin-top: 15px;
+            }
+        }
         table {
             width: auto;
+            max-width: 90%;
+            margin: 0 auto 0 auto;
         }
 
         input {
@@ -60,7 +83,6 @@
                 margin-left: 32px;
                 color: blue;
                 border: 1px solid black;
-                border-radius: 50%;
                 text-decoration: none;
                 font-size: 1.6rem;
                 vertical-align: center;
@@ -88,6 +110,7 @@
             display: inline-block;
             width: 32px;
             aspect-ratio: 1;
+            margin: 3px;
         }
         .stage-button-current {
             cursor: default;
@@ -142,7 +165,7 @@ input {
     background-color: var(--neutral-color);
     border: 1px solid var(--font-color);
     padding: 4px;
-    margin-bottom: 5px;
+    margin: 5px;
 }
 
 #edit-article-page {

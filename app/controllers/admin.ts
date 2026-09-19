@@ -88,13 +88,17 @@ export const post_adminAPI_loginCheck = async (req: Request, res: Response): Pro
     const cookieOptions = COOKIE_OPTIONS;
     if (await usersDatabase.isCorrectLoginCombo(id, pass)) {
         const session = newSession(id);
-        usersDatabase.addSession(session);
-        if (rememberMe == "on") {
-            cookieOptions.maxAge = 28 * MILISECONDS_IN_A_DAY; // 4 weeks
-        }
-        logger.security(`${req.ip} login SUCCESS as user '${id}'`);
-        res.cookie("session", session.token, cookieOptions);
-        res.redirect("/admin");
+        usersDatabase.addSession(session).then(() => {
+            if (rememberMe == "on") {
+                cookieOptions.maxAge = 28 * MILISECONDS_IN_A_DAY; // 4 weeks
+            }
+            logger.security(`${req.ip} login SUCCESS as user '${id}'`);
+            res.cookie("session", session.token, cookieOptions);
+            res.redirect("/admin");
+        }).catch((err) => {
+            logger.error(err, "could not add session to user database");
+            res.sendStatus(500);
+        })
     } else {
         logger.security(`${req.ip} login FAIL as user '${id}'`);
         res.redirect("/login");

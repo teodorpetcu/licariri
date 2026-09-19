@@ -78,7 +78,7 @@ export class UsersDatabase extends Database {
      */
     public addUser = async (user: User, pass: string): Promise<void> => {
         const hash = await hashPassword(pass);
-        return await this.run('INSERT INTO users VALUES(?, ?, ?, ?)', [user.id, user.role, user.suspended, hash])
+        return await this.run('INSERT INTO users (id, role, suspended, password) VALUES(?, ?, ?, ?)', [user.id, user.role, user.suspended, hash])
             .catch((err) => {
                 this.dbLogger.error(err, `adding user '${user}'`);
                 return Promise.reject(err);
@@ -122,7 +122,7 @@ export class UsersDatabase extends Database {
      * Save the given session in the database
      */
     public addSession = async (session: Session): Promise<void> => {
-        return await this.run('INSERT INTO sessions VALUES (?, ?, ?)', [session.user_id, session.token, session.timestamp])
+        return await this.run('INSERT INTO sessions (user, token, timestamp) VALUES (?, ?, ?)', [session.user_id, session.token, session.timestamp])
             .catch((err) => {
                 this.dbLogger.error(err, "adding session");
                 return Promise.reject(err);
@@ -175,7 +175,7 @@ export class UsersDatabase extends Database {
      * Add a record to the `activity` table
      */
     public addActivity = async (user: User, action: UserActivityAction, target: string): Promise<void> => {
-        return await this.run('INSERT INTO activity VALUES (?, ?, ?, ?)', [Date.now(), user.id, action, target])
+        return await this.run('INSERT INTO activity (timestamp, user, action, target) VALUES (?, ?, ?, ?)', [Date.now(), user.id, action, target])
             .catch((err) => {
                 this.dbLogger.error(err, "adding user activity");
                 return Promise.reject(err);
