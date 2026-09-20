@@ -188,8 +188,8 @@ export const put_adminAPI_modifyArticle = async (req: Request, res: Response): P
     const originalArticle: ArticleMeta = (await articleDatabase.getArticleMeta(originalID))!;
 
     const article = req.body.article;
-    article.timestamp = originalArticle?.timestamp ? originalArticle.timestamp : Date.now();
-    article.stage = originalArticle?.stage ?? "draft";
+    article.timestamp = originalArticle.timestamp;
+    article.stage = originalArticle.stage;
     const markdownContents = req.body.markdownContents;
     const thumbnail: UploadedFile = req.files?.thumbnail;
 
@@ -247,7 +247,7 @@ export const put_adminAPI_modifyArticle = async (req: Request, res: Response): P
 export const validateArticleModificationRequestBody = (req: Request, res: Response, next: NextFunction) => {
     if (! req.body.article) {
         return res.status(400).send("no article body in request body");
-    } else if (! req.body.markdownContents) {
+    } else if (req.body.markdownContents == undefined) {
         return res.status(400).send("no markdownContents in request body");
     }
     if (typeof req.body.article == "string") {

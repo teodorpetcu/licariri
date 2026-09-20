@@ -238,7 +238,8 @@ export class ArticleDatabase extends Database {
             this.run('DELETE FROM articles WHERE id = ?', [id]),
             this.run('DELETE FROM article_authors WHERE id = ?', [id]),
             this.run('DELETE FROM article_tags WHERE id = ?', [id]),
-            this.run('DELETE FROM article_credits WHERE id = ?', [id])
+            this.run('DELETE FROM article_credits WHERE id = ?', [id]),
+            this.run('DELETE FROM article_styles WHERE id = ?', [id]),
         ])
             .then(() => Promise.resolve())
             .catch((err) => {

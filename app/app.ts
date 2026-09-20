@@ -141,9 +141,7 @@ if (process.env.ALLOW_ADMIN_ROUTES == "true") {
     app.get("/admin/articles", requestLogger, get_adminAPI_articles);
     app.get("/admin/articles/new", requestLogger, get_adminAddArticlePage);
     app.get("/admin/articles/:articleID", requestLogger, get_adminAddArticlePage);
-    // NOTE: preview route must be before the POST /admin/articles/:articleID
-    // route, to avoid :articleID matching to 'article-preview'
-    app.post("/admin/articles/article-preview", requestLogger, validateArticleModificationRequestBody, post_adminAPI_articlePreview);
+    app.post("/admin/articles/:articleID/preview", requestLogger, validateArticleModificationRequestBody, post_adminAPI_articlePreview);
     app.post("/admin/articles/:articleID", requestLogger, validateArticleModificationRequestBody, post_adminAPI_addArticle);
     app.put("/admin/articles/:articleID", requestLogger, validateArticleModificationRequestBody, put_adminAPI_modifyArticle);
     app.post("/admin/articles/:articleID/stage", requestLogger, post_adminAPI_updateArticleStage);

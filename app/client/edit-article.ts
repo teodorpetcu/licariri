@@ -101,7 +101,7 @@ const getArticleThumbnail = (): File | undefined => {
 
 const updatePreviewThumbnail = () => {
     if (! inputThumbnail.files) return;
-    const [uploadedThumbnail] = inputThumbnail.files;
+    const [uploadedThumbnail] = inputThumbnail.files ?? [undefined];
     if (uploadedThumbnail) {
         previewMinifiedThumbnailImage.src = URL.createObjectURL(uploadedThumbnail);
     } else {
@@ -141,7 +141,8 @@ const showDTPPage = () => {
 
 const showPreviewPage = () => {
     const articleReq = getArticleFromFormData();
-    fetch("/admin/articles/article-preview", {
+    if (! articleReq.markdownContents) articleReq.markdownContents = "";
+    fetch(`/admin/articles/${ARTICLE_ID}/preview`, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
@@ -156,7 +157,7 @@ const showPreviewPage = () => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, "text/html");
             const previewPageArticleThumbnail = (doc.getElementById("article-thumbnail") as HTMLImageElement);
-            const [newThumbnail] = inputThumbnail.files ?? [];
+            const [newThumbnail] = inputThumbnail.files ?? [undefined];
             if (newThumbnail) {
                 previewPageArticleThumbnail.src = URL.createObjectURL(newThumbnail);
             }

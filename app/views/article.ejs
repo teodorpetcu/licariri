@@ -29,7 +29,7 @@ _%>
         <%_ } else { %>
         <img id="article-thumbnail" src="/articles/images/<%= article.id %>.webp" class="no-select">
         <%_ } _%>
-        <div id="thumbnail-text-container" class="center-flex">
+        <div id="thumbnail-text-container">
         <%_ if (article.style.title.position == "thumbnail") { _%>
             <h1 id="article-title" style="font-family: <%= article.style.title.font %>; font-size: <%= article.style.title.fontSizeArticle %>rem; font-weight: <%= article.style.title.fontWeight %>; color: <%= article.style.title.color %>" <%_ if (article.style.title.fillStyle) { %> class="colour-complement-background"<%_ } _%>><%= article.title _%><%_ } _%></h1>
             <%_ if (article.subtitle && article.style.subtitle.position == "thumbnail") { _%>
