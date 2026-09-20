@@ -73,8 +73,8 @@ const makeArticleCredit = (name: string, credited_for: "editorial" | "dtp" | "th
 }
 
 const getArticleCreditsFromFormData = (formData: FormData): ArticleCredit[] => {
-    const editorial: string[] = (formData.get("article.credits.editorial") as string).split(", ").filter(x => x);
-    const dtp: string[] = (formData.get("article.credits.dtp") as string).split(", ").filter(x => x);
+    const editorial: string[] = (formData.get("article.credits.editorial") as string ?? "").split(", ").filter(x => x);
+    const dtp: string[] = (formData.get("article.credits.dtp") as string ?? "").split(", ").filter(x => x);
     const thumbnail: string[] = (formData.get("article.credits.thumbnail") as string).split(", ").filter(x => x);
     return editorial.map(name => makeArticleCredit(name, "editorial"))
         .concat(dtp.map(name => makeArticleCredit(name, "dtp")))
