@@ -187,8 +187,9 @@ export const put_adminAPI_modifyArticle = async (req: Request, res: Response): P
     // the original article resource is... supposedly guaranteed to exist
     const originalArticle: ArticleMeta = (await articleDatabase.getArticleMeta(originalID))!;
 
-    const article = req.body.article;
+    const article: Article = req.body.article;
     article.timestamp = originalArticle.timestamp;
+    article.date = originalArticle.date;
     article.stage = originalArticle.stage;
     const markdownContents = req.body.markdownContents;
     const thumbnail: UploadedFile = req.files?.thumbnail;
