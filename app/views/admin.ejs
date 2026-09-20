@@ -4,7 +4,7 @@
 <head>
     <title>Administrare</title>
 <%- include("meta"); _%>
-    <link rel="stylesheet" href="/css/admin.css" type="text/css">
+    <link rel="stylesheet" type="text/css" href="/css/admin.css?v0.1.0">
     <script type="text/javascript" src="/js/admin.js" defer></script>
 </head>
 
@@ -19,15 +19,15 @@
             </form>
         </div>
         <hr>
-        <a href="#change-password">Schimbă-ți parola</a>
+        <!--<a id="panel-change-password" class="panel-button" href="#change-password">Schimbă-ți parola</a>-->
         <%_ if (canManageOtherUsers) { _%>
-        <a href="#users">Gestionare utilizatori</a>
+        <a id="panel-users" class="panel-button" href="#users">Gestionare utilizatori</a>
         <%_ } _%>
-        <a href="#activity">Activitate recentă</a>
+        <a id="panel-activity" class="panel-button" href="#activity">Activitate recentă</a>
         <hr>
-        <a href="#articles">Articole</a>
+        <a id="panel-articles" class="panel-button" href="#articles">Articole</a>
         <hr>
-        <a href="#magazines">Reviste arhivate</a>
+        <a id="panel-magazines" class="panel-button" href="#magazines">Reviste arhivate</a>
     </div>
     <div id="content"></div>
 </body>

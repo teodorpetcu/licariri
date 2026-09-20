@@ -115,7 +115,7 @@ const appendChildren = (parentElem: HTMLElement, childrenElems: HTMLElement[]): 
 const renderChangePassword = (): void => {
     const panel = createContentPanelHeading("Schimbare parolă");
     const form = createPostForm("/admin/change-password");
-    form.classList.add("form-container");
+    form.classList.add("sectionbox");
 
     const originalPasswordLabel = createLabelForInput("Parola actuală:", "original");
     const originalPasswordInput = createInputField("password", "original");
@@ -156,6 +156,7 @@ const renderChangePassword = (): void => {
 
 const createAddUserDiv = (): HTMLDivElement => {
     const addUserDiv = document.createElement("div");
+    addUserDiv.classList.add("sectionbox");
     addUserDiv.classList.add("form-container");
     const formTitle = document.createElement("h3");
     formTitle.textContent = "Adaugă utilizator";
@@ -199,6 +200,7 @@ const renderUsers = (usersJSON: User[]): void => {
     panel.appendChild(addUserDiv);
 
     const table = document.createElement("table");
+    table.classList.add("sectionbox");
     const headerRow = createRow(["Nume", "Rol", "Acțiuni"]);
     table.appendChild(headerRow);
     for (const user of usersJSON) {
@@ -212,6 +214,7 @@ const renderUsers = (usersJSON: User[]): void => {
 const renderActivity = (activityJSON: Activity[]): void => {
     const panel = createContentPanelHeading("Activitate");
     const table = document.createElement("table");
+    table.classList.add("sectionbox");
     const headerRow = createRow(["Data", "Utilizator", "Acțiune", "Obiect"]);
     table.appendChild(headerRow);
     for (const activity of activityJSON) {
@@ -248,6 +251,7 @@ const renderArticles = (articleJSON: Article[]): void => {
     const panel = createContentPanelHeading("Articole", "/admin/articles/new");
 
     const table = document.createElement("table");
+    table.classList.add("sectionbox");
     const headerRow = createRow(["Titlu", "Autor(i)", "Stadiu", "Data publicării", "Acțiuni"]);
     table.appendChild(headerRow);
 
@@ -272,6 +276,7 @@ const renderArticles = (articleJSON: Article[]): void => {
 
 const createAddMagazineDiv = (): HTMLDivElement => {
     const addMagazineDiv = document.createElement("div");
+    addMagazineDiv.classList.add("sectionbox");
     addMagazineDiv.classList.add("form-container");
     const formTitle = document.createElement("h3");
     formTitle.textContent = "Adaugă revistă (PDF)";
@@ -310,6 +315,7 @@ const renderMagazines = (magazinesJSON: Magazine[]): void => {
     const addMagazineDiv = createAddMagazineDiv();
 
     const table = document.createElement("table");
+    table.classList.add("sectionbox");
     const headerRow = createRow(["Revistă", "Acțiuni"]);
     table.appendChild(headerRow);
     for (const magazine of magazinesJSON) {
@@ -325,6 +331,15 @@ const renderMagazines = (magazinesJSON: Magazine[]): void => {
     }
     panel.appendChild(addMagazineDiv);
     render(panel, table);
+}
+
+const panelButtons = document.getElementsByClassName("panel-button")!;
+
+const updateSelectedPanelButton = (panelName: adminDashboardPanelNames | string): void => {
+    for (const panelButton of panelButtons) {
+        panelButton.classList.remove("selected");
+    }
+    document.getElementById(`panel-${panelName}`)!.classList.add("selected");
 }
 
 const loadPanel = async (panel: adminDashboardPanelNames | string): Promise<void> => {
@@ -350,6 +365,7 @@ const loadPanel = async (panel: adminDashboardPanelNames | string): Promise<void
                 render();
         }
     }
+    updateSelectedPanelButton(panel);
 }
 
 globalThis.addEventListener("hashchange", () => {
