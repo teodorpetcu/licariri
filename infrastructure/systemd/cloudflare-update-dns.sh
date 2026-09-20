@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 # TODO: put in a separate file and source that
 [[ -z "${XDG_CONFIG_HOME}" ]] \
@@ -21,7 +21,7 @@ function new_ip_differs_from_last {
 }
 
 function update_ip_log {
-    echo "${current_ip}" >> "${IP_LOG_FILE}"
+    echo "$(date '+%Y-%m-%d') ${current_ip}" >> "${IP_LOG_FILE}"
 }
 
 function update_cloudflare_dns_record {

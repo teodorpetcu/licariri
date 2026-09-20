@@ -1,7 +1,7 @@
 [Unit]
 
 [Timer]
-OnCalendar=Sun,Tue,Thu *-*-* 22:00:00
+OnCalendar=*-*-* 04:00:00
 Persistent=true
 
 [Install]
