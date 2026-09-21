@@ -127,15 +127,24 @@ const updatePreviewThumbnail = () => {
 
 updatePreviewThumbnail(); // to initialise it
 
+
 const showContentPage = () => {
-    contentPage.style.display = "grid";
+    if (screen.width > 800) {
+        contentPage.style.display = "grid";
+    } else {
+        contentPage.style.display = "block";
+    }
     dtpPage.style.display = "none";
     previewPage.style.display = "none";
 }
 
 const showDTPPage = () => {
     contentPage.style.display = "none";
-    dtpPage.style.display = "grid";
+    if (screen.width > 800) {
+        dtpPage.style.display = "grid";
+    } else {
+        dtpPage.style.display = "block";
+    }
     previewPage.style.display = "none";
 }
 
@@ -166,7 +175,7 @@ const showPreviewPage = () => {
 
     contentPage.style.display = "none";
     dtpPage.style.display = "none";
-    previewPage.style.display = "grid";
+    previewPage.style.display = "block";
 }
 
 document.getElementById("button-edit-content")!.addEventListener("click", showContentPage);

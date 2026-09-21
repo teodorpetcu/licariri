@@ -4,12 +4,12 @@
 <head>
     <title>Administrare</title>
 <%- include("meta"); _%>
-    <link rel="stylesheet" type="text/css" href="/css/admin.css?v0.1.0">
+    <link rel="stylesheet" type="text/css" href="/css/admin.css?v0.1.1">
     <script type="text/javascript" src="/js/admin.js" defer></script>
 </head>
 
 <body id="admin-page">
-    <div id="panels">
+    <div id="panels" class="sectionbox">
         <div id="userinfo">
             <p><%= user.id %></p>
             <form action="/admin/logout" method="POST">

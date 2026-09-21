@@ -58,6 +58,7 @@ body.open * {
 }
 
 #main-nav {
+    position: absolute;
     #main-nav-button {
         z-index: 10;
         position: fixed;
@@ -309,9 +310,8 @@ body.open * {
         margin: 0;
         padding: 0;
     }
-    margin-top: 0;
+    margin-top: 10px;
     > h1 {
-        font-family: "Kameron";
         margin: 0;
         font-family: "Georgia", serif;
         font-weight: 700;
@@ -343,10 +343,11 @@ body.open * {
 .article-thumbnail-grid {
     position: relative;
     display: grid;
-    margin: 0 auto;
+    margin: 12px auto 12px auto;
     padding: 10px 25px;
-    width: calc(4 * 300px + 3 * 2rem + 50px);
-    grid-template-columns: repeat(4, 300px);
+    /*width: calc(4 * 300px + 3 * 2rem + 50px);*/
+    width: calc(950px + 4rem);
+    grid-template-columns: repeat(3, 300px);
     gap: 2rem;
 }
 
@@ -717,7 +718,7 @@ body.open * {
     }
     .article-thumbnail-grid {
         width: calc(950px + 4rem);
-        grid-template-columns: repeat(3, 300px);
+        /*grid-template-columns: repeat(3, 300px);*/
     }
     /* If the last row has only one element, put it in the center */
     .article-thumbnail-grid a:nth-child(3n-2):last-child {

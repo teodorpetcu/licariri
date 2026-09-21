@@ -12,7 +12,7 @@ _%>
 <head>
     <title>Editează <%= defaults.title %></title>
     <%- await include("meta"); %>
-    <link rel="stylesheet" type="text/css" href="/css/admin.css?v0.1.0">
+    <link rel="stylesheet" type="text/css" href="/css/admin.css?v0.1.1">
     <script type="text/javascript" src="/js/edit-article.js" defer></script>
 </head>
 
@@ -68,11 +68,6 @@ _%>
             </div>
         </div>
         <div id="edit-article-dtp">
-            <div id="preview-minified-thumbnail" class="article-thumbnail no-select" style="width: 300px; position: absolute; right: 100px; top: 300px; transform: translateY(-50%);">
-                <h1 id="preview-minified-thumbnail-title" class="center"></h1>
-                <img id="preview-minified-thumbnail-img">
-            </div>
-
             <div class="sectionbox">
                 <label>Thumbnail:</label>
                 <input type="file" accept="image/*" name="thumbnail" id="input-thumbnail">
@@ -80,6 +75,19 @@ _%>
 
                 <label>Ascunde titlul din thumbnail:</label>
                 <input type="checkbox" name="article.style.hideTitleInThumbnail" <% if (defaults.style.hideTitleInThumbnail) { %> checked <% } %>>
+
+                <!--TITLE FILL STYLE == <select>-->
+                <label>Titlul contrastează cu fundalul (ignoră culoarea):</label>
+                <input type="checkbox" name="article.style.title.fillStyle" <% if (defaults.style.title.fillStyle) { %> checked <% } %>>
+
+                <label>Mărimea fontului titlului din thumbnail:</label>
+                <input name="article.style.title.fontSizeThumbnail"
+                    value="<%= defaults.style.title.fontSizeThumbnail %>"
+                    type="range" min="1.5" max="2.5" step="0.1" >
+            </div>
+            <div id="preview-minified-thumbnail" class="article-thumbnail no-select">
+                <h1 id="preview-minified-thumbnail-title" class="center"></h1>
+                <img id="preview-minified-thumbnail-img">
             </div>
 
             <div class="sectionbox">
@@ -88,11 +96,6 @@ _%>
                     <option value="Baskervville">Baskervville</option>
                     <option value="Kameron" <% if (defaults.style.title.font == "Kameron") { %>selected<% } %>>Kameron</option>
                 </select>
-
-                <label>Mărimea fontului titlului din thumbnail:</label>
-                <input name="article.style.title.fontSizeThumbnail"
-                    value="<%= defaults.style.title.fontSizeThumbnail %>"
-                    type="range" min="1.5" max="2.5" step="0.1" >
 
                 <label>Mărimea fontului titlului din articol:</label>
                 <input name="article.style.title.fontSizeArticle"
@@ -103,10 +106,6 @@ _%>
                 <input name="article.style.title.fontWeight"
                     value="<%= defaults.style.title.fontWeight %>"
                     type="range" min="400" max="800" step="50">
-
-                <!--TITLE FILL STYLE == <select>-->
-                <label>Titlul contrastează cu fundalul (ignoră culoarea):</label>
-                <input type="checkbox" name="article.style.title.fillStyle" <% if (defaults.style.title.fillStyle) { %> checked <% } %>>
 
                 <label>Culoarea titlului:</label>
                 <input name="article.style.title.color"

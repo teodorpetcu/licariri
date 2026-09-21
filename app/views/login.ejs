@@ -4,7 +4,7 @@
 <head>
     <title>Autentificare</title>
 <%- include("meta"); _%>
-    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/css/login.css?v0.1.1">
     <script type="text/javascript" src="/js/main-nav.js" defer></script>
 </head>
 
@@ -13,10 +13,10 @@
     <div id="login-input-credentials">
         <h1>Autentificare</h1>
         <form action="/login" method="post" autocomplete="off">
-            <label for="username">Nume utilizator:</label>
+            <label>Nume utilizator:</label>
             <input required type="text" id="username" name="username">
 
-            <label for="password">Parolă:</label>
+            <label>Parolă:</label>
             <input required type="password" id="password" name="password">
 
             <input id="remember_me" type="checkbox" name="remember_me">

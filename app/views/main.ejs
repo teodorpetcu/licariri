@@ -17,28 +17,29 @@
         <p>a elevilor C. N. <i>„Dr. Ioan Meșotă”</i>, Brașov</p>
     </div>
     <div id="home-page-contents">
+        <%_ if (articles.length) { _%>
+        <span class="squiggly-line"></span>
+        <a name="articole"></a>
+        <div class="article-thumbnail-grid">
+            <%_ for (article of articles) { _%>
+            <a href="/articles/<%= article.id %>">
+                <div class="article-thumbnail">
+                    <%_ if (! article.style.hideTitleInThumbnail) { _%> <h1
+                        style="font-family: <%= article.style.title.font %>; font-size: <%= article.style.title.fontSizeThumbnail %>rem; font-weight: <%= article.style.title.fontWeight%>; color: <%= article.style.title.color %>" class="center<% if (article.style.title.fillStyle) { %> colour-complement-background<%_ } _%>"><%= article.title %></h1>
+                    <%_ } _%>
+                    <img src="/articles/images/<%= article.id %>.webp">
+                </div>
+            </a>
+            <%_ } _%>
+        </div>
+        <%_ } _%>
+
         <span class="squiggly-line"></span>
         <div id="introduction">
-            <a name="articole"></a>
-            <div class="article-thumbnail-grid">
-            <%_ for (article of articles) { _%>
-                <a href="/articles/<%= article.id %>">
-                    <div class="article-thumbnail">
-                        <%_ if (! article.style.hideTitleInThumbnail) { _%> <h1
-                            style="font-family: <%= article.style.title.font %>; font-size: <%= article.style.title.fontSizeThumbnail %>rem; font-weight: <%= article.style.title.fontWeight%>; color: <%= article.style.title.color %>" class="center<% if (article.style.title.fillStyle) { %> colour-complement-background<%_ } _%>"><%= article.title %></h1>
-                        <%_ } _%>
-                        <img src="/articles/images/<%= article.id %>.webp">
-                    </div>
-                </a>
-            <%_ } _%>
-            </div>
-
-            <%_ if (articles.length) { _%>
-            <span class="squiggly-line"></span>
-            <%_ } _%>
-
             <h4>anul trecut, ne-am propus numai trei cuvinte:</h4>
             <h1>Dimensiuni și perspective</h1>
+            <h4>și am reușit să strângem</h4>
+            <h1>72 de pagini de... puncte de vedere</h1>
             <div class="magazine-highlight-container">
                 <div class="magazine-thumbnail">
                     <a href="/magazines/Licăriri%202025-2026.pdf"><img src="/magazines/thumbnails/Licăriri%202025-2026.webp"></a>
@@ -47,13 +48,10 @@
                         href="/magazines/Licăriri%202025-2026.pdf">Licăriri 2025-2026</a>
                 </div>
             </div>
-
-            <span class="squiggly-line"></span>
         </div>
-
         <div id="magazines">
             <a name="arhiva-reviste"></a>
-            <p>Elevii redacției și ai liceului se schimbă; munca lor rămâne. Îți propunem să răsfoiești și volumele publicate în anii trecuți:</p>
+            <p>Dacă ai puțin timp, îți propunem să răsfoiești și volumele publicate în anii trecuți:</p>
             <div id="magazine-archive">
                 <div class="magazine-thumbnail-grid">
                 <%_ for (magazine of magazines.filter((magazine) => magazine.timestamp > 946684800)) { _%>
