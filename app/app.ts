@@ -127,7 +127,7 @@ if (process.env.ALLOW_ADMIN_ROUTES == "true") {
             (_: Request, res: Response) => res.sendFile(import.meta.dirname + "/public/js/admin.js"));
     app.get("/js/edit-article.js", requestLogger, identifyAuthorisedUser, forbidUnauthorised,
             (_: Request, res: Response) => res.sendFile(import.meta.dirname + "/public/js/edit-article.js"));
-    app.get("/login", requestLogger, get_adminLoginPage);
+    app.get("/login", requestLogger, identifyAuthorisedUser, get_adminLoginPage);
     app.post("/login", requestLogger, post_adminAPI_loginCheck);
     app.post("/admin/logout", requestLogger, post_adminAPI_logout);
 
