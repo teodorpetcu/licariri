@@ -36,7 +36,7 @@ export const MAIN_PAGE_ARTICLE_COUNT = 12;
 export const COOKIE_OPTIONS = {
     httpOnly: true,
     secure: true,
-    sameSite: "strict",
+    sameSite: "lax",
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
 };
 export const SESSION_TOKEN_LENGTH = 64;
