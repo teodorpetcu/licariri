@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import path from "node:path";
+import { CookieOptions } from "express";
 
 const APPDATA_DIR = path.resolve("../data");
 export const ARTICLES_DIRECTORY = APPDATA_DIR + "/articles";
@@ -33,7 +34,7 @@ export const QUERY_PRERENDERS = APPDATA_DIR + "/query";
 export const SITEMAP_FILE_PATH = APPDATA_DIR + "/sitemap.xml";
 export const MAIN_PAGE_HTML_FILE_PATH = APPDATA_DIR + "/main.html";
 export const MAIN_PAGE_ARTICLE_COUNT = 12;
-export const COOKIE_OPTIONS = {
+export const COOKIE_OPTIONS: CookieOptions = {
     httpOnly: true,
     secure: true,
     sameSite: "lax",

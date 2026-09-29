@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import ejs from "ejs";
-import { type Request, type Response } from "express";
+import { type RequestHandler } from "express";
 
 import { type Article } from "../models/types.ts";
 import { fileExists, writeFile } from "../utils/util.ts";
@@ -32,7 +32,7 @@ type QueryParams = {
     exactMatch?: boolean,
 }
 
-const renderQueryPage = async (query: QueryParams) => {
+const renderQueryPage = async (query: QueryParams): Promise<string|void> => {
     let articleIDs = [];
     let searchResults = [];
 
@@ -132,7 +132,7 @@ const renderQueryPage = async (query: QueryParams) => {
         .catch((err: Error) => logger.error(err, "rendering query page"));
 }
 
-export const get_queryPage = async (req: Request, res: Response) => {
+export const get_queryPage: RequestHandler = async (req, res) => {
     if (req.query.author && !req.query.tag && !req.query.any && !req.query.text) {
         if (await fileExists(QUERY_PRERENDERS + `/author=${req.query.author}.html`)) {
             res.sendFile(QUERY_PRERENDERS + `/author=${req.query.author}.html`);
@@ -158,7 +158,13 @@ export const prerenderQueryAsFile = async (query: QueryParams) => {
 
     if (filename) {
         return await renderQueryPage(query)
-            .then((queryPage) => writeFile(filename, queryPage))
+            .then((queryPage) => {
+                if (queryPage) {
+                    return writeFile(filename, queryPage)
+                } else {
+                    logger.error(Error("query page empty"))
+                }
+            })
             .then(() => true)
             .catch((err) => logger.error(err, "writing prerendered query page file"));
     } else {

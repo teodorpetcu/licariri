@@ -11,6 +11,11 @@
     },
     "nodeModulesDir": "auto",
     "imports": {
+        "@types/bcrypt": "npm:@types/bcrypt@^6.0.0",
+        "@types/cookie-parser": "npm:@types/cookie-parser@^1.4.10",
+        "@types/ejs": "npm:@types/ejs@^3.1.5",
+        "@types/express": "npm:@types/express@^5.0.6",
+        "@types/express-fileupload": "npm:@types/express-fileupload@^1.5.1",
         "bcrypt": "npm:bcrypt@^5.1.1",
         "body-parser": "npm:body-parser@^1.20.2",
         "cookie-parser": "npm:cookie-parser@^1.4.6",

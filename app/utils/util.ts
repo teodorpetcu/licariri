@@ -20,7 +20,7 @@ import * as CONFIG from "../config.ts";
 
 // FILESYSTEM OPERATIONS
 
-export const writeFile = async (path: string, contents: string): Promise<void> => {
+export const writeFile = async (path: string, contents: string | Buffer): Promise<void> => {
     return await fs.promises.writeFile(path, contents, {encoding: "utf-8"});
 }
 

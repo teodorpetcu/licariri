@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Request, Response, NextFunction } from "express";
+import { RequestHandler } from "express";
 
 import { COOKIE_OPTIONS } from "../config.ts";
 import usersDatabase from "../models/admin.ts";
@@ -28,7 +28,7 @@ const MILISECONDS_IN_A_DAY = 24 * 60 * 60 * 1000;
  * Middleware: look at the cookies on the request and attach user information to
  * `req.user`, if the session token is valid, or `undefined`, if invalid.
  */
-export const identifyAuthorisedUser = async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
+export const identifyAuthorisedUser: RequestHandler = async (req, _res, next): Promise<void> => {
     const sessionCookie = req.cookies.session;
     req.user = await usersDatabase.getSessionUser(sessionCookie);
     next();
@@ -37,7 +37,7 @@ export const identifyAuthorisedUser = async (req: Request, _res: Response, next:
 /**
  * Must be used after `identifyAuthorisedUser`
  */
-export const forbidUnauthorised = (req: Request, res: Response, next: NextFunction): void => {
+export const requireAuth: RequestHandler = (req, res, next): void => {
     if (req.user) {
         if (req.user.suspended) {
             res.status(401).send("Ne pare rău, contul tău a fost suspendat.");
@@ -61,7 +61,7 @@ const paginate = (arr: Array<any>, pageSize: number): Array<any> => {
     )
 }
 
-export const get_adminLoginPage = (req: Request, res: Response): void => {
+export const get_adminLoginPage: RequestHandler = (req, res): void => {
     if (req.user) {
         res.redirect("/admin");
     } else {
@@ -69,7 +69,7 @@ export const get_adminLoginPage = (req: Request, res: Response): void => {
     }
 }
 
-export const get_adminPage = (req: Request, res: Response): void => {
+export const get_adminPage: RequestHandler = (req, res): void => {
     if (req.user) {
         let canManageOtherUsers = false;
         if (req.user.role == "administrator") {
@@ -81,7 +81,7 @@ export const get_adminPage = (req: Request, res: Response): void => {
     }
 }
 
-export const post_adminAPI_loginCheck = async (req: Request, res: Response): Promise<void> => {
+export const post_adminAPI_loginCheck: RequestHandler = async (req, res): Promise<void> => {
     const id = req.body.username;
     const pass = req.body.password;
     const rememberMe = req.body.remember_me;
@@ -105,14 +105,14 @@ export const post_adminAPI_loginCheck = async (req: Request, res: Response): Pro
     }
 }
 
-export const post_adminAPI_logout = (req: Request, res: Response): void => {
+export const post_adminAPI_logout: RequestHandler = (req, res): void => {
     usersDatabase.removeSession(req.cookies.session);
     res.clearCookie("session");
     res.redirect("/login")
 }
 
-export const post_adminAPI_addUser = (req: Request, res: Response): void => {
-    if (req.user.role != "administrator") {
+export const post_adminAPI_addUser: RequestHandler = (req, res): void => {
+    if (req.user?.role != "administrator") {
         res.sendStatus(401);
     } else {
         let role = req.body.role;
@@ -124,7 +124,11 @@ export const post_adminAPI_addUser = (req: Request, res: Response): void => {
     }
 }
 
-export const post_adminAPI_changeUserPassword = async (req: Request, res: Response): Promise<void> => {
+export const post_adminAPI_changeUserPassword: RequestHandler = async (req, res): Promise<void> => {
+    if (! req.user) {
+        res.sendStatus(401);
+        return;
+    }
     if (await usersDatabase.isCorrectLoginCombo(req.user.id, req.body.original)) {
         await Promise.all([
             usersDatabase.changePassword(req.user, req.body.password),
@@ -137,10 +141,10 @@ export const post_adminAPI_changeUserPassword = async (req: Request, res: Respon
     }
 }
 
-export const post_adminAPI_suspendUser = (req: Request, res: Response): void => {
+export const post_adminAPI_suspendUser: RequestHandler = (req, res): void => {
     const userID = req.body.id;
     const suspend = req.body.suspend;
-    if (req.user.role != "administrator") {
+    if (req.user?.role != "administrator") {
         res.status(404).render("404");
     } else {
         if (suspend == 1) {
@@ -197,12 +201,12 @@ const activityToHumanReadable = (activity: Activity): {
     };
 }
 
-export const get_adminAPI_users = async (_: Request, res: Response): Promise<void> => {
+export const get_adminAPI_users: RequestHandler = async (_, res): Promise<void> => {
     const users = await usersDatabase.getAllUsers();
     res.send(users);
 }
 
-export const get_adminAPI_activity = async (_: Request, res: Response): Promise<void> => {
+export const get_adminAPI_activity: RequestHandler = async (_, res): Promise<void> => {
     const activity = await usersDatabase.getAllActivities();
     const human_readable = await Promise.all(activity.filter((a) => a.action != "changepassword").map((a) => activityToHumanReadable(a)));
     res.send(human_readable);

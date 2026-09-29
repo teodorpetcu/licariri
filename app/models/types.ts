@@ -221,3 +221,11 @@ export interface SanitisedArticleModificationRequestBody {
     article: Article,
     markdownContents: string,
 }
+
+declare global {
+    namespace Express {
+        interface Request {
+            user?: User;
+        }
+    }
+}

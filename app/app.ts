@@ -14,7 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import express, { type Request, type Response, type NextFunction, type Application } from "express";
+import express, { type Request, type Response, type NextFunction } from "express";
+import { type Server } from "node:http";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
@@ -51,7 +52,7 @@ import {
 
 import {
     identifyAuthorisedUser,
-    forbidUnauthorised,
+    requireAuth,
 
     get_adminLoginPage,
     get_adminPage,
@@ -123,15 +124,15 @@ if (process.env.ALLOW_QUERY_ROUTES == "true") {
 if (process.env.ALLOW_ADMIN_ROUTES == "true") {
     logger.info("/login, /admin routes FUNCTIONAL");
     app.get("/css/login.css", requestLogger, (_: Request, res: Response) => res.sendFile(import.meta.dirname + "/public/css/login.css"));
-    app.get("/js/admin.js", requestLogger, identifyAuthorisedUser, forbidUnauthorised,
+    app.get("/js/admin.js", requestLogger, identifyAuthorisedUser, requireAuth,
             (_: Request, res: Response) => res.sendFile(import.meta.dirname + "/public/js/admin.js"));
-    app.get("/js/edit-article.js", requestLogger, identifyAuthorisedUser, forbidUnauthorised,
+    app.get("/js/edit-article.js", requestLogger, identifyAuthorisedUser, requireAuth,
             (_: Request, res: Response) => res.sendFile(import.meta.dirname + "/public/js/edit-article.js"));
     app.get("/login", requestLogger, identifyAuthorisedUser, get_adminLoginPage);
     app.post("/login", requestLogger, post_adminAPI_loginCheck);
     app.post("/admin/logout", requestLogger, post_adminAPI_logout);
 
-    app.use(["/admin", "/admin/*", "/css/admin.css"], identifyAuthorisedUser, forbidUnauthorised);
+    app.use(["/admin", "/admin/*", "/css/admin.css"], identifyAuthorisedUser, requireAuth);
 
     app.get("/css/admin.css", requestLogger, (_: Request, res: Response) => res.sendFile(import.meta.dirname + "/public/css/admin.css"));
     app.get("/admin", requestLogger, get_adminPage);
@@ -151,7 +152,7 @@ if (process.env.ALLOW_ADMIN_ROUTES == "true") {
     app.post("/admin/magazines/add", requestLogger, post_adminAPI_addMagazine);
     app.post("/admin/magazines/remove", requestLogger, post_adminAPI_removeMagazine);
 
-    app.use("/admin/articles/images", requestLogger, identifyAuthorisedUser, forbidUnauthorised);
+    app.use("/admin/articles/images", requestLogger, identifyAuthorisedUser, requireAuth);
     app.use("/admin/articles/images", express.static(PUBLIC_ARTICLE_IMAGES_PATH), express.static(DRAFT_ARTICLE_IMAGES_PATH), express.static(TRASH_ARTICLE_IMAGES_PATH));
 
     // TODO: implement a single function to handle authorisation at the
@@ -167,7 +168,7 @@ if (process.env.ALLOW_ADMIN_ROUTES == "true") {
 
 app.get("*", requestLogger, (req: Request, res: Response) => res.status(404).render("404", {url: req.url}));
 
-let httpServer: Application = undefined;
+let httpServer: Server | undefined = undefined;
 
 logger.info("connecting to databases...");
 createDataDirectoriesIfTheyDontExist()
@@ -198,7 +199,7 @@ const gracefulShutdown = async (signal: string) => {
         })
         .then(() => {
             if (httpServer) {
-                httpServer.close((err: Error) => {
+                httpServer.close((err) => {
                     logger.info("web server down");
                     process.exit(err ? 1 : 0);
                 })

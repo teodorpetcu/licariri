@@ -18,7 +18,7 @@ import { exec } from "node:child_process";
 import { marked } from "marked";
 import ejs from "ejs";
 import sharp from "sharp";
-import { type Request, type Response, type NextFunction } from "express";
+import { type Request, RequestHandler } from "express";
 import { type UploadedFile } from "express-fileupload";
 
 import { logger } from "../services/logger.ts";
@@ -111,11 +111,11 @@ export const updateMainPage = async (): Promise<void> => {
         });
 }
 
-export const get_mainPage = (_: Request, res: Response): void => {
+export const get_mainPage: RequestHandler = (_, res): void => {
     res.sendFile(`${MAIN_PAGE_HTML_FILE_PATH}`);
 }
 
-export const get_articlePage = async (req: Request, res: Response): Promise<void> => {
+export const get_articlePage: RequestHandler = async (req, res): Promise<void> => {
     const articleID = req.params.articleID;
     if (await fileExists(`${PUBLIC_ARTICLE_CONTENTS_PATH}/${articleID}.html`)) {
         res.sendFile(`${PUBLIC_ARTICLE_CONTENTS_PATH}/${articleID}.html`);
@@ -124,7 +124,7 @@ export const get_articlePage = async (req: Request, res: Response): Promise<void
     }
 }
 
-export const post_adminAPI_articlePreview = async (req: Request, res: Response): Promise<void> => {
+export const post_adminAPI_articlePreview: RequestHandler<{articleID: string}> = async (req, res): Promise<void> => {
     const originalArticle = await articleDatabase.getArticleMeta(req.params.articleID);
     const article: Article = req.body.article;
     if (originalArticle) {
@@ -142,7 +142,16 @@ export const post_adminAPI_articlePreview = async (req: Request, res: Response):
         })
 }
 
-export const post_adminAPI_addArticle = async (req: Request, res: Response): Promise<void> => {
+export const getSingleFile = (req: Request, name: string): UploadedFile | undefined => {
+    const file = req.files?.[name];
+    if (Array.isArray(file)) {
+        return undefined;
+    } else {
+        return file;
+    }
+}
+
+export const post_adminAPI_addArticle: RequestHandler = async (req, res): Promise<void> => {
     const wantedTitle = req.body.article.title;
     const wantedID = generateArticleID(wantedTitle);
     const articleWithWantedIDExists = await articleDatabase.getArticleMeta(wantedID) ? true : false;
@@ -155,7 +164,7 @@ export const post_adminAPI_addArticle = async (req: Request, res: Response): Pro
     }
 
     const article: Article = req.body.article;
-    const thumbnail: UploadedFile|undefined = req.files?.thumbnail;
+    const thumbnail = getSingleFile(req, "thumbnail");
 
     return await Promise.all([
         // full article metadata
@@ -179,7 +188,7 @@ export const post_adminAPI_addArticle = async (req: Request, res: Response): Pro
         });
 }
 
-export const put_adminAPI_modifyArticle = async (req: Request, res: Response): Promise<void> => {
+export const put_adminAPI_modifyArticle: RequestHandler<{articleID: string}> = async (req, res): Promise<void> => {
     const originalID = req.params.articleID;
     const wantedTitle = req.body.article.title;
     const wantedID = generateArticleID(wantedTitle);
@@ -192,7 +201,7 @@ export const put_adminAPI_modifyArticle = async (req: Request, res: Response): P
     article.date = originalArticle.date;
     article.stage = originalArticle.stage;
     const markdownContents = req.body.markdownContents;
-    const thumbnail: UploadedFile = req.files?.thumbnail;
+    const thumbnail = getSingleFile(req, "thumbnail");
 
     // keep the original title and id when:
     // 1) there is a rename AND an article with the wanted ID already exists
@@ -225,9 +234,9 @@ export const put_adminAPI_modifyArticle = async (req: Request, res: Response): P
             // on a rename, update activity entries to point to the new article id
             if (article.id != originalArticle.id) {
                 usersDatabase.changeActivityTarget("modify", originalArticle.id, article.id);
-                usersDatabase.addActivity(req.user, "rename", originalArticle.id + "::" + article.id);
+                usersDatabase.addActivity(req.user!, "rename", originalArticle.id + "::" + article.id);
             }
-            usersDatabase.addActivity(req.user, "modify", article.id);
+            usersDatabase.addActivity(req.user!, "modify", article.id);
         })
         .then(() => {
             if (article.stage == "public") {
@@ -245,7 +254,7 @@ export const put_adminAPI_modifyArticle = async (req: Request, res: Response): P
         });
 }
 
-export const validateArticleModificationRequestBody = (req: Request, res: Response, next: NextFunction) => {
+export const validateArticleModificationRequestBody: RequestHandler = (req, res, next) => {
     if (! req.body.article) {
         return res.status(400).send("no article body in request body");
     } else if (req.body.markdownContents == undefined) {
@@ -323,9 +332,12 @@ const replaceArticleThumbnail = async (originalArticle: ArticleMeta, article: Ar
     }
 }
 
-export const post_adminAPI_updateArticleStage = async (req: Request, res: Response): Promise<void> => {
+export const post_adminAPI_updateArticleStage: RequestHandler<{articleID: string}> = async (req, res): Promise<void> => {
     const original = await articleDatabase.getArticleMeta(req.params.articleID);
-    if (! original) return res.sendStatus(500);
+    if (! original) {
+        res.sendStatus(500);
+        return;
+    }
 
     const updated: ArticleMeta = { ...original }; // spread to create a copy
     updated.stage = req.body.stage;
@@ -345,7 +357,7 @@ export const post_adminAPI_updateArticleStage = async (req: Request, res: Respon
                 if (updated.stage == "draft" || updated.stage == "trash") {
                     actionType = updated.stage;
                 }
-                usersDatabase.addActivity(req.user, actionType, updated.id)
+                usersDatabase.addActivity(req.user!, actionType, updated.id)
 
                 res.redirect("/admin");
             })
@@ -358,7 +370,7 @@ export const post_adminAPI_updateArticleStage = async (req: Request, res: Respon
     }
 }
 
-export const post_adminAPI_removeArticle = async (req: Request, res: Response): Promise<void> => {
+export const post_adminAPI_removeArticle: RequestHandler = async (req, res): Promise<void> => {
     const articleID = req.body.id;
     return await Promise.all([
         articleDatabase.removeArticle(articleID),
@@ -371,10 +383,10 @@ export const post_adminAPI_removeArticle = async (req: Request, res: Response): 
         });
 }
 
-export const post_adminAPI_addMagazine = (req: Request, res: Response): void => {
+export const post_adminAPI_addMagazine: RequestHandler = (req, res): void => {
     const timestamp = new Date(req.body.date).getTime();
     const description = req.body.description.replace(/\//g, "").trim();
-    const pdffile = req.files ? req.files.pdffile : undefined;
+    const pdffile = getSingleFile(req, "pdffile");
     const magazine = newMagazine(timestamp, description);
 
     if (pdffile && /pdf$/.test(pdffile.mimetype)) {
@@ -390,7 +402,7 @@ export const post_adminAPI_addMagazine = (req: Request, res: Response): void => 
                     }
                 })
             })
-            .then(() => usersDatabase.addActivity(req.user, "addmagazine", description))
+            .then(() => usersDatabase.addActivity(req.user!, "addmagazine", description))
             .then(() => updateMainPage())
             .then(() => res.status(200).redirect("/"))
         })
@@ -401,10 +413,14 @@ export const post_adminAPI_addMagazine = (req: Request, res: Response): void => 
     }
 }
 
-export const post_adminAPI_removeMagazine = (req: Request, res: Response): void => {
+export const post_adminAPI_removeMagazine: RequestHandler = (req, res): void => {
     const magazineDescription = req.body.description;
+    if (req.user?.role != "administrator") {
+        res.sendStatus(401);
+        return;
+    }
     articleDatabase.removeMagazine(magazineDescription)
-        .then(() => usersDatabase.addActivity(req.user, "rmmagazine", magazineDescription))
+        .then(() => usersDatabase.addActivity(req.user!, "rmmagazine", magazineDescription))
         .then(() => updateMainPage())
         .then(() => res.status(200).redirect("/admin/magazines"))
         .catch((_err) => res.sendStatus(500));
@@ -418,8 +434,8 @@ const renderEditArticlePageTemplate = async (article: Article, markdownContents:
     }, { async: true });
 }
 
-export const get_adminAddArticlePage = async (req: Request, res: Response): Promise<void> => {
-    let article: Article | undefined = await articleDatabase.getArticle(req.params.articleID);
+export const get_adminAddArticlePage: RequestHandler<{articleID: string}> = async (req, res): Promise<void> => {
+    const article: Article | undefined = await articleDatabase.getArticle(req.params.articleID);
     if (article) {
         await readFileIfExists(getArticleMarkdownFilePath(article))
             .then(async (markdownContents) => {
@@ -431,34 +447,40 @@ export const get_adminAddArticlePage = async (req: Request, res: Response): Prom
                 return res.sendStatus(500)
             })
     } else {
-        const newArticleTitle = await articleDatabase.getNextNewArticleTitle().catch((err) => {
-            logger.error(err, "getting admin add article page")
-            return res.sendStatus(500);
-        })
-        article = newArticle({
-            stage: "draft",
-            title: newArticleTitle,
-        });
-        const markdownContents = "";
-        await renderEditArticlePageTemplate(article, markdownContents, "post")
+        await articleDatabase.getNextNewArticleTitle()
+            .then((newArticleTitle) => {
+                return newArticle({
+                    stage: "draft",
+                    title: newArticleTitle,
+                });
+            })
+            .then((article) => renderEditArticlePageTemplate(article, "", "post"))
             .then((renderedPage) => res.send(renderedPage))
             .catch((err) => {
-                logger.error(err, "getting admin add article page");
-                return res.sendStatus(500);
+                logger.error(err, "getting admin add article page")
+                res.sendStatus(500);
             })
     }
 }
 
-export const get_adminAPI_articles = async (_: Request, res: Response): Promise<void> => {
+export const get_adminAPI_articles: RequestHandler = async (_, res): Promise<void> => {
     return await articleDatabase.searchArticles()
-        .then((articles) => res.send(articles))
+        .then((articles) => {
+            res.send(articles)
+        })
         .catch((err) => {
             logger.error(err, "GET /admin/articles");
             res.sendStatus(500);
         })
 }
 
-export const get_adminAPI_magazines = async (_: Request, res: Response): Promise<void> => {
-    const magazines = await articleDatabase.getAllMagazinesSorted();
-    res.send(magazines);
+export const get_adminAPI_magazines: RequestHandler = async (_, res): Promise<void> => {
+    return await articleDatabase.getAllMagazinesSorted()
+        .then((magazines) => {
+            res.send(magazines);
+        })
+        .catch((err) => {
+            logger.error(err, "GET /admin/magazines");
+            res.sendStatus(500);
+        })
 }
