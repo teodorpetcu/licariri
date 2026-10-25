@@ -10,10 +10,11 @@ readonly CREDENTIALS_FILE="${XDG_CONFIG_HOME}/licariri/cloudflare-update-dns-cre
 
 readonly IP_LOG_FILE="${HOME}/.ip-log"
 
-current_ip=$(curl --silent https://ipv4.icanhazip.com)
+readonly CURRENT_IP=$(curl --silent https://ipv4.icanhazip.com)
 
 function new_ip_differs_from_last {
-    if [[ "${current_ip}" != "$(tail -n1 ${IP_LOG_FILE})" ]]; then
+    local last_ip="$(tail -n1 ${IP_LOG_FILE} | awk '{ print $2; }')"
+    if [[ "${CURRENT_IP}" != "${last_ip}" ]]; then
         return 0 # true
     else
         return 1 # false
@@ -21,7 +22,7 @@ function new_ip_differs_from_last {
 }
 
 function update_ip_log {
-    echo "$(date '+%Y-%m-%d') ${current_ip}" >> "${IP_LOG_FILE}"
+    echo "$(date '+%Y-%m-%d') ${CURRENT_IP}" >> "${IP_LOG_FILE}"
 }
 
 function update_cloudflare_dns_record {
