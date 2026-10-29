@@ -14,7 +14,7 @@ readonly CURRENT_IP=$(curl --silent https://ipv4.icanhazip.com)
 
 function new_ip_differs_from_last {
     local last_ip="$(tail -n1 ${IP_LOG_FILE} | awk '{ print $2; }')"
-    if [[ "${CURRENT_IP}" != "${last_ip}" ]]; then
+    if [[ "${CURRENT_IP}" != "${last_ip}" && ! -z "${CURRENT_IP}" ]]; then
         return 0 # true
     else
         return 1 # false
@@ -26,15 +26,15 @@ function update_ip_log {
 }
 
 function update_cloudflare_dns_record {
-    curl https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$DNS_RECORD_ID \
+    curl "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records/${DNS_RECORD_ID}" \
         -X PUT \
         -H 'Content-Type: application/json' \
-        -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+        -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
         -d "{
           \"name\": \"licariri.ro\",
           \"ttl\": 3600,
           \"type\": \"A\",
-          \"content\": \"${current_ip}\",
+          \"content\": \"${CURRENT_IP}\",
           \"proxied\": true
         }"
 }
