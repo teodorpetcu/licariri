@@ -10,7 +10,7 @@ Deno.test.beforeAll(async () => {
 })
 
 Deno.test.beforeEach(async () => {
-    // nuke the database
+    // nuke the test database
     await testArticleDB.exec("DELETE FROM articles");
     await testArticleDB.exec("DELETE FROM article_styles");
     await testArticleDB.exec("DELETE FROM article_authors");
